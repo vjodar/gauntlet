@@ -3,6 +3,7 @@ require 'playState'
 require 'player'
 require 'walls'
 require 'enemies'
+require 'resourceNodes'
 
 function love.load()
     --set pixelated look

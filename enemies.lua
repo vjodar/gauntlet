@@ -5,21 +5,17 @@ function Enemies:load()
 end
 
 function Enemies:update()
-    for k, enemy in pairs(self.enemiesTable) do 
-        enemy:update()
-    end
+    for i,enemy in pairs(self.enemiesTable) do enemy:update() end
 end
 
 function Enemies:draw()
-    for k, enemy in pairs(self.enemiesTable) do 
-        enemy:draw()
-    end
+    for i,enemy in pairs(self.enemiesTable) do enemy:draw() end
 end
 
 function Enemies:add_orc_t1(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
-        --setip physics collider
+        --setup physics collider
         self.collider=world:newRectangleCollider(_x,_y,9,9)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
@@ -73,7 +69,7 @@ end
 function Enemies:add_demon_t1(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
-        --setip physics collider
+        --setup physics collider
         self.collider=world:newRectangleCollider(_x,_y,9,9)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
@@ -127,7 +123,7 @@ end
 function Enemies:add_skeleton_t1(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
-        --setip physics collider
+        --setup physics collider
         self.collider=world:newRectangleCollider(_x,_y,9,14)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
@@ -181,7 +177,7 @@ end
 function Enemies:add_orc_t2(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
-        --setip physics collider
+        --setup physics collider
         self.collider=world:newRectangleCollider(_x,_y,10,15)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
@@ -235,7 +231,7 @@ end
 function Enemies:add_demon_t2(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
-        --setip physics collider
+        --setup physics collider
         self.collider=world:newRectangleCollider(_x,_y,10,17)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
@@ -289,7 +285,7 @@ end
 function Enemies:add_mage_t2(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
-        --setip physics collider
+        --setup physics collider
         self.collider=world:newRectangleCollider(_x,_y,12,15)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
@@ -336,7 +332,7 @@ end
 function Enemies:add_orc_t3(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
-        --setip physics collider
+        --setup physics collider
         self.collider=world:newRectangleCollider(_x,_y,19,25)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
@@ -390,7 +386,7 @@ end
 function Enemies:add_demon_t3(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
-        --setip physics collider
+        --setup physics collider
         self.collider=world:newRectangleCollider(_x,_y,19,25)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0

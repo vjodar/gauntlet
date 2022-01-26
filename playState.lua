@@ -8,26 +8,36 @@ function PlayState:load()
     world=wf.newWorld() --initialize physics world which handles colliders
 
     Walls:load() --create colliders for all walls in map
-    Player:load() --initialize player character
+    ResourceNodes:load() --initialize resourceNodes class
     Enemies:load() --initialize enemies class
+    Player:load() --initialize player character
 
     --Testing enemies------------------
-    Enemies:add_orc_t1(150,150)
-    Enemies:add_demon_t1(200,150)
-    Enemies:add_skeleton_t1(250,150)
-    Enemies:add_orc_t2(300,150)
-    Enemies:add_demon_t2(350,150)
-    Enemies:add_mage_t2(400,150)
-    Enemies:add_orc_t3(450,150)
-    Enemies:add_demon_t3(500,150)
+    Enemies:add_orc_t1(350,150)
+    Enemies:add_demon_t1(400,150)
+    Enemies:add_skeleton_t1(450,150)
+    Enemies:add_orc_t2(350,100)
+    Enemies:add_demon_t2(400,100)
+    Enemies:add_mage_t2(450,100)
+    Enemies:add_orc_t3(375,50)
+    Enemies:add_demon_t3(435,50)
     --Testing enemies------------------
+
+    --Testing resource nodes-----------
+    ResourceNodes:add_tree(580,40)
+    ResourceNodes:add_rock(640,51)
+    ResourceNodes:add_vine(700,16)
+    ResourceNodes:add_fungi(600,100)
+    ResourceNodes:add_fishing_hole(704,128)
+    --Testing resource nodes-----------
 end
 
 function PlayState:update()
 
     world:update(dt) --update physics colliders
-    Player:update() --update player
+    ResourceNodes:update() --update resource nodes
     Enemies:update() --update enemies
+    Player:update() --update player
 
     cam:lookAt(Player.xPos,Player.yPos)
 
@@ -45,13 +55,17 @@ function PlayState:draw()
     cam:attach()
         gameMap:drawLayer(gameMap.layers['Ground'])
         gameMap:drawLayer(gameMap.layers['Walls'])
-        --world:draw() --draws all physics colliders
+        -- world:draw() --draws all physics colliders
+        ResourceNodes:draw()
         Enemies:draw()
         Player:draw()
         gameMap:drawLayer(gameMap.layers['Foreground'])
     cam:detach()
 
     --debug---------------
-    --love.graphics.print(#Enemies.enemiesTable,10,10)
+    love.graphics.print(Player.xPos,10,0)
+    love.graphics.print(Player.yPos,10,10)    
+    love.graphics.print(#ResourceNodes.resourceNodesTable,0,500)
+    love.graphics.print(#Enemies.enemiesTable,0,520)
     --debug---------------
 end
