@@ -13,28 +13,29 @@ function PlayState:load()
     Player:load() --initialize player character
 
     --Testing enemies------------------
-    Enemies:add_orc_t1(350,150)
-    Enemies:add_demon_t1(400,150)
-    Enemies:add_skeleton_t1(450,150)
-    Enemies:add_orc_t2(350,100)
-    Enemies:add_demon_t2(400,100)
-    Enemies:add_mage_t2(450,100)
-    Enemies:add_orc_t3(375,50)
-    Enemies:add_demon_t3(435,50)
+    Enemies:add_orc_t1(350,170)
+    Enemies:add_demon_t1(400,170)
+    Enemies:add_skeleton_t1(450,170)
+    Enemies:add_orc_t2(350,120)
+    Enemies:add_demon_t2(400,120)
+    Enemies:add_mage_t2(450,120)
+    Enemies:add_orc_t3(375,70)
+    Enemies:add_demon_t3(435,70)
     --Testing enemies------------------
 
     --Testing resource nodes-----------
-    ResourceNodes:add_tree(580,40)
-    ResourceNodes:add_rock(640,51)
+    ResourceNodes:add_tree(580,80)
+    ResourceNodes:add_rock(640,75)
     ResourceNodes:add_vine(700,16)
-    ResourceNodes:add_fungi(600,100)
-    ResourceNodes:add_fishing_hole(704,128)
+    ResourceNodes:add_fungi(600,130)
+    ResourceNodes:add_fishing_hole(710,135)
     --Testing resource nodes-----------
 end
 
 function PlayState:update()
 
     world:update(dt) --update physics colliders
+
     ResourceNodes:update() --update resource nodes
     Enemies:update() --update enemies
     Player:update() --update player
@@ -55,7 +56,7 @@ function PlayState:draw()
     cam:attach()
         gameMap:drawLayer(gameMap.layers['Ground'])
         gameMap:drawLayer(gameMap.layers['Walls'])
-        -- world:draw() --draws all physics colliders
+        world:draw() --draws all physics colliders
         ResourceNodes:draw()
         Enemies:draw()
         Player:draw()
@@ -65,7 +66,6 @@ function PlayState:draw()
     --debug---------------
     love.graphics.print(Player.xPos,10,0)
     love.graphics.print(Player.yPos,10,10)    
-    love.graphics.print(#ResourceNodes.resourceNodesTable,0,500)
     love.graphics.print(#Enemies.enemiesTable,0,520)
     --debug---------------
 end

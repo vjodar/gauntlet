@@ -2,7 +2,7 @@ Player={}
 
 function Player:load()
     --setup player's physics collider and position, velocity vectors
-    self.collider=world:newBSGRectangleCollider(600,100,12,17,4)
+    self.collider=world:newRectangleCollider(100,100,12,4)
     self.xPos, self.yPos=self.collider:getPosition()
     self.xVel, self.yVel=self.collider:getLinearVelocity()
     self.collider:setLinearDamping(20) --apply increased 'friction'
@@ -49,7 +49,7 @@ function Player:draw()
     end
     
     --draw the appropriate current animation
-    self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,scaleX,1,8,14)
+    self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,scaleX,1,8,15)
 end
 
 function Player:move()
