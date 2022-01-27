@@ -1,17 +1,5 @@
 ResourceNodes={}
 
-function ResourceNodes:load() 
-    self.resourceNodesTable={}
-end
-
-function ResourceNodes:update() 
-    for i,node in pairs(self.resourceNodesTable) do node:update() end 
-end
-
-function ResourceNodes:draw() 
-    for i,node in pairs(self.resourceNodesTable) do node:draw() end 
-end
-
 function ResourceNodes:add_tree(_x,_y) 
     local node={}
 
@@ -26,7 +14,7 @@ function ResourceNodes:add_tree(_x,_y)
         self.state={}
         self.state.depleted=false 
 
-        table.insert(ResourceNodes.resourceNodesTable,self)
+        table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() 
@@ -53,7 +41,7 @@ function ResourceNodes:add_rock(_x,_y)
         self.state={}
         self.state.depleted=false 
 
-        table.insert(ResourceNodes.resourceNodesTable,self)
+        table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() 
@@ -80,7 +68,7 @@ function ResourceNodes:add_vine(_x,_y)
         self.state={}
         self.state.depleted=false 
 
-        table.insert(ResourceNodes.resourceNodesTable,self)
+        table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() end
@@ -106,7 +94,7 @@ function ResourceNodes:add_fungi(_x,_y)
         self.state={}
         self.state.depleted=false 
 
-        table.insert(ResourceNodes.resourceNodesTable,self)
+        table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() 
@@ -139,7 +127,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
         self.state={}
         self.state.depleted=false 
 
-        table.insert(ResourceNodes.resourceNodesTable,self)
+        table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() 
@@ -147,7 +135,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
     end
 
     function node:draw() 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,0,-4)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,0,-5)
     end
 
     node:load()

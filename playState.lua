@@ -7,9 +7,8 @@ function PlayState:load()
 
     world=wf.newWorld() --initialize physics world which handles colliders
 
+    Entities:load() --initialize table of entities
     Walls:load() --create colliders for all walls in map
-    ResourceNodes:load() --initialize resourceNodes class
-    Enemies:load() --initialize enemies class
     Player:load() --initialize player character
 
     --Testing enemies------------------
@@ -36,9 +35,7 @@ function PlayState:update()
 
     world:update(dt) --update physics colliders
 
-    ResourceNodes:update() --update resource nodes
-    Enemies:update() --update enemies
-    Player:update() --update player
+    Entities:update() --update all entities
 
     cam:lookAt(Player.xPos,Player.yPos)
 
@@ -56,16 +53,14 @@ function PlayState:draw()
     cam:attach()
         gameMap:drawLayer(gameMap.layers['Ground'])
         gameMap:drawLayer(gameMap.layers['Walls'])
-        world:draw() --draws all physics colliders
-        ResourceNodes:draw()
-        Enemies:draw()
-        Player:draw()
+        --world:draw() --draws all physics colliders
+        Entities:draw() --draw all entities in order of their yPos value
         gameMap:drawLayer(gameMap.layers['Foreground'])
     cam:detach()
 
     --debug---------------
-    love.graphics.print(Player.xPos,10,0)
-    love.graphics.print(Player.yPos,10,10)    
-    love.graphics.print(#Enemies.enemiesTable,0,520)
+    -- love.graphics.print(Player.xPos,10,0)
+    -- love.graphics.print(Player.yPos,10,10)
+    -- love.graphics.print(#Entities.entitiesTable,0,500)
     --debug---------------
 end

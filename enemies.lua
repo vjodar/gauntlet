@@ -1,17 +1,5 @@
 Enemies={}
 
-function Enemies:load()
-    self.enemiesTable={} --stores enemies
-end
-
-function Enemies:update()
-    for i,enemy in pairs(self.enemiesTable) do enemy:update() end
-end
-
-function Enemies:draw()
-    for i,enemy in pairs(self.enemiesTable) do enemy:draw() end
-end
-
 function Enemies:add_orc_t1(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
@@ -35,7 +23,8 @@ function Enemies:add_orc_t1(_x,_y)
         self.state.facing='right'
         self.state.moving=false
 
-        table.insert(Enemies.enemiesTable,self) --insert enemy into enemiesTable
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
     end
 
     function enemy:update() 
@@ -89,7 +78,8 @@ function Enemies:add_demon_t1(_x,_y)
         self.state.facing='right'
         self.state.moving=false
 
-        table.insert(Enemies.enemiesTable,self) --insert enemy into enemiesTable
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
     end
 
     function enemy:update() 
@@ -143,7 +133,8 @@ function Enemies:add_skeleton_t1(_x,_y)
         self.state.facing='right'
         self.state.moving=false
 
-        table.insert(Enemies.enemiesTable,self) --insert enemy into enemiesTable
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
     end
 
     function enemy:update() 
@@ -197,7 +188,8 @@ function Enemies:add_orc_t2(_x,_y)
         self.state.facing='right'
         self.state.moving=false
 
-        table.insert(Enemies.enemiesTable,self) --insert enemy into enemiesTable
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
     end
 
     function enemy:update() 
@@ -251,7 +243,8 @@ function Enemies:add_demon_t2(_x,_y)
         self.state.facing='right'
         self.state.moving=false
 
-        table.insert(Enemies.enemiesTable,self) --insert enemy into enemiesTable
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
     end
 
     function enemy:update() 
@@ -304,7 +297,8 @@ function Enemies:add_mage_t2(_x,_y)
         self.state={}
         self.state.facing='right'
 
-        table.insert(Enemies.enemiesTable,self) --insert enemy into enemiesTable
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
     end
 
     function enemy:update() 
@@ -352,7 +346,8 @@ function Enemies:add_orc_t3(_x,_y)
         self.state.facing='right'
         self.state.moving=false
 
-        table.insert(Enemies.enemiesTable,self) --insert enemy into enemiesTable
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
     end
 
     function enemy:update() 
@@ -406,7 +401,8 @@ function Enemies:add_demon_t3(_x,_y)
         self.state.facing='right'
         self.state.moving=false
 
-        table.insert(Enemies.enemiesTable,self) --insert enemy into enemiesTable
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
     end
 
     function enemy:update() 

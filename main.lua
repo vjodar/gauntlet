@@ -1,5 +1,6 @@
 require 'timerState'
 require 'playState'
+require 'entities'
 require 'player'
 require 'walls'
 require 'enemies'

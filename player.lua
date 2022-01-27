@@ -21,6 +21,8 @@ function Player:load()
     self.state={}
     self.state.facing='right'
     self.state.moving=false
+
+    table.insert(Entities.entitiesTable,self)
 end
 
 function Player:update()
