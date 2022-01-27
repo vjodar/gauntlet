@@ -115,18 +115,18 @@
 </data>
  </layer>
  <objectgroup id="4" name="WallsObj">
-  <object id="5" x="16" y="12" width="768" height="32"/>
-  <object id="6" x="16" y="764" width="768" height="20"/>
+  <object id="5" x="16" y="12" width="768" height="36"/>
+  <object id="6" x="16" y="768" width="768" height="16"/>
   <object id="7" x="16" y="12" width="4" height="772"/>
   <object id="8" x="780" y="12" width="4" height="772"/>
-  <object id="9" x="20" y="220" width="108" height="16"/>
-  <object id="10" x="160" y="220" width="224" height="16"/>
-  <object id="11" x="416" y="220" width="224" height="16"/>
-  <object id="12" x="672" y="220" width="108" height="16"/>
-  <object id="13" x="524" y="12" width="8" height="112"/>
-  <object id="14" x="268" y="12" width="8" height="112"/>
-  <object id="17" x="268" y="156" width="8" height="304"/>
-  <object id="19" x="524" y="156" width="8" height="304"/>
+  <object id="9" x="20" y="224" width="108" height="16"/>
+  <object id="10" x="160" y="224" width="224" height="16"/>
+  <object id="11" x="416" y="224" width="224" height="16"/>
+  <object id="12" x="672" y="224" width="108" height="16"/>
+  <object id="13" x="524" y="12" width="8" height="116"/>
+  <object id="14" x="268" y="12" width="8" height="116"/>
+  <object id="17" x="268" y="156" width="8" height="308"/>
+  <object id="19" x="524" y="156" width="8" height="308"/>
   <object id="20" x="268" y="492" width="8" height="276"/>
   <object id="21" x="524" y="492" width="8" height="276"/>
  </objectgroup>

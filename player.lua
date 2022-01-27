@@ -51,7 +51,7 @@ function Player:draw()
     end
     
     --draw the appropriate current animation
-    self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,scaleX,1,8,15)
+    self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,scaleX,1,8,19)
 end
 
 function Player:move()

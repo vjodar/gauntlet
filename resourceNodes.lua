@@ -21,7 +21,7 @@ function ResourceNodes:add_tree(_x,_y)
     end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,16)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,20)
     end
 
     node:load()
@@ -33,7 +33,7 @@ function ResourceNodes:add_rock(_x,_y)
     function node:load() 
         --setup collider and position vectors
         self.xPos, self.yPos = _x,_y 
-        self.collider=world:newRectangleCollider(_x,_y,16,6)
+        self.collider=world:newRectangleCollider(_x,_y,16,9)
         self.collider:setType('static')
         self.sprite=love.graphics.newImage('assets/rock.png')
 
@@ -60,7 +60,7 @@ function ResourceNodes:add_vine(_x,_y)
     function node:load() 
         --setup collider and position vectors
         self.xPos, self.yPos = _x,_y 
-        self.collider=world:newRectangleCollider(_x,_y,16,26)
+        self.collider=world:newRectangleCollider(_x,_y,16,32)
         self.collider:setType('static')
         self.sprite=love.graphics.newImage('assets/vine.png')
 
@@ -101,7 +101,7 @@ function ResourceNodes:add_fungi(_x,_y)
     end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,5,2)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,5,5)
     end
 
     node:load()
@@ -113,7 +113,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
     function node:load() 
         --setup collider and position vectors
         self.xPos, self.yPos = _x,_y 
-        self.collider=world:newBSGRectangleCollider(_x,_y,16,8,3)
+        self.collider=world:newBSGRectangleCollider(_x,_y,16,8,2)
         self.collider:setType('static')
 
         --animations
@@ -135,7 +135,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
     end
 
     function node:draw() 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,0,-4)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,0,-1)
     end
 
     node:load()
