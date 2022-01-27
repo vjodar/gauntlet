@@ -4,4 +4,5 @@ function love.conf(t)
     t.console=true              --Attach a console (boolean, Windows only)
     t.window.width=1200         --The window width (number)
     t.window.height=900         --The window height (number)
+    t.window.resizable=false
 end

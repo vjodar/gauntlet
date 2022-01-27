@@ -3,7 +3,8 @@ PlayState={}
 function PlayState:load()
     gameMap=sti('assets/maps/testMap.lua')
     cam=camera()
-    cam:zoom(3) --1x zoom for every 400px width / 300px height
+    --1x zoom for every 400px width and 300px height
+    cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600)) 
 
     world=wf.newWorld() --initialize physics world which handles colliders
 
@@ -53,7 +54,7 @@ function PlayState:draw()
     cam:attach()
         gameMap:drawLayer(gameMap.layers['Ground'])
         gameMap:drawLayer(gameMap.layers['Walls'])
-        --world:draw() --draws all physics colliders
+        -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         gameMap:drawLayer(gameMap.layers['Foreground'])
     cam:detach()

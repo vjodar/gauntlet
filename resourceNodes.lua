@@ -6,7 +6,7 @@ function ResourceNodes:add_tree(_x,_y)
     function node:load() 
         --setup collider and position vectors
         self.xPos, self.yPos = _x,_y 
-        self.collider=world:newRectangleCollider(_x,_y,14,4)
+        self.collider=world:newRectangleCollider(_x,_y,14,6)
         self.collider:setType('static')
         self.sprite=love.graphics.newImage('assets/tree.png')
 
@@ -21,7 +21,7 @@ function ResourceNodes:add_tree(_x,_y)
     end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,18)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,16)
     end
 
     node:load()
@@ -33,7 +33,7 @@ function ResourceNodes:add_rock(_x,_y)
     function node:load() 
         --setup collider and position vectors
         self.xPos, self.yPos = _x,_y 
-        self.collider=world:newRectangleCollider(_x,_y,16,4)
+        self.collider=world:newRectangleCollider(_x,_y,16,6)
         self.collider:setType('static')
         self.sprite=love.graphics.newImage('assets/rock.png')
 
@@ -48,7 +48,7 @@ function ResourceNodes:add_rock(_x,_y)
     end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,8)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,4)
     end
 
     node:load()
@@ -60,7 +60,7 @@ function ResourceNodes:add_vine(_x,_y)
     function node:load() 
         --setup collider and position vectors
         self.xPos, self.yPos = _x,_y 
-        self.collider=world:newRectangleCollider(_x,_y,16,28)
+        self.collider=world:newRectangleCollider(_x,_y,16,26)
         self.collider:setType('static')
         self.sprite=love.graphics.newImage('assets/vine.png')
 
@@ -86,7 +86,7 @@ function ResourceNodes:add_fungi(_x,_y)
     function node:load() 
         --setup collider and position vectors
         self.xPos, self.yPos = _x,_y 
-        self.collider=world:newRectangleCollider(_x,_y,8,4)
+        self.collider=world:newRectangleCollider(_x,_y,6,6)
         self.collider:setType('static')
         self.sprite=love.graphics.newImage('assets/fungi.png')
 
@@ -101,7 +101,7 @@ function ResourceNodes:add_fungi(_x,_y)
     end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,5,5)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,5,2)
     end
 
     node:load()
@@ -135,7 +135,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
     end
 
     function node:draw() 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,0,-5)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,0,-4)
     end
 
     node:load()

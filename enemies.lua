@@ -317,7 +317,7 @@ function Enemies:add_mage_t2(_x,_y)
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,7,17)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,7,18)
     end
 
     enemy:load() --initialize enemy
@@ -327,7 +327,7 @@ function Enemies:add_orc_t3(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
-        self.collider=world:newRectangleCollider(_x,_y,19,6)
+        self.collider=world:newRectangleCollider(_x,_y,19,7)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
@@ -372,7 +372,7 @@ function Enemies:add_orc_t3(_x,_y)
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,16,22)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,16,24)
     end
 
     enemy:load() --initialize enemy
@@ -382,7 +382,7 @@ function Enemies:add_demon_t3(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
-        self.collider=world:newRectangleCollider(_x,_y,19,6)
+        self.collider=world:newRectangleCollider(_x,_y,19,7)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
@@ -427,7 +427,7 @@ function Enemies:add_demon_t3(_x,_y)
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,16,22)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,16,24)
     end
 
     enemy:load() --initialize enemy

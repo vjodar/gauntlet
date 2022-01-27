@@ -8,11 +8,15 @@ function Entities:load()
     --All other entity classes will add their objects to this table to be
     --updated and then sorted by their yPos value before being drawn
     self.entitiesTable={}
+
+    --sorting function to be used in table.sort()
+    --takes two entities and returns the one with the larger yPos value.
+    self.sort=function(e1,e2) return e1.yPos<e2.yPos end
 end
 
 function Entities:update() 
     --sort the entitiesTable by yPos value
-    table.sort(self.entitiesTable, function(e1,e2) return e1.yPos<e2.yPos end)
+    table.sort(self.entitiesTable, self.sort)
 
     for i,entity in pairs(self.entitiesTable) do entity:update() end
 end
