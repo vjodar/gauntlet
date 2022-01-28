@@ -15,16 +15,25 @@ function ResourceNodes:add_tree(_x,_y)
 
         --node state metatable
         self.state={}
-        self.state.depleted=false 
+        self.state.depleted=false
+        self.state.harvestProgress=0 
 
         table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() 
+        if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+            Items:add_tree_wood(self.xPos,self.yPos)
+            self.state.harvestProgress=0
+        end
     end
 
     function node:draw() 
         love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,7,22)
+    end
+
+    function node:harvestResource()
+        self.state.harvestProgress=self.state.harvestProgress+dt
     end
 
     node:load()
@@ -46,15 +55,24 @@ function ResourceNodes:add_rock(_x,_y)
         --node state metatable
         self.state={}
         self.state.depleted=false 
+        self.state.harvestProgress=0
 
         table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() 
+        if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+            Items:add_rock_ore(self.xPos,self.yPos)
+            self.state.harvestProgress=0
+        end
     end
 
     function node:draw() 
         love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,7.5)
+    end
+
+    function node:harvestResource()
+        self.state.harvestProgress=self.state.harvestProgress+dt
     end
 
     node:load()
@@ -76,14 +94,25 @@ function ResourceNodes:add_vine(_x,_y)
         --node state metatable
         self.state={}
         self.state.depleted=false 
+        self.state.harvestProgress=0
 
         table.insert(Entities.entitiesTable,self)
     end
 
-    function node:update() end
+    function node:update() 
+        if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+            Items:add_vine_fiber(self.xPos,self.yPos)
+            self.state.harvestProgress=0
+        end
+    end
 
     function node:draw() 
         love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,16)
+    end
+
+    function node:harvestResource()
+        self.state.harvestProgress=self.state.harvestProgress+dt
+        -- print(self.state.harvestProgress)
     end
 
     node:load()
@@ -105,15 +134,25 @@ function ResourceNodes:add_fungi(_x,_y)
         --node state metatable
         self.state={}
         self.state.depleted=false 
+        self.state.harvestProgress=0
 
         table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() 
+        if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+            Items:add_fungi_mushroom(self.xPos,self.yPos)
+            self.state.harvestProgress=0
+        end
     end
 
     function node:draw() 
         love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,8)
+    end
+
+    function node:harvestResource()
+        self.state.harvestProgress=self.state.harvestProgress+dt
+        -- print(self.state.harvestProgress)
     end
 
     node:load()
@@ -140,16 +179,27 @@ function ResourceNodes:add_fishing_hole(_x,_y)
         --node state metatable
         self.state={}
         self.state.depleted=false 
+        self.state.harvestProgress=0
 
         table.insert(Entities.entitiesTable,self)
     end
 
     function node:update() 
         self.currentAnim:update(dt)
+
+        if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+            Items:add_fish_raw(self.xPos,self.yPos)
+            self.state.harvestProgress=0
+        end
     end
 
     function node:draw() 
         self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,3)
+    end
+
+    function node:harvestResource()
+        self.state.harvestProgress=self.state.harvestProgress+dt
+        -- print(self.state.harvestProgress)
     end
 
     node:load()

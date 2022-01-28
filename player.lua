@@ -10,6 +10,7 @@ function Player:load()
     self.collider:setCollisionClass('player')
     self.collider:setObject(self) --attach collider to this object
     self.moveSpeed=40
+    self.moveSpeedDiag=self.moveSpeed*0.61
 
     --sprites and animations
     self.spriteSheet=love.graphics.newImage('assets/armor_full_t3.png')
@@ -23,6 +24,8 @@ function Player:load()
     self.state={}
     self.state.facing='right'
     self.state.moving=false
+    self.state.movingHorizontally=false 
+    self.state.movingVertially=false 
 
     table.insert(Entities.entitiesTable,self)
 end
@@ -58,25 +61,42 @@ function Player:draw()
 end
 
 function Player:move()
-    self.state.moving=false --default to idle
+    --default movement states to idle
+    self.state.moving=false 
+    self.state.movingHorizontally=false 
+    self.state.movingVertically=false 
 
     if love.keyboard.isDown('left') then 
         self.xVel=self.xVel-self.moveSpeed
         self.state.facing='left'
         self.state.moving=true
+        self.state.movingHorizontally=true
     end
     if love.keyboard.isDown('right') then 
         self.xVel=self.xVel+self.moveSpeed 
         self.state.facing='right'
         self.state.moving=true
+        self.state.movingHorizontally=true
     end
     if love.keyboard.isDown('up') then 
-        self.yVel=self.yVel-self.moveSpeed
+        --accomodate for diagonal speed
+        if self.state.movingHorizontally then 
+            self.yVel=self.yVel-self.moveSpeedDiag
+        else            
+            self.yVel=self.yVel-self.moveSpeed
+        end 
         self.state.moving=true
+        self.state.movingVertially=true
     end
     if love.keyboard.isDown('down') then 
-        self.yVel=self.yVel+self.moveSpeed 
+        --accomodate for diagonal speed
+        if self.state.movingHorizontally then 
+            self.yVel=self.yVel+self.moveSpeedDiag
+        else            
+            self.yVel=self.yVel+self.moveSpeed
+        end 
         self.state.moving=true
+        self.state.movingVertially=true 
     end
 
     --apply updated velocities to collider
@@ -95,8 +115,9 @@ function Player:query()
             --face player toward that node
             if nearbyNode.xPos<self.xPos then self.state.facing='left' 
             else self.state.facing='right' end
-            --harvest the node
 
+            --harvest the node
+            nearbyNode:harvestResource()
         end 
     end
 end
