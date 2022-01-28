@@ -23,7 +23,7 @@ function ResourceNodes:add_tree(_x,_y)
 
     function node:update() 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
-            Items:add_tree_wood(self.xPos,self.yPos)
+            Items:spawn_item(self.xPos,self.yPos,'tree_wood')
             self.state.harvestProgress=0
         end
     end
@@ -62,7 +62,7 @@ function ResourceNodes:add_rock(_x,_y)
 
     function node:update() 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
-            Items:add_rock_ore(self.xPos,self.yPos)
+            Items:spawn_item(self.xPos,self.yPos,'rock_ore')
             self.state.harvestProgress=0
         end
     end
@@ -101,7 +101,7 @@ function ResourceNodes:add_vine(_x,_y)
 
     function node:update() 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
-            Items:add_vine_fiber(self.xPos,self.yPos)
+            Items:spawn_item(self.xPos,self.yPos,'vine_fiber')
             self.state.harvestProgress=0
         end
     end
@@ -141,7 +141,7 @@ function ResourceNodes:add_fungi(_x,_y)
 
     function node:update() 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
-            Items:add_fungi_mushroom(self.xPos,self.yPos)
+            Items:spawn_item(self.xPos,self.yPos,'fungi_mushroom')
             self.state.harvestProgress=0
         end
     end
@@ -188,7 +188,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
         self.currentAnim:update(dt)
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
-            Items:add_fish_raw(self.xPos,self.yPos)
+            Items:spawn_item(self.xPos,self.yPos,'fish_raw')
             self.state.harvestProgress=0
         end
     end
