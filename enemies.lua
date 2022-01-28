@@ -9,6 +9,8 @@ function Enemies:add_orc_t1(_x,_y)
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         self.spriteSheet=love.graphics.newImage('assets/orc_t1.png')
@@ -64,6 +66,8 @@ function Enemies:add_demon_t1(_x,_y)
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         self.spriteSheet=love.graphics.newImage('assets/demon_t1.png')
@@ -119,6 +123,8 @@ function Enemies:add_skeleton_t1(_x,_y)
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         self.spriteSheet=love.graphics.newImage('assets/skeleton_t1.png')
@@ -174,6 +180,8 @@ function Enemies:add_orc_t2(_x,_y)
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         self.spriteSheet=love.graphics.newImage('assets/orc_t2.png')
@@ -229,6 +237,8 @@ function Enemies:add_demon_t2(_x,_y)
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         self.spriteSheet=love.graphics.newImage('assets/demon_t2.png')
@@ -284,6 +294,8 @@ function Enemies:add_mage_t2(_x,_y)
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         --Mage idle/moving animations are the same
@@ -332,6 +344,8 @@ function Enemies:add_orc_t3(_x,_y)
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         self.spriteSheet=love.graphics.newImage('assets/orc_t3.png')
@@ -387,6 +401,8 @@ function Enemies:add_demon_t3(_x,_y)
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         self.spriteSheet=love.graphics.newImage('assets/demon_t3.png')

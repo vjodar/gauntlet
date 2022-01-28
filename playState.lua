@@ -7,6 +7,11 @@ function PlayState:load()
     cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600)) 
 
     world=wf.newWorld() --initialize physics world which handles colliders
+    world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
+    world:addCollisionClass('player')
+    world:addCollisionClass('enemy')
+    world:addCollisionClass('resourceNode')
+    world:addCollisionClass('depletedNode')
 
     Entities:load() --initialize table of entities
     Walls:load() --create colliders for all walls in map
@@ -26,7 +31,7 @@ function PlayState:load()
     --Testing resource nodes-----------
     ResourceNodes:add_tree(580,80)
     ResourceNodes:add_rock(640,75)
-    ResourceNodes:add_vine(700,16)
+    ResourceNodes:add_vine(700,15)
     ResourceNodes:add_fungi(600,130)
     ResourceNodes:add_fishing_hole(710,135)
     --Testing resource nodes-----------
@@ -54,7 +59,7 @@ function PlayState:draw()
     cam:attach()
         gameMap:drawLayer(gameMap.layers['Ground'])
         gameMap:drawLayer(gameMap.layers['Walls'])
-        -- world:draw() --draws all physics colliders
+        world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         gameMap:drawLayer(gameMap.layers['Foreground'])
     cam:detach()

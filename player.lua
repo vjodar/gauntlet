@@ -2,11 +2,13 @@ Player={}
 
 function Player:load()
     --setup player's physics collider and position, velocity vectors
-    self.collider=world:newRectangleCollider(100,100,12,5)
+    self.collider=world:newRectangleCollider(600,100,12,5)
     self.xPos, self.yPos=self.collider:getPosition()
     self.xVel, self.yVel=self.collider:getLinearVelocity()
     self.collider:setLinearDamping(20) --apply increased 'friction'
     self.collider:setFixedRotation(true) --collider won't spin/rotate
+    self.collider:setCollisionClass('player')
+    self.collider:setObject(self) --attach collider to this object
     self.moveSpeed=40
 
     --sprites and animations
@@ -33,6 +35,7 @@ function Player:update()
     --Only accept inputs when currently on top of state stack
     if acceptInput then 
         self:move() --movement
+        self:query()
     end
 
     --update animations
@@ -78,4 +81,22 @@ function Player:move()
 
     --apply updated velocities to collider
     self.collider:setLinearVelocity(self.xVel,self.yVel)
+end
+
+--Query the world for any nearby resource nodes. If there is one nearby,
+--begin harvesting it's resource by calling the node's harvestResource function
+function Player:query()
+    if love.keyboard.isDown('x') then 
+        local nodeColliders=world:queryRectangleArea(self.xPos-8,self.yPos-5,16,10,{'resourceNode'})
+        if #nodeColliders>0 then --found a resource node
+            --gets the resourceNode object attached to the collider
+            local nearbyNode=nodeColliders[1]:getObject()
+
+            --face player toward that node
+            if nearbyNode.xPos<self.xPos then self.state.facing='left' 
+            else self.state.facing='right' end
+            --harvest the node
+
+        end 
+    end
 end

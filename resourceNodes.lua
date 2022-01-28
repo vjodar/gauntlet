@@ -5,9 +5,12 @@ function ResourceNodes:add_tree(_x,_y)
 
     function node:load() 
         --setup collider and position vectors
-        self.xPos, self.yPos = _x,_y 
         self.collider=world:newRectangleCollider(_x,_y,14,6)
+        self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setType('static')
+        self.collider:setCollisionClass('resourceNode')
+        self.collider:setObject(self) --attach collider to this object
+
         self.sprite=love.graphics.newImage('assets/tree.png')
 
         --node state metatable
@@ -21,7 +24,7 @@ function ResourceNodes:add_tree(_x,_y)
     end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,20)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,7,22)
     end
 
     node:load()
@@ -32,9 +35,12 @@ function ResourceNodes:add_rock(_x,_y)
 
     function node:load() 
         --setup collider and position vectors
-        self.xPos, self.yPos = _x,_y 
         self.collider=world:newRectangleCollider(_x,_y,16,9)
+        self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setType('static')
+        self.collider:setCollisionClass('resourceNode')
+        self.collider:setObject(self) --attach collider to this object
+
         self.sprite=love.graphics.newImage('assets/rock.png')
 
         --node state metatable
@@ -48,7 +54,7 @@ function ResourceNodes:add_rock(_x,_y)
     end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,4)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,7.5)
     end
 
     node:load()
@@ -59,9 +65,12 @@ function ResourceNodes:add_vine(_x,_y)
 
     function node:load() 
         --setup collider and position vectors
-        self.xPos, self.yPos = _x,_y 
         self.collider=world:newRectangleCollider(_x,_y,16,32)
+        self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setType('static')
+        self.collider:setCollisionClass('resourceNode')
+        self.collider:setObject(self) --attach collider to this object
+
         self.sprite=love.graphics.newImage('assets/vine.png')
 
         --node state metatable
@@ -74,7 +83,7 @@ function ResourceNodes:add_vine(_x,_y)
     function node:update() end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,0)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,16)
     end
 
     node:load()
@@ -85,9 +94,12 @@ function ResourceNodes:add_fungi(_x,_y)
 
     function node:load() 
         --setup collider and position vectors
-        self.xPos, self.yPos = _x,_y 
         self.collider=world:newRectangleCollider(_x,_y,6,6)
+        self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setType('static')
+        self.collider:setCollisionClass('resourceNode')
+        self.collider:setObject(self) --attach collider to this object
+
         self.sprite=love.graphics.newImage('assets/fungi.png')
 
         --node state metatable
@@ -101,7 +113,7 @@ function ResourceNodes:add_fungi(_x,_y)
     end
 
     function node:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,5,5)
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,8)
     end
 
     node:load()
@@ -112,9 +124,11 @@ function ResourceNodes:add_fishing_hole(_x,_y)
 
     function node:load() 
         --setup collider and position vectors
-        self.xPos, self.yPos = _x,_y 
         self.collider=world:newBSGRectangleCollider(_x,_y,16,8,2)
+        self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setType('static')
+        self.collider:setCollisionClass('resourceNode')
+        self.collider:setObject(self) --attach collider to this object
 
         --animations
         self.spriteSheet=love.graphics.newImage('assets/fishing_hole.png')
@@ -135,7 +149,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
     end
 
     function node:draw() 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,0,-1)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,3)
     end
 
     node:load()
