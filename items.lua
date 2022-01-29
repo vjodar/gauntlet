@@ -5,22 +5,23 @@ function Items:spawn_item(_x,_y,_name)
 
     function item:load() 
         self.xPos,self.yPos=_x,_y 
-        --choose a random x,y velocity between -8 and 8 to shoot out of node
+        self.name=_name 
+        --choose a random x,y velocity to shoot out of node
         self.xVel=8-love.math.random(16)
-        self.yVel=8-love.math.random(16)       
+        self.yVel=7-love.math.random(14)       
 
         --Select appropriate sprite for item
-        if _name=='tree_wood' then 
+        if self.name=='tree_wood' then 
             self.sprite=love.graphics.newImage('assets/tree_wood.png')
-        elseif _name=='rock_ore' then 
+        elseif self.name=='rock_ore' then 
             self.sprite=love.graphics.newImage('assets/rock_ore.png')            
-        elseif _name=='vine_fiber' then 
+        elseif self.name=='vine_fiber' then 
             self.sprite=love.graphics.newImage('assets/vine_fiber.png')
             --Because vines are only on top walls, vine fibers can only spawn below.
-            self.yVel=3+love.math.random(5)
-        elseif _name=='fungi_mushroom' then 
+            self.yVel=3+love.math.random(4)
+        elseif self.name=='fungi_mushroom' then 
             self.sprite=love.graphics.newImage('assets/fungi_mushroom.png')
-        elseif _name=='fish_raw' then 
+        elseif self.name=='fish_raw' then 
             self.sprite=love.graphics.newImage('assets/fish_raw.png')
         end
 
@@ -28,7 +29,8 @@ function Items:spawn_item(_x,_y,_name)
         --is used with the sine function to achieve a bob/float visual effect
         self.yOffset=self.sprite:getHeight()/2
         self.oscillation=0
-
+        
+        print(self.yVel)
         table.insert(Entities.entitiesTable,self)
     end 
 

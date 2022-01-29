@@ -31,7 +31,7 @@ function PlayState:load()
     --Testing resource nodes-----------
     ResourceNodes:add_tree(580,80)
     ResourceNodes:add_rock(640,75)
-    ResourceNodes:add_vine(700,15)
+    ResourceNodes:add_vine(700,17)
     ResourceNodes:add_fungi(600,130)
     ResourceNodes:add_fishing_hole(710,135)
     --Testing resource nodes-----------
