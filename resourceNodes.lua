@@ -13,6 +13,7 @@ function ResourceNodes:add_tree(_x,_y)
 
         self.sprite=love.graphics.newImage('assets/tree.png')
         self.spriteDepleted=love.graphics.newImage('assets/tree_depleted.png')
+        self.spriteTool=love.graphics.newImage('assets/tool_hatchet.png')
 
         --node state metatable
         self.state={}
@@ -57,11 +58,35 @@ function ResourceNodes:add_tree(_x,_y)
             love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,7,22)
         else 
             love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,7,22)
+            if self.state.beingHarvested==true then 
+                self:animateHatchet()
+            end
         end
     end
 
     function node:harvestResource()
         self.state.harvestProgress=self.state.harvestProgress+dt
+    end
+
+    --draws and animates the hatchet sprite when node is being harvested
+    function node:animateHatchet()
+        if Player.state.facing=='right' then 
+            love.graphics.draw( --animate hatchet swing to the right
+                self.spriteTool,
+                --draw the hatchet between the player and node
+                (self.xPos+Player.xPos)/2-6,(self.yPos+Player.yPos)/2,
+                math.sin(self.state.harvestProgress*14)*0.9,
+                1,1,8,18
+            )
+        else --player is facing left
+            love.graphics.draw( --animate hatchet swing to the left
+                self.spriteTool,
+                --draw the hatchet between the player and node
+                (self.xPos+Player.xPos)/2+6,(self.yPos+Player.yPos)/2,
+                math.sin(self.state.harvestProgress*14+math.pi)*0.9,
+                -1,1,8,18
+            )
+        end
     end
 
     node:load()
@@ -79,6 +104,7 @@ function ResourceNodes:add_rock(_x,_y)
         self.collider:setObject(self) --attach collider to this object
 
         self.sprite=love.graphics.newImage('assets/rock.png')
+        self.spriteTool=love.graphics.newImage('assets/tool_pickaxe.png')
         self.spriteDepleted=love.graphics.newImage('assets/rock_depleted.png')
 
         --node state metatable
@@ -124,11 +150,35 @@ function ResourceNodes:add_rock(_x,_y)
             love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,7.5)
         else 
             love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,7.5)
+            if self.state.beingHarvested==true then 
+                self:animatePickaxe()
+            end
         end
     end
 
     function node:harvestResource()
         self.state.harvestProgress=self.state.harvestProgress+dt
+    end
+
+    --Draws and animates the pickaxe sprite when this node is being harvested
+    function node:animatePickaxe()
+        if Player.state.facing=='right' then 
+            love.graphics.draw( --animate pickaxe swing to the right
+                self.spriteTool,
+                --draw pickaxe between the player and node
+                (self.xPos+Player.xPos)/2-6,(self.yPos-5 + Player.yPos)/2,
+                math.sin(self.state.harvestProgress*14),
+                1,1,8,16
+            )
+        else --player is facing left
+            love.graphics.draw( --animate pickaxe swing to the left
+                self.spriteTool,
+                --draw the pickaxe between the player and node
+                (self.xPos + Player.xPos)/2+6,(self.yPos-5 + Player.yPos)/2,
+                math.sin(self.state.harvestProgress*14+math.pi),
+                1,1,8,16
+            )
+        end
     end
 
     node:load()
@@ -194,9 +244,9 @@ function ResourceNodes:add_vine(_x,_y)
                 love.graphics.draw(
                     self.sprite,self.xPos,self.yPos,nil,
                     --animate by oscillating x,y stretching and y-offset
-                    1.1+math.sin(self.state.harvestProgressPrev*6+math.pi)*0.1,
-                    1.1+math.sin(self.state.harvestProgressPrev*6)*0.05,
-                    8,16-(1.1+math.sin(self.state.harvestProgressPrev*6))
+                    1.1+math.sin(self.state.harvestProgressPrev*7+math.pi)*0.1,
+                    1.1+math.sin(self.state.harvestProgressPrev*7)*0.05,
+                    8,16-(1.1+math.sin(self.state.harvestProgressPrev*7))
                 )
             else
                 love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,16)
@@ -273,9 +323,9 @@ function ResourceNodes:add_fungi(_x,_y)
                 love.graphics.draw(
                     self.sprite,self.xPos,self.yPos,nil,
                     --animate by oscillating x,y stretching and y-offset
-                    1.1+math.sin(self.state.harvestProgressPrev*6+math.pi)*0.25,
-                    1.1+math.sin(self.state.harvestProgressPrev*6)*0.25,
-                    8,8+(1.1+math.sin(self.state.harvestProgressPrev*6))
+                    1.1+math.sin(self.state.harvestProgressPrev*7+math.pi)*0.25,
+                    1.1+math.sin(self.state.harvestProgressPrev*7)*0.25,
+                    8,8+(1.1+math.sin(self.state.harvestProgressPrev*7))
                 )
             else
                 love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,8)

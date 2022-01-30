@@ -107,7 +107,7 @@ end
 --begin harvesting it's resource by calling the node's harvestResource function
 function Player:query()
     if love.keyboard.isDown('x') then 
-        local nodeColliders=world:queryRectangleArea(self.xPos-8,self.yPos-5,16,10,{'resourceNode'})
+        local nodeColliders=world:queryRectangleArea(self.xPos-9,self.yPos-6,18,12,{'resourceNode'})
         if #nodeColliders>0 then --found a resource node
             --gets the resourceNode object attached to the collider
             local nearbyNode=nodeColliders[1]:getObject()

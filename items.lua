@@ -5,10 +5,10 @@ function Items:spawn_item(_x,_y,_name)
 
     function item:load() 
         self.xPos,self.yPos=_x,_y 
-        self.name=_name 
+        self.name=_name         
         --choose a random x,y velocity to shoot out of node
-        self.xVel=8-love.math.random(16)
-        self.yVel=7-love.math.random(14)       
+        self.xVel=8-love.math.random(16)   
+        self.yVel=7-love.math.random(14)
 
         --Select appropriate sprite for item
         if self.name=='tree_wood' then 
