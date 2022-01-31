@@ -58,9 +58,7 @@ function ResourceNodes:add_tree(_x,_y)
             love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,7,22)
         else 
             love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,7,22)
-            if self.state.beingHarvested==true then 
-                self:animateHatchet()
-            end
+            if self.state.beingHarvested==true then self:animateHatchet() end
         end
     end
 
@@ -150,9 +148,7 @@ function ResourceNodes:add_rock(_x,_y)
             love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,7.5)
         else 
             love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,7.5)
-            if self.state.beingHarvested==true then 
-                self:animatePickaxe()
-            end
+            if self.state.beingHarvested==true then self:animatePickaxe() end
         end
     end
 
@@ -279,7 +275,7 @@ function ResourceNodes:add_fungi(_x,_y)
         --node state metatable
         self.state={}
         self.state.depleted=false 
-        self.state.resources=3 --amount of resource items to give
+        self.state.resources=1 --amount of resource items to give
         self.state.harvestProgress=0
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
@@ -353,12 +349,16 @@ function ResourceNodes:add_fishing_hole(_x,_y)
         self.collider:setCollisionClass('resourceNode')
         self.collider:setObject(self) --attach collider to this object
 
-        --animations
+        --sprites and animations
         self.spriteSheet=love.graphics.newImage('assets/fishing_hole.png')
+        self.spriteSheetTool=love.graphics.newImage('assets/tool_harpoon.png')
+        --  animation grid for fishing hole
         self.grid=anim8.newGrid(16,9,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
+        --  animation grid for harpoon
+        self.gridTool=anim8.newGrid(7,26,self.spriteSheetTool:getWidth(),self.spriteSheetTool:getHeight())
         self.animations={}
-        self.animations.full=anim8.newAnimation(self.grid('1-4',1), 0.15)
-        self.currentAnim=self.animations.full 
+        self.animations.fishing_hole=anim8.newAnimation(self.grid('1-4',1), 0.15)
+        self.animations.tool_harpoon=anim8.newAnimation(self.gridTool('1-20',1), 0.05)
         self.spriteDepleted=love.graphics.newImage('assets/fishing_hole_depleted.png')
 
         --node state metatable
@@ -373,7 +373,11 @@ function ResourceNodes:add_fishing_hole(_x,_y)
     end
 
     function node:update() 
-        if self.state.depleted==false then self.currentAnim:update(dt) end 
+        --update fishing hole and harpoon animations unless the node is depleted
+        if self.state.depleted==false then 
+            self.animations.fishing_hole:update(dt) 
+            self.animations.tool_harpoon:update(dt)
+        end 
 
         if self.state.harvestProgressPrev~=self.state.harvestProgress then 
             self.state.beingHarvested=true 
@@ -405,13 +409,21 @@ function ResourceNodes:add_fishing_hole(_x,_y)
         if self.state.depleted==true then 
             love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,3)
         else 
-            self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,3)
+            self.animations.fishing_hole:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,3)
+            if self.state.beingHarvested then 
+                --draw harpoon animation
+                self.animations.tool_harpoon:draw(
+                    self.spriteSheetTool,
+                    self.xPos,self.yPos+2,
+                    (Player.xPos-self.xPos)*0.05,
+                    1,1,3,28
+                )
+            end
         end
     end
 
     function node:harvestResource()
         self.state.harvestProgress=self.state.harvestProgress+dt
-        -- print(self.state.harvestProgress)
     end
 
     node:load()
