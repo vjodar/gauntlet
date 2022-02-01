@@ -11,9 +11,23 @@ function ResourceNodes:add_tree(_x,_y)
         self.collider:setCollisionClass('resourceNode')
         self.collider:setObject(self) --attach collider to this object
 
+        --sprites
         self.sprite=love.graphics.newImage('assets/tree.png')
         self.spriteDepleted=love.graphics.newImage('assets/tree_depleted.png')
         self.spriteTool=love.graphics.newImage('assets/tool_hatchet.png')
+        self.spriteParticle=love.graphics.newImage('assets/tree_particle.png')
+        self.spriteShake=0
+
+        --particles
+        self.particles=love.graphics.newParticleSystem(self.spriteParticle,100)
+        self.particles:setParticleLifetime(0.5,1) --particles live 0.5s - 1s
+        self.particles:setSpeed(100,200) --min and max speed
+        self.particles:setLinearDamping(10) --'friction'
+        self.particles:setLinearAcceleration(0,100,0,200) --min and max acceleration
+        self.particles:setDirection(1.6)
+        self.particles:setSpread(2*math.pi) --particles will spread 360degrees
+        self.particles:setEmissionArea('ellipse',3,5) 
+        self.particles:setRotation(0,math.pi*2)
 
         --node state metatable
         self.state={}
@@ -44,6 +58,21 @@ function ResourceNodes:add_tree(_x,_y)
             if self.state.resources==0 then self.state.depleted=true end 
         end
 
+        self.particles:update(dt) --update particle system
+
+        self.spriteShake=0 --spriteShake defaults to 0
+
+        --use sine wave funtion to syncronize shaking and particle emission
+        --with hatchet hit
+        if (math.sin(self.state.harvestProgress*14)>0.9) then 
+            if Player.state.facing=='right' then
+                 self.spriteShake=1
+            else --player is facing left
+                self.spriteShake=-1
+            end
+            if self.state.beingHarvested then self.particles:emit(1) end 
+        end
+
         --once depleted, change collision class to prevent further harvesting
         if self.state.depleted==true then 
             self.collider:setCollisionClass('depletedNode')
@@ -57,9 +86,12 @@ function ResourceNodes:add_tree(_x,_y)
         if self.state.depleted then 
             love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,7,22)
         else 
-            love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,7,22)
+            love.graphics.draw(
+                self.sprite,self.xPos+self.spriteShake,self.yPos,nil,1,1,7,22
+            )
             if self.state.beingHarvested==true then self:animateHatchet() end
         end
+        love.graphics.draw(self.particles,self.xPos,self.yPos-12)
     end
 
     function node:harvestResource()
@@ -101,9 +133,22 @@ function ResourceNodes:add_rock(_x,_y)
         self.collider:setCollisionClass('resourceNode')
         self.collider:setObject(self) --attach collider to this object
 
+        --sprites
         self.sprite=love.graphics.newImage('assets/rock.png')
         self.spriteTool=love.graphics.newImage('assets/tool_pickaxe.png')
         self.spriteDepleted=love.graphics.newImage('assets/rock_depleted.png')
+        self.spriteParticle=love.graphics.newImage('assets/rock_particle.png')
+        self.spriteShake=0
+
+        --particles
+        self.particles=love.graphics.newParticleSystem(self.spriteParticle,100)
+        self.particles:setParticleLifetime(0.5,1) --particles live 1 to 2 sec
+        self.particles:setSpeed(50,100) --min and max speed
+        self.particles:setLinearDamping(1) --'friction'
+        self.particles:setLinearAcceleration(0,100)
+        self.particles:setDirection(4.7) --particles will shoot upward
+        self.particles:setSpread(1.5) --particles will spread 90degrees
+        self.particles:setRotation(0,2*math.pi) --particles will be rotated randomly
 
         --node state metatable
         self.state={}
@@ -126,12 +171,28 @@ function ResourceNodes:add_rock(_x,_y)
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
             --spawn appropriate item, restart harvest progress
             Items:spawn_item(self.xPos,self.yPos,'rock_ore')
-            self.state.harvestProgress=0
+            self.state.harvestProgress=0 --reset harvestProgress
 
             --after spawning item, reduce available resources by 1
             --update depleted state when resources are 0
             self.state.resources=self.state.resources-1
             if self.state.resources==0 then self.state.depleted=true end 
+        end
+
+        self.particles:update(dt) --update particle systems
+
+        self.spriteShake=0 --spriteShake defaults to 0
+
+        --uses sine wave function to syncronize shaking and particle emission
+        --with pickaxe swings
+        if (math.sin(self.state.harvestProgress*14)>0.9) then 
+            if Player.state.facing=='right' then
+                 self.spriteShake=1
+            else --player is facing left
+                self.spriteShake=-1
+            end
+            --shoot out particles
+            if self.state.beingHarvested then self.particles:emit(1) end 
         end
 
         --once depleted, change collision class to prevent further harvesting
@@ -147,9 +208,14 @@ function ResourceNodes:add_rock(_x,_y)
         if self.state.depleted==true then 
             love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,7.5)
         else 
-            love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,7.5)
+            love.graphics.draw(
+                self.sprite,
+                self.xPos+self.spriteShake,self.yPos,
+                nil,1,1,8,7.5)
             if self.state.beingHarvested==true then self:animatePickaxe() end
         end
+        --draw particles
+        love.graphics.draw(self.particles,self.xPos,self.yPos)
     end
 
     function node:harvestResource()
@@ -415,6 +481,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
                 self.animations.tool_harpoon:draw(
                     self.spriteSheetTool,
                     self.xPos,self.yPos+2,
+                    --rotate sprite to tilt harpoon handle toward player
                     (Player.xPos-self.xPos)*0.05,
                     1,1,3,28
                 )

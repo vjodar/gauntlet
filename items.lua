@@ -7,8 +7,8 @@ function Items:spawn_item(_x,_y,_name)
         self.xPos,self.yPos=_x,_y 
         self.name=_name         
         --choose a random x,y velocity to shoot out of node
-        self.xVel=8-love.math.random(16)   
-        self.yVel=7-love.math.random(14)
+        self.xVel=8-love.math.random()*16
+        self.yVel=7-love.math.random()*14
 
         --Select appropriate sprite for item
         if self.name=='tree_wood' then 
@@ -18,7 +18,7 @@ function Items:spawn_item(_x,_y,_name)
         elseif self.name=='vine_fiber' then 
             self.sprite=love.graphics.newImage('assets/vine_fiber.png')
             --Because vines are only on top walls, vine fibers can only spawn below.
-            self.yVel=3+love.math.random(4)
+            self.yVel=3+love.math.random()*4
         elseif self.name=='fungi_mushroom' then 
             self.sprite=love.graphics.newImage('assets/fungi_mushroom.png')
         elseif self.name=='fish_raw' then 
@@ -26,7 +26,7 @@ function Items:spawn_item(_x,_y,_name)
         end
 
         --Offset the sprite when drawing to have yPos at the center, oscillation
-        --is used with the sine function to achieve a bob/float visual effect
+        --is done with the sine function to achieve a bob/float visual effect
         self.yOffset=self.sprite:getHeight()/2
         self.oscillation=0
         
@@ -35,7 +35,7 @@ function Items:spawn_item(_x,_y,_name)
     end 
 
     function item:update()
-        --item should pop out and travel from its node for a bit
+        --item will pop out and travel from its node for a bit
         if self.xVel~=0 and self.yVel~=0 then 
             self.xPos=self.xPos+self.xVel
             self.yPos=self.yPos+self.yVel
