@@ -46,7 +46,7 @@ function Enemies:add_orc_t1(_x,_y)
     end
 
     function enemy:draw()
-        self.shadow:draw(self.xPos-5,self.yPos-3) --draw shadow
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
@@ -105,7 +105,7 @@ function Enemies:add_demon_t1(_x,_y)
     end
 
     function enemy:draw()
-        self.shadow:draw(self.xPos-5,self.yPos-3) --draw shadow
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
@@ -164,7 +164,7 @@ function Enemies:add_skeleton_t1(_x,_y)
     end
 
     function enemy:draw()
-        self.shadow:draw(self.xPos-6,self.yPos-3) --draw shadow
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
@@ -223,7 +223,7 @@ function Enemies:add_orc_t2(_x,_y)
     end
 
     function enemy:draw()
-        self.shadow:draw(self.xPos-6,self.yPos-3) --draw shadow
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
@@ -282,7 +282,7 @@ function Enemies:add_demon_t2(_x,_y)
     end
 
     function enemy:draw()
-        self.shadow:draw(self.xPos-6,self.yPos-3) --draw shadow
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
@@ -334,7 +334,7 @@ function Enemies:add_mage_t2(_x,_y)
     end
 
     function enemy:draw()
-        self.shadow:draw(self.xPos-7,self.yPos-3) --draw shadow
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
@@ -393,7 +393,7 @@ function Enemies:add_orc_t3(_x,_y)
     end
 
     function enemy:draw()
-        self.shadow:draw(self.xPos-11,self.yPos-4) --draw shadow
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
@@ -452,7 +452,7 @@ function Enemies:add_demon_t3(_x,_y)
     end
 
     function enemy:draw()
-        self.shadow:draw(self.xPos-11,self.yPos-4) --draw shadow
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 

@@ -48,7 +48,7 @@ end
 
 function Player:draw()
     --draw shadow before sprite
-    self.shadow:draw(self.xPos-7,self.yPos-3)
+    self.shadow:draw(self.xPos,self.yPos)
 
     local scaleX=1 --used to flip sprite when facing left
     if self.state.facing=='left' then scaleX=-1 end

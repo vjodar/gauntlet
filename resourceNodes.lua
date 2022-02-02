@@ -5,7 +5,7 @@ function ResourceNodes:add_tree(_x,_y)
 
     function node:load() 
         --setup collider and position vectors
-        self.collider=world:newRectangleCollider(_x,_y,14,6)
+        self.collider=world:newBSGRectangleCollider(_x,_y,14,8,3)
         self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setType('static')
         self.collider:setCollisionClass('resourceNode')
@@ -16,6 +16,7 @@ function ResourceNodes:add_tree(_x,_y)
         self.spriteDepleted=love.graphics.newImage('assets/tree_depleted.png')
         self.spriteTool=love.graphics.newImage('assets/tool_hatchet.png')
         self.spriteParticle=love.graphics.newImage('assets/tree_particle.png')
+        self.shadow=Shadows:newShadow('tree') --shadow
         self.spriteShake=0
 
         --particles
@@ -84,15 +85,16 @@ function ResourceNodes:add_tree(_x,_y)
     end
 
     function node:draw() 
+        self.shadow:draw(self.xPos,self.yPos)
         if self.state.depleted then 
-            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,7,22)
+            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,7,27)
         else 
             love.graphics.draw(
-                self.sprite,self.xPos+self.spriteShake,self.yPos,nil,1,1,7,22
+                self.sprite,self.xPos+self.spriteShake,self.yPos,nil,1,1,7,27
             )
             if self.state.beingHarvested==true then self:animateHatchet() end
         end
-        love.graphics.draw(self.particles,self.xPos,self.yPos-12)
+        love.graphics.draw(self.particles,self.xPos,self.yPos-20)
     end
 
     function node:harvestResource()
@@ -128,7 +130,7 @@ function ResourceNodes:add_rock(_x,_y)
 
     function node:load() 
         --setup collider and position vectors
-        self.collider=world:newRectangleCollider(_x,_y,16,9)
+        self.collider=world:newBSGRectangleCollider(_x,_y,16,8,2)
         self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setType('static')
         self.collider:setCollisionClass('resourceNode')
@@ -139,6 +141,7 @@ function ResourceNodes:add_rock(_x,_y)
         self.spriteTool=love.graphics.newImage('assets/tool_pickaxe.png')
         self.spriteDepleted=love.graphics.newImage('assets/rock_depleted.png')
         self.spriteParticle=love.graphics.newImage('assets/rock_particle.png')
+        self.shadow=Shadows:newShadow('rock') --shadow
         self.spriteShake=0
 
         --particles
@@ -206,17 +209,18 @@ function ResourceNodes:add_rock(_x,_y)
     end
 
     function node:draw() 
+        self.shadow:draw(self.xPos,self.yPos+1) --draw shadow
         if self.state.depleted==true then 
-            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,7.5)
+            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,10)
         else 
             love.graphics.draw(
                 self.sprite,
                 self.xPos+self.spriteShake,self.yPos,
-                nil,1,1,8,7.5)
+                nil,1,1,8,10)
             if self.state.beingHarvested==true then self:animatePickaxe() end
         end
         --draw particles
-        love.graphics.draw(self.particles,self.xPos,self.yPos)
+        love.graphics.draw(self.particles,self.xPos,self.yPos-3)
     end
 
     function node:harvestResource()
@@ -348,7 +352,7 @@ function ResourceNodes:add_fungi(_x,_y)
 
     function node:load() 
         --setup collider and position vectors
-        self.collider=world:newRectangleCollider(_x,_y,6,6)
+        self.collider=world:newBSGRectangleCollider(_x,_y,14,8,3)
         self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setType('static')
         self.collider:setCollisionClass('resourceNode')
@@ -358,6 +362,7 @@ function ResourceNodes:add_fungi(_x,_y)
         self.sprite=love.graphics.newImage('assets/fungi.png')
         self.spriteDepleted=love.graphics.newImage('assets/fungi_depleted.png')
         self.spriteParticle=love.graphics.newImage('assets/fungi_particle.png')
+        self.shadow=Shadows:newShadow('fungi') --shadow
 
         --particles
         self.particles=love.graphics.newParticleSystem(self.spriteParticle,100)
@@ -413,8 +418,9 @@ function ResourceNodes:add_fungi(_x,_y)
     end
 
     function node:draw() 
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.depleted==true then 
-            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,8)
+            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,11)
         else
             if self.state.beingHarvested then 
                 love.graphics.draw(
@@ -422,10 +428,10 @@ function ResourceNodes:add_fungi(_x,_y)
                     --animate by oscillating x,y stretching and y-offset
                     1.1+math.sin(self.state.harvestProgressPrev*7+math.pi)*0.25,
                     1.1+math.sin(self.state.harvestProgressPrev*7)*0.25,
-                    8,8+(1.1+math.sin(self.state.harvestProgressPrev*7))
+                    8,11+(1.1+math.sin(self.state.harvestProgressPrev*7))
                 )
             else
-                love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,8)
+                love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,8,11)
             end
         end 
         --draw particles
@@ -530,9 +536,9 @@ function ResourceNodes:add_fishing_hole(_x,_y)
 
     function node:draw() 
         if self.state.depleted==true then 
-            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,3)
+            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,8,4)
         else 
-            self.animations.fishing_hole:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,3)
+            self.animations.fishing_hole:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,4)
             if self.state.beingHarvested then 
                 --draw harpoon animation
                 self.animations.tool_harpoon:draw(
