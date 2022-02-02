@@ -6,6 +6,7 @@ require 'walls'
 require 'enemies'
 require 'resourceNodes'
 require 'items'
+require 'shadows'
 
 function love.load()
     --set pixelated look

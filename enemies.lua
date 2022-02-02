@@ -19,6 +19,7 @@ function Enemies:add_orc_t1(_x,_y)
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.shadow=Shadows:newShadow('tiny') --shadow
 
         --enemy's current state metatable
         self.state={}
@@ -45,13 +46,14 @@ function Enemies:add_orc_t1(_x,_y)
     end
 
     function enemy:draw()
+        self.shadow:draw(self.xPos-5,self.yPos-3) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,13)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,14)
     end
 
     enemy:load() --initialize enemy
@@ -76,6 +78,7 @@ function Enemies:add_demon_t1(_x,_y)
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.shadow=Shadows:newShadow('tiny') --shadow
 
         --enemy's current state metatable
         self.state={}
@@ -102,13 +105,14 @@ function Enemies:add_demon_t1(_x,_y)
     end
 
     function enemy:draw()
+        self.shadow:draw(self.xPos-5,self.yPos-3) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,13)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,14)
     end
 
     enemy:load() --initialize enemy
@@ -133,6 +137,7 @@ function Enemies:add_skeleton_t1(_x,_y)
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.shadow=Shadows:newShadow('small') --shadow
 
         --enemy's current state metatable
         self.state={}
@@ -159,13 +164,14 @@ function Enemies:add_skeleton_t1(_x,_y)
     end
 
     function enemy:draw()
+        self.shadow:draw(self.xPos-6,self.yPos-3) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,13)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,14)
     end
 
     enemy:load() --initialize enemy
@@ -190,6 +196,7 @@ function Enemies:add_orc_t2(_x,_y)
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.shadow=Shadows:newShadow('small') --shadow
 
         --enemy's current state metatable
         self.state={}
@@ -216,13 +223,14 @@ function Enemies:add_orc_t2(_x,_y)
     end
 
     function enemy:draw()
+        self.shadow:draw(self.xPos-6,self.yPos-3) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,9,14)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,9,15)
     end
 
     enemy:load() --initialize enemy
@@ -232,7 +240,7 @@ function Enemies:add_demon_t2(_x,_y)
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
-        self.collider=world:newRectangleCollider(_x,_y,10,6)
+        self.collider=world:newRectangleCollider(_x,_y,11,6)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
         self.collider:setLinearDamping(20)
@@ -247,6 +255,7 @@ function Enemies:add_demon_t2(_x,_y)
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.shadow=Shadows:newShadow('small') --shadow
 
         --enemy's current state metatable
         self.state={}
@@ -273,13 +282,14 @@ function Enemies:add_demon_t2(_x,_y)
     end
 
     function enemy:draw()
+        self.shadow:draw(self.xPos-6,self.yPos-3) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,7,20)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,8,21)
     end
 
     enemy:load() --initialize enemy
@@ -304,6 +314,7 @@ function Enemies:add_mage_t2(_x,_y)
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.shadow=Shadows:newShadow('medium') --shadow
 
         --enemy's current state metatable
         self.state={}
@@ -323,13 +334,14 @@ function Enemies:add_mage_t2(_x,_y)
     end
 
     function enemy:draw()
+        self.shadow:draw(self.xPos-7,self.yPos-3) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,7,21)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,7,22)
     end
 
     enemy:load() --initialize enemy
@@ -354,6 +366,7 @@ function Enemies:add_orc_t3(_x,_y)
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.shadow=Shadows:newShadow('large') --shadow
 
         --enemy's current state metatable
         self.state={}
@@ -380,13 +393,14 @@ function Enemies:add_orc_t3(_x,_y)
     end
 
     function enemy:draw()
+        self.shadow:draw(self.xPos-11,self.yPos-4) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,16,28)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,16,29)
     end
 
     enemy:load() --initialize enemy
@@ -411,6 +425,7 @@ function Enemies:add_demon_t3(_x,_y)
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.shadow=Shadows:newShadow('large') --shadow
 
         --enemy's current state metatable
         self.state={}
@@ -437,13 +452,14 @@ function Enemies:add_demon_t3(_x,_y)
     end
 
     function enemy:draw()
+        self.shadow:draw(self.xPos-11,self.yPos-4) --draw shadow
         if self.state.moving==true then 
             self.currentAnim=self.animations.moving 
         else 
             self.currentAnim=self.animations.idle
         end
 
-        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,16,28)
+        self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,16,29)
     end
 
     enemy:load() --initialize enemy

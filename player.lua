@@ -18,7 +18,8 @@ function Player:load()
     self.animations={} --anmations table
     self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
     self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
-    self.currentAnim=self.animations.idle    
+    self.currentAnim=self.animations.idle  
+    self.shadow=Shadows:newShadow('medium')  --shadow
 
     --'metatable' containing info of the player's current state
     self.state={}
@@ -46,6 +47,9 @@ function Player:update()
 end
 
 function Player:draw()
+    --draw shadow before sprite
+    self.shadow:draw(self.xPos-7,self.yPos-3)
+
     local scaleX=1 --used to flip sprite when facing left
     if self.state.facing=='left' then scaleX=-1 end
 
@@ -57,7 +61,7 @@ function Player:draw()
     end
     
     --draw the appropriate current animation
-    self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,scaleX,1,8,19)
+    self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,scaleX,1,8,20)
 end
 
 function Player:move()
