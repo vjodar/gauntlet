@@ -5,7 +5,8 @@ function Items:spawn_item(_x,_y,_name)
 
     function item:load() 
         self.xPos,self.yPos=_x,_y 
-        self.name=_name         
+        self.name=_name
+        self.shadow=Shadows:newShadow(self.name) --shadow
         --choose a random x,y velocity to shoot out of node
         self.xVel=8-love.math.random()*16
         self.yVel=7-love.math.random()*14
@@ -25,12 +26,11 @@ function Items:spawn_item(_x,_y,_name)
             self.sprite=love.graphics.newImage('assets/fish_raw.png')
         end
 
-        --Offset the sprite when drawing to have yPos at the center, oscillation
-        --is done with the sine function to achieve a bob/float visual effect
-        self.yOffset=self.sprite:getHeight()/2
+        --Offset sprite's origin to its center
+        self.xOffset=self.sprite:getWidth()*0.5
+        self.yOffset=self.sprite:getHeight()-2
         self.oscillation=0
         
-        print(self.yVel)
         table.insert(Entities.entitiesTable,self)
     end 
 
@@ -50,7 +50,8 @@ function Items:spawn_item(_x,_y,_name)
     end 
 
     function item:draw() 
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,0,self.yOffset)
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,self.xOffset,self.yOffset)
     end 
 
     item:load()

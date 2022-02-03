@@ -85,12 +85,12 @@ function ResourceNodes:add_tree(_x,_y)
     end
 
     function node:draw() 
-        self.shadow:draw(self.xPos,self.yPos)
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
         if self.state.depleted then 
-            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,7,27)
+            love.graphics.draw(self.spriteDepleted,self.xPos,self.yPos,nil,1,1,7,26)
         else 
             love.graphics.draw(
-                self.sprite,self.xPos+self.spriteShake,self.yPos,nil,1,1,7,27
+                self.sprite,self.xPos+self.spriteShake,self.yPos,nil,1,1,7,26
             )
             if self.state.beingHarvested==true then self:animateHatchet() end
         end
