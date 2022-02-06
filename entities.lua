@@ -18,7 +18,9 @@ function Entities:update()
     --sort the entitiesTable by yPos value
     table.sort(self.entitiesTable, self.sort)
 
-    for i,entity in pairs(self.entitiesTable) do entity:update() end
+    for i,entity in pairs(self.entitiesTable) do 
+        if entity:update()==false then table.remove(self.entitiesTable,i) end 
+    end
 end
 
 function Entities:draw() 

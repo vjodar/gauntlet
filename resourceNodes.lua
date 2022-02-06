@@ -66,7 +66,7 @@ function ResourceNodes:add_tree(_x,_y)
         --use sine wave funtion to syncronize shaking and particle emission
         --with hatchet hit
         --only shake and emit particles if node is actively being harvested
-        if (math.sin(self.state.harvestProgress*14)>0.9) and self.state.beingHarvested then 
+        if (math.cos(self.state.harvestProgress*14)>0.9) and self.state.beingHarvested then 
             if Player.state.facing=='right' then
                  self.spriteShake=1
             else --player is facing left
@@ -108,7 +108,7 @@ function ResourceNodes:add_tree(_x,_y)
                 self.spriteTool,
                 --draw the hatchet between the player and node
                 (self.xPos+Player.xPos)/2-6,(self.yPos+Player.yPos)/2,
-                math.sin(self.state.harvestProgress*14)*0.9,
+                math.cos(self.state.harvestProgress*14)*0.9,
                 1,1,8,18
             )
         else --player is facing left
@@ -116,7 +116,7 @@ function ResourceNodes:add_tree(_x,_y)
                 self.spriteTool,
                 --draw the hatchet between the player and node
                 (self.xPos+Player.xPos)/2+6,(self.yPos+Player.yPos)/2,
-                math.sin(self.state.harvestProgress*14+math.pi)*0.9,
+                math.cos(self.state.harvestProgress*14+math.pi)*0.9,
                 -1,1,8,18
             )
         end
@@ -190,7 +190,7 @@ function ResourceNodes:add_rock(_x,_y)
         --uses sine wave function to syncronize shaking and particle emission
         --with pickaxe swings
         --only shake and emit particles if node is actively being harvested
-        if (math.sin(self.state.harvestProgress*14)>0.9) and self.state.beingHarvested then 
+        if (math.cos(self.state.harvestProgress*14)>0.9) and self.state.beingHarvested then 
             if Player.state.facing=='right' then
                  self.spriteShake=1
             else --player is facing left
@@ -234,7 +234,7 @@ function ResourceNodes:add_rock(_x,_y)
                 self.spriteTool,
                 --draw pickaxe between the player and node
                 (self.xPos+Player.xPos)/2-6,(self.yPos-5 + Player.yPos)/2,
-                math.sin(self.state.harvestProgress*14),
+                math.cos(self.state.harvestProgress*14),
                 1,1,8,16
             )
         else --player is facing left
@@ -242,7 +242,7 @@ function ResourceNodes:add_rock(_x,_y)
                 self.spriteTool,
                 --draw the pickaxe between the player and node
                 (self.xPos + Player.xPos)/2+6,(self.yPos-5 + Player.yPos)/2,
-                math.sin(self.state.harvestProgress*14+math.pi),
+                math.cos(self.state.harvestProgress*14+math.pi),
                 1,1,8,16
             )
         end

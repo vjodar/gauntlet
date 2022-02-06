@@ -19,6 +19,7 @@ function love.load()
     camera=require 'libraries/camera'
 
     dt=0 --delta time global
+    framerate=60 --60fps global var
     gameStates={} --state stack
     acceptInput=false --flag to restrict inputs to one state at a time
 
