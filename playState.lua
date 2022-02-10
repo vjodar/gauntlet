@@ -5,7 +5,6 @@ function PlayState:load()
     cam=camera()
     --1x zoom for every 400px width and 300px height
     cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600))
-    -- cam:zoom(4)
 
     world=wf.newWorld() --initialize physics world which handles colliders
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
@@ -17,6 +16,7 @@ function PlayState:load()
     Entities:load() --initialize table of entities
     Walls:load() --create colliders for all walls in map
     Player:load() --initialize player character
+    Hud:load() --initialize Heads Up Display
 
     --Testing enemies------------------
     Enemies:add_orc_t1(350,170)
@@ -44,7 +44,9 @@ function PlayState:update()
 
     Entities:update() --update all entities
 
-    cam:lookAt(Player.xPos,Player.yPos)
+    cam:lookAt(Player.xPos,Player.yPos) --update camera
+
+    Hud:update() --update Heads Up Display
 
     --For testing----------------------
     if acceptInput then 
@@ -64,6 +66,8 @@ function PlayState:draw()
         Entities:draw() --draw all entities in order of their yPos value
         gameMap:drawLayer(gameMap.layers['Foreground'])
     cam:detach()
+
+    Hud:draw() --draw up outside of camera
 
     --debug---------------
     -- love.graphics.print(Player.xPos,10,0)
