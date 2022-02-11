@@ -50,7 +50,7 @@ function PlayState:update()
 
     --For testing----------------------
     if acceptInput then 
-        if love.keyboard.isDown("escape") then love.event.quit() end --easy close for devs.
+        if releasedKey=='escape' then love.event.quit() end --easy close for devs.
     end
     --For testing----------------------
 

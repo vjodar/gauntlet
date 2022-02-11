@@ -26,6 +26,12 @@ function love.load()
     gameStates={} --state stack
     acceptInput=false --flag to restrict inputs to one state at a time
 
+    --releasedKey stores keys released from love.keyreleased callback
+    --releasedKeyPrev stores the released key from the last frame
+    --these are used to enable button pressing and holding functionality
+    --while defining behavior in appropriate class/object instead of in callback
+    releasedKey,releasedKeyPrev="",""
+
     table.insert(gameStates,TimerState) --timer state is always first on gamestates stack
 
     --Initial game state 
@@ -37,8 +43,13 @@ end
 
 function love.update(_dt)
     dt=_dt --update delta time
+    --releasedKey only stores released keys for 1 frame
+    if releasedKey==releasedKeyPrev then releasedKey="" end
+    releasedKeyPrev=releasedKey --update releasedKeyPrev
+
     for i,state in pairs(gameStates) do
-        acceptInput=(i==2) --input will only be accepted for state in gameStates[2]
+        --input should only be accepted by gamestate on top of stack (last in table)
+        acceptInput=(i==#gameStates)
         --run each state in gameStates, remove any that return false
         if not state:update()==true then table.remove(gameStates,i) end 
     end
@@ -53,3 +64,5 @@ function love.draw()
     --end
     --Debug-----------------------------------------
 end
+
+function love.keyreleased(_key) releasedKey=_key end 

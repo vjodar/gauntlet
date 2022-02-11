@@ -127,35 +127,14 @@ function Inventory:load()
     self.xVel=10*windowScaleX --speed of inventory segments and icons
     self.numClosed=0 --number of inventory segments and icons are in their closed position
     self.numOpen=27 --number of inventory segments and icons are in their open position
-
-    --button data
-    self.button={}
-    self.button.duration=0
-    self.button.durationPrev=self.button.duration 
-    self.button.hasReleased=true --button has been released since last pressed
 end
 
 function Inventory:update()
-    if love.keyboard.isDown('space') then 
-        self.button.duration=self.button.duration+dt --increment button hold duration
-
-        --inventory will begin opening or closing when button is pressed 
-        --(but not if it's already being held down)
-        if not self.state.transitioning and self.button.hasReleased then
-            self.state.transitioning=true
-            self.button.duration=0
-        end
+    if self.state.transitioning then 
+        self:move()
+    elseif releasedKey=='space' and acceptInput then 
+        self.state.transitioning=true 
     end
-
-    --check if button is being held down
-    if self.button.durationPrev==self.button.duration then 
-        self.button.hasReleased=true else self.button.hasReleased=false 
-    end
-
-    if self.state.transitioning then self:move() end 
-
-    --update button duration
-    self.button.durationPrev=self.button.duration
 end
 
 function Inventory:draw()
