@@ -13,9 +13,11 @@ function PlayState:load()
     world:addCollisionClass('resourceNode')
     world:addCollisionClass('depletedNode')
 
+    Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
     Walls:load() --create colliders for all walls in map
     Player:load() --initialize player character
+    Items:load() --initialize items
     Hud:load() --initialize Heads Up Display
 
     --Testing enemies------------------

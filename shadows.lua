@@ -1,35 +1,61 @@
 Shadows={}
 
-function Shadows:newShadow(_size)
+function Shadows:load()
+    self.tiny=love.graphics.newImage('assets/shadow_tiny.png') --11,6
+    self.small=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.medium=love.graphics.newImage('assets/shadow_medium.png') --14,6
+    self.large=love.graphics.newImage('assets/shadow_large.png') --22,8
+    self.rock=love.graphics.newImage('assets/shadow_rock.png') --16,7
+    self.fungi=love.graphics.newImage('assets/shadow_fungi.png') --not elipse
+    self.tree=love.graphics.newImage('assets/shadow_tree.png') --14,8
+    self.tree_wood=love.graphics.newImage('assets/shadow_medium.png') --14,6
+    self.rock_ore=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.fungi_mushroom=love.graphics.newImage('assets/shadow_fungi_mushroom.png') --11,6
+    self.vine_fiber=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.fish_raw=love.graphics.newImage('assets/shadow_fish_raw.png') --10,5
+    self.arcane_bowstring=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.arcane_orb=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.arcane_shards=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.broken_bow=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.broken_staff=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.fish_cooked=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.rock_metal=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.tree_planks=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.vine_thread=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.vial=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.potion=love.graphics.newImage('assets/shadow_small.png') --12,6
+end
+
+function Shadows:newShadow(_type)
     local shadow={}
 
-    if _size=='tiny' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_tiny.png')
-    elseif _size=='small' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_small.png')
-    elseif _size=='medium' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_medium.png')
-    elseif _size=='large' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_large.png')
-    elseif _size=='rock' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_rock.png')
-    elseif _size=='fungi' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_fungi.png')
-    elseif _size=='tree' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_tree.png')
-    elseif _size=='tree_wood' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_medium.png')
-    elseif _size=='rock_ore' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_rock_ore.png')
-    elseif _size=='fungi_mushroom' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_fungi_mushroom.png')
-    elseif _size=='vine_fiber' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_vine_fiber.png')
-    elseif _size=='fish_raw' then 
-        shadow.sprite=love.graphics.newImage('assets/shadow_fish_raw.png')
+    if _type=='tiny' then shadow.sprite=Shadows.tiny
+    elseif _type=='small' then shadow.sprite=Shadows.small
+    elseif _type=='medium' then shadow.sprite=Shadows.medium
+    elseif _type=='large' then shadow.sprite=Shadows.large
+    elseif _type=='rock' then shadow.sprite=Shadows.rock
+    elseif _type=='fungi' then  shadow.sprite=Shadows.fungi
+    elseif _type=='tree' then shadow.sprite=Shadows.tree
+    elseif _type=='tree_wood' then shadow.sprite=Shadows.tree_wood 
+    elseif _type=='rock_ore' then shadow.sprite=Shadows.rock_ore
+    elseif _type=='fungi_mushroom' then shadow.sprite=Shadows.fungi_mushroom
+    elseif _type=='vine_fiber' then shadow.sprite=Shadows.vine_fiber
+    elseif _type=='fish_raw' then shadow.sprite=Shadows.fish_raw
+    elseif _type=='arcane_bowstring' then shadow.sprite=Shadows.arcane_bowstring
+    elseif _type=='arcane_orb' then shadow.sprite=Shadows.arcane_orb
+    elseif _type=='arcane_shards' then shadow.sprite=Shadows.arcane_shards
+    elseif _type=='broken_bow' then shadow.sprite=Shadows.broken_bow
+    elseif _type=='broken_staff' then shadow.sprite=Shadows.broken_staff
+    elseif _type=='fish_cooked' then shadow.sprite=Shadows.fish_cooked
+    elseif _type=='rock_metal' then shadow.sprite=Shadows.rock_metal
+    elseif _type=='tree_planks' then shadow.sprite=Shadows.tree_planks
+    elseif _type=='vine_thread' then shadow.sprite=Shadows.vine_thread
+    elseif _type=='vial' then shadow.sprite=Shadows.vial
+    elseif _type=='potion' then shadow.sprite=Shadows.potion
     end
     
     --offsets the shadow's origin to it's center
+    if shadow.sprite==nil then print(_type) end 
     shadow.w=shadow.sprite:getWidth()*0.5
     shadow.h=shadow.sprite:getHeight()*0.5
 

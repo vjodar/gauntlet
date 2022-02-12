@@ -1,5 +1,17 @@
 Items={}
 
+function Items:load()
+    --load item sprites
+    self.tree_wood=love.graphics.newImage('assets/tree_wood.png')
+    self.rock_ore=love.graphics.newImage('assets/rock_ore.png')
+    self.vine_fiber=love.graphics.newImage('assets/vine_fiber.png')
+    self.fungi_mushroom=love.graphics.newImage('assets/fungi_mushroom.png')
+    self.fish_raw=love.graphics.newImage('assets/fish_raw.png')
+    self.tree_planks=love.graphics.newImage('assets/tree_planks.png')
+    self.rock_metal=love.graphics.newImage('assets/rock_metal.png')
+    self.vine_thread=love.graphics.newImage('assets/vine_thread.png')
+end
+
 function Items:spawn_item(_x,_y,_name) 
     local item={}
 
@@ -13,18 +25,17 @@ function Items:spawn_item(_x,_y,_name)
         self.yVel=(7-love.math.random()*14)*framerate
 
         --Select appropriate sprite for item
-        if self.name=='tree_wood' then 
-            self.sprite=love.graphics.newImage('assets/tree_wood.png')
-        elseif self.name=='rock_ore' then 
-            self.sprite=love.graphics.newImage('assets/rock_ore.png')            
+        if self.name=='tree_wood' then self.sprite=Items.tree_wood
+        elseif self.name=='rock_ore' then self.sprite=Items.rock_ore           
+        elseif self.name=='fungi_mushroom' then self.sprite=Items.fungi_mushroom       
+        elseif self.name=='fish_raw' then self.sprite=Items.fish_raw       
+        elseif self.name=='tree_planks' then self.sprite=Items.tree_planks  
+        elseif self.name=='rock_metal' then self.sprite=Items.rock_metal  
+        elseif self.name=='vine_thread' then self.sprite=Items.vine_thread  
         elseif self.name=='vine_fiber' then 
-            self.sprite=love.graphics.newImage('assets/vine_fiber.png')
+            self.sprite=Items.vine_fiber
             --Because vines are only on top walls, vine fibers can only spawn below.
             self.yVel=(3+love.math.random()*4)*framerate
-        elseif self.name=='fungi_mushroom' then 
-            self.sprite=love.graphics.newImage('assets/fungi_mushroom.png')
-        elseif self.name=='fish_raw' then 
-            self.sprite=love.graphics.newImage('assets/fish_raw.png')
         end
 
         --Offset sprite's origin to its center
@@ -105,10 +116,9 @@ function Items:spawn_item(_x,_y,_name)
     function item:addToPlayer()
         if math.abs(self.xPos-Player.xPos)<10 and math.abs(self.yPos-Player.yPos)<10 then 
             --remove item from entities table
-            print("Hello")
             self.removeEntity=true
             --add item to player's inventory
-            --TODO
+            Inventory:addItem(self.name)
         end
     end
 

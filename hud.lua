@@ -14,31 +14,7 @@ function Hud:load()
     }
 
     --action 'buttons' cluster
-    self.actions={}
-    self.actions.interact={ --bottom button
-        sprite=love.graphics.newImage('assets/hud_interact.png'),
-        xPos=0, yPos=0
-    }
-    self.actions.combat={ --top button
-        sprite=love.graphics.newImage('assets/hud_combat.png'),
-        xPos=0, yPos=0
-    }
-    self.actions.fish={ --left button 1
-        sprite=love.graphics.newImage('assets/hud_fish.png'),
-        xPos=0, yPos=0
-    }
-    self.actions.potion={ --left button 2
-        sprite=love.graphics.newImage('assets/hud_potion.png'),
-        xPos=0, yPos=0
-    }
-    self.actions.protect_physical={ --right button 1
-        sprite=love.graphics.newImage('assets/hud_protect_physical.png'),
-        xPos=0, yPos=0
-    }
-    self.actions.protect_magical={ --right button 2
-        sprite=love.graphics.newImage('assets/hud_protect_magical.png'),
-        xPos=0, yPos=0
-    }
+    
 
     --inventory
     Inventory:load()
