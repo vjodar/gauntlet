@@ -3,13 +3,21 @@ Items={}
 function Items:load()
     --load item sprites
     self.tree_wood=love.graphics.newImage('assets/tree_wood.png')
+    self.tree_planks=love.graphics.newImage('assets/tree_planks.png')
     self.rock_ore=love.graphics.newImage('assets/rock_ore.png')
+    self.rock_metal=love.graphics.newImage('assets/rock_metal.png')
     self.vine_fiber=love.graphics.newImage('assets/vine_fiber.png')
+    self.vine_thread=love.graphics.newImage('assets/vine_thread.png')
     self.fungi_mushroom=love.graphics.newImage('assets/fungi_mushroom.png')
     self.fish_raw=love.graphics.newImage('assets/fish_raw.png')
-    self.tree_planks=love.graphics.newImage('assets/tree_planks.png')
-    self.rock_metal=love.graphics.newImage('assets/rock_metal.png')
-    self.vine_thread=love.graphics.newImage('assets/vine_thread.png')
+    self.fish_cooked=love.graphics.newImage('assets/fish_cooked.png')
+    self.arcane_bowstring=love.graphics.newImage('assets/arcane_bowstring.png')
+    self.arcane_orb=love.graphics.newImage('assets/arcane_orb.png')
+    self.arcane_shards=love.graphics.newImage('assets/arcane_shards.png')
+    self.broken_bow=love.graphics.newImage('assets/broken_bow.png')
+    self.broken_staff=love.graphics.newImage('assets/broken_staff.png')
+    self.vial=love.graphics.newImage('assets/vial.png')
+    self.potion=love.graphics.newImage('assets/potion.png')
 end
 
 function Items:spawn_item(_x,_y,_name) 
@@ -26,16 +34,24 @@ function Items:spawn_item(_x,_y,_name)
 
         --Select appropriate sprite for item
         if self.name=='tree_wood' then self.sprite=Items.tree_wood
+        elseif self.name=='tree_planks' then self.sprite=Items.tree_planks
         elseif self.name=='rock_ore' then self.sprite=Items.rock_ore           
+        elseif self.name=='rock_metal' then self.sprite=Items.rock_metal           
         elseif self.name=='fungi_mushroom' then self.sprite=Items.fungi_mushroom       
-        elseif self.name=='fish_raw' then self.sprite=Items.fish_raw       
-        elseif self.name=='tree_planks' then self.sprite=Items.tree_planks  
-        elseif self.name=='rock_metal' then self.sprite=Items.rock_metal  
-        elseif self.name=='vine_thread' then self.sprite=Items.vine_thread  
+        elseif self.name=='fish_raw' then self.sprite=Items.fish_raw    
+        elseif self.name=='fish_cooked' then self.sprite=Items.fish_cooked
+        elseif self.name=='vine_thread' then self.sprite=Items.vine_thread
         elseif self.name=='vine_fiber' then 
             self.sprite=Items.vine_fiber
             --Because vines are only on top walls, vine fibers can only spawn below.
             self.yVel=(3+love.math.random()*4)*framerate
+        elseif self.name=='vial' then self.sprite=Items.vial 
+        elseif self.name=='potion' then self.sprite=Items.potion 
+        elseif self.name=='arcane_bowstring' then self.sprite=Items.arcane_bowstring 
+        elseif self.name=='arcane_orb' then self.sprite=Items.arcane_orb 
+        elseif self.name=='arcane_shards' then self.sprite=Items.arcane_shards 
+        elseif self.name=='broken_bow' then self.sprite=Items.broken_bow 
+        elseif self.name=='broken_staff' then self.sprite=Items.broken_staff 
         end
 
         --Offset sprite's origin to its center

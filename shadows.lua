@@ -10,20 +10,20 @@ function Shadows:load()
     self.tree=love.graphics.newImage('assets/shadow_tree.png') --14,8
     self.tree_wood=love.graphics.newImage('assets/shadow_medium.png') --14,6
     self.rock_ore=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.fungi_mushroom=love.graphics.newImage('assets/shadow_fungi_mushroom.png') --11,6
+    self.fungi_mushroom=love.graphics.newImage('assets/shadow_fungi_mushroom.png') --not elipse
     self.vine_fiber=love.graphics.newImage('assets/shadow_small.png') --12,6
     self.fish_raw=love.graphics.newImage('assets/shadow_fish_raw.png') --10,5
-    self.arcane_bowstring=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.arcane_orb=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.arcane_shards=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.arcane_bowstring=love.graphics.newImage('assets/shadow_tiny.png') --11,6
+    self.arcane_orb=love.graphics.newImage('assets/shadow_vial.png') --10,6
+    self.arcane_shards=love.graphics.newImage('assets/shadow_tiny.png') --12,6
     self.broken_bow=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.broken_staff=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.fish_cooked=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.rock_metal=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.tree_planks=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.vine_thread=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.vial=love.graphics.newImage('assets/shadow_small.png') --12,6
-    self.potion=love.graphics.newImage('assets/shadow_small.png') --12,6
+    self.broken_staff=love.graphics.newImage('assets/shadow_broken_staff.png') --not elipse    
+    self.fish_cooked=love.graphics.newImage('assets/shadow_fish_raw.png') --10,5
+    self.rock_metal=love.graphics.newImage('assets/shadow_rock_metal.png') --not elipse
+    self.tree_planks=love.graphics.newImage('assets/shadow_tree_planks.png') --12,6
+    self.vine_thread=love.graphics.newImage('assets/shadow_vine_thread.png') --8,5
+    self.vial=love.graphics.newImage('assets/shadow_vial.png') --10,6
+    self.potion=love.graphics.newImage('assets/shadow_vial.png') --10,6
 end
 
 function Shadows:newShadow(_type)
