@@ -24,6 +24,12 @@ function Shadows:load()
     self.vine_thread=love.graphics.newImage('assets/shadow_vine_thread.png') --8,5
     self.vial=love.graphics.newImage('assets/shadow_vial.png') --10,6
     self.potion=love.graphics.newImage('assets/shadow_vial.png') --10,6
+    self.weapon_bow_t1=love.graphics.newImage('assets/shadow_weapon.png') --8,5
+    self.weapon_bow_t2=love.graphics.newImage('assets/shadow_weapon.png') --8,5
+    self.weapon_bow_t3=love.graphics.newImage('assets/shadow_weapon.png') --8,5
+    self.weapon_staff_t1=love.graphics.newImage('assets/shadow_weapon.png') --8,5
+    self.weapon_staff_t2=love.graphics.newImage('assets/shadow_weapon.png') --8,5
+    self.weapon_staff_t3=love.graphics.newImage('assets/shadow_weapon.png') --8,5
 end
 
 function Shadows:newShadow(_type)
@@ -52,6 +58,12 @@ function Shadows:newShadow(_type)
     elseif _type=='vine_thread' then shadow.sprite=Shadows.vine_thread
     elseif _type=='vial' then shadow.sprite=Shadows.vial
     elseif _type=='potion' then shadow.sprite=Shadows.potion
+    elseif _type=='weapon_bow_t1' then shadow.sprite=Shadows.weapon_bow_t1
+    elseif _type=='weapon_bow_t2' then shadow.sprite=Shadows.weapon_bow_t2
+    elseif _type=='weapon_bow_t3' then shadow.sprite=Shadows.weapon_bow_t3
+    elseif _type=='weapon_staff_t1' then shadow.sprite=Shadows.weapon_staff_t1
+    elseif _type=='weapon_staff_t2' then shadow.sprite=Shadows.weapon_staff_t2
+    elseif _type=='weapon_staff_t3' then shadow.sprite=Shadows.weapon_staff_t3
     end
     
     --offsets the shadow's origin to it's center
