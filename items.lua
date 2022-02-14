@@ -24,15 +24,15 @@ function Items:load()
     self.weapon_staff_t1=love.graphics.newImage('assets/weapon_staff_t1_item.png')
     self.weapon_staff_t2=love.graphics.newImage('assets/weapon_staff_t2_item.png')
     self.weapon_staff_t3=love.graphics.newImage('assets/weapon_staff_t3_item.png')
-    -- self.armor_head_t1=love.graphics.newImage('assets/armor_head_t1.png')
-    -- self.armor_head_t2=love.graphics.newImage('assets/armor_head_t2.png')
-    -- self.armor_head_t3=love.graphics.newImage('assets/armor_head_t3.png')
-    -- self.armor_chest_t1=love.graphics.newImage('assets/armor_chest_t1.png')
-    -- self.armor_chest_t2=love.graphics.newImage('assets/armor_chest_t2.png')
-    -- self.armor_chest_t3=love.graphics.newImage('assets/armor_chest_t3.png')
-    -- self.armor_legs_t1=love.graphics.newImage('assets/armor_legs_t1.png')
-    -- self.armor_legs_t2=love.graphics.newImage('assets/armor_legs_t2.png')
-    -- self.armor_legs_t3=love.graphics.newImage('assets/armor_legs_t3.png')
+    self.armor_head_t1=love.graphics.newImage('assets/armor_head_t1_item.png')
+    self.armor_head_t2=love.graphics.newImage('assets/armor_head_t2_item.png')
+    self.armor_head_t3=love.graphics.newImage('assets/armor_head_t3_item.png')
+    self.armor_chest_t1=love.graphics.newImage('assets/armor_chest_t1_item.png')
+    self.armor_chest_t2=love.graphics.newImage('assets/armor_chest_t2_item.png')
+    self.armor_chest_t3=love.graphics.newImage('assets/armor_chest_t3_item.png')
+    self.armor_legs_t1=love.graphics.newImage('assets/armor_legs_t1_item.png')
+    self.armor_legs_t2=love.graphics.newImage('assets/armor_legs_t2_item.png')
+    self.armor_legs_t3=love.graphics.newImage('assets/armor_legs_t3_item.png')
 end
 
 function Items:spawn_item(_x,_y,_name) 
@@ -62,17 +62,29 @@ function Items:spawn_item(_x,_y,_name)
             self.yVel=(3+love.math.random()*4)*framerate
         elseif self.name=='vial' then self.sprite=Items.vial 
         elseif self.name=='potion' then self.sprite=Items.potion 
+
         elseif self.name=='arcane_bowstring' then self.sprite=Items.arcane_bowstring 
         elseif self.name=='arcane_orb' then self.sprite=Items.arcane_orb 
         elseif self.name=='arcane_shards' then self.sprite=Items.arcane_shards 
         elseif self.name=='broken_bow' then self.sprite=Items.broken_bow 
         elseif self.name=='broken_staff' then self.sprite=Items.broken_staff 
+
         elseif self.name=='weapon_bow_t1' then self.sprite=Items.weapon_bow_t1 
         elseif self.name=='weapon_bow_t2' then self.sprite=Items.weapon_bow_t2 
         elseif self.name=='weapon_bow_t3' then self.sprite=Items.weapon_bow_t3 
         elseif self.name=='weapon_staff_t1' then self.sprite=Items.weapon_staff_t1
         elseif self.name=='weapon_staff_t2' then self.sprite=Items.weapon_staff_t2
         elseif self.name=='weapon_staff_t3' then self.sprite=Items.weapon_staff_t3
+
+        elseif self.name=='armor_head_t1' then self.sprite=Items.armor_head_t1 
+        elseif self.name=='armor_head_t2' then self.sprite=Items.armor_head_t2
+        elseif self.name=='armor_head_t3' then self.sprite=Items.armor_head_t3 
+        elseif self.name=='armor_chest_t1' then self.sprite=Items.armor_chest_t1 
+        elseif self.name=='armor_chest_t2' then self.sprite=Items.armor_chest_t2
+        elseif self.name=='armor_chest_t3' then self.sprite=Items.armor_chest_t3 
+        elseif self.name=='armor_legs_t1' then self.sprite=Items.armor_legs_t1
+        elseif self.name=='armor_legs_t2' then self.sprite=Items.armor_legs_t2
+        elseif self.name=='armor_legs_t3' then self.sprite=Items.armor_legs_t3
         end
 
         --Offset sprite's origin to its center
