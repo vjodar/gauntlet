@@ -40,9 +40,9 @@ function Shadows:load()
     self.armor_chest_t1=love.graphics.newImage('assets/shadow_fish_raw.png') --10,5
     self.armor_chest_t2=love.graphics.newImage('assets/shadow_fish_raw.png') --10,5
     self.armor_chest_t3=love.graphics.newImage('assets/shadow_fish_raw.png') --10,5
-    self.armor_legs_t1=love.graphics.newImage('assets/shadow_legs.png')
-    self.armor_legs_t2=love.graphics.newImage('assets/shadow_legs.png')
-    self.armor_legs_t3=love.graphics.newImage('assets/shadow_legs.png')
+    self.armor_legs_t1=love.graphics.newImage('assets/shadow_legs.png') --not elipse
+    self.armor_legs_t2=love.graphics.newImage('assets/shadow_legs.png') --not elipse
+    self.armor_legs_t3=love.graphics.newImage('assets/shadow_legs.png') --not elipse
 end
 
 function Shadows:newShadow(_type)
@@ -53,23 +53,24 @@ function Shadows:newShadow(_type)
     elseif _type=='medium' then shadow.sprite=Shadows.medium
     elseif _type=='large' then shadow.sprite=Shadows.large
 
-    elseif _type=='rock' then shadow.sprite=Shadows.rock
-    elseif _type=='fungi' then  shadow.sprite=Shadows.fungi
     elseif _type=='tree' then shadow.sprite=Shadows.tree
+    elseif _type=='tree_planks' then shadow.sprite=Shadows.tree_planks
     elseif _type=='tree_wood' then shadow.sprite=Shadows.tree_wood 
+    elseif _type=='rock' then shadow.sprite=Shadows.rock
     elseif _type=='rock_ore' then shadow.sprite=Shadows.rock_ore
+    elseif _type=='rock_metal' then shadow.sprite=Shadows.rock_metal
+    elseif _type=='fungi' then  shadow.sprite=Shadows.fungi
     elseif _type=='fungi_mushroom' then shadow.sprite=Shadows.fungi_mushroom
     elseif _type=='vine_fiber' then shadow.sprite=Shadows.vine_fiber
     elseif _type=='fish_raw' then shadow.sprite=Shadows.fish_raw
+    elseif _type=='fish_cooked' then shadow.sprite=Shadows.fish_cooked
+    elseif _type=='vine_thread' then shadow.sprite=Shadows.vine_thread
+
     elseif _type=='arcane_bowstring' then shadow.sprite=Shadows.arcane_bowstring
     elseif _type=='arcane_orb' then shadow.sprite=Shadows.arcane_orb
     elseif _type=='arcane_shards' then shadow.sprite=Shadows.arcane_shards
     elseif _type=='broken_bow' then shadow.sprite=Shadows.broken_bow
     elseif _type=='broken_staff' then shadow.sprite=Shadows.broken_staff
-    elseif _type=='fish_cooked' then shadow.sprite=Shadows.fish_cooked
-    elseif _type=='rock_metal' then shadow.sprite=Shadows.rock_metal
-    elseif _type=='tree_planks' then shadow.sprite=Shadows.tree_planks
-    elseif _type=='vine_thread' then shadow.sprite=Shadows.vine_thread
     elseif _type=='vial' then shadow.sprite=Shadows.vial
     elseif _type=='potion' then shadow.sprite=Shadows.potion
 

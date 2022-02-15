@@ -15,7 +15,7 @@ end
 function TimerState:draw() end
 
 --Uses timer objects to perform some action after the given _time (in seconds)
-function TimerState:after(_fn,_time)
+function TimerState:after(_time,_fn)
     table.insert(self.timers,{
         t=_time,
         fn=_fn,
@@ -32,9 +32,9 @@ function TimerState:after(_fn,_time)
     })
 end
 
---Uses timer objects to perform _callback every _time second intervals
+--Uses timer objects to perform _callback every _interval second intervals
 --WARNING: no current way to remove this timer
-function TimerState:every(_fn,_time)
+function TimerState:every(_interval,_fn)
     table.insert(self.timers, {
         interval=_time,
         t=0,
@@ -53,17 +53,17 @@ function TimerState:every(_fn,_time)
 end
 
 --Creates a timer to "tween" or move _obj from it's current (x,y) to an end (x,y) in _time seconds
-function TimerState:tween(_obj,_endPos,_time)
+function TimerState:tweenPos(_obj,_endPos,_time)
     table.insert(self.timers,{ 
         t=_time,
         obj=_obj,
-        velX=(_endPos.x-_obj.x)/_time,
-        velY=(_endPos.y-_obj.y)/_time,
+        velX=(_endPos.xPos-_obj.xPos)/_time,
+        velY=(_endPos.yPos-_obj.yPos)/_time,
         update=function(self)
             if self.t<=0 then return false end --timer is complete, remove this timer from timers
             --move object, decrement t
-            self.obj.x=self.obj.x+self.velX*dt
-            self.obj.y=self.obj.y+self.velY*dt
+            self.obj.xPos=self.obj.xPos+self.velX*dt
+            self.obj.yPos=self.obj.yPos+self.velY*dt
             self.t=self.t-dt
             return true 
         end

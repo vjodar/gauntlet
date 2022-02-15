@@ -1,4 +1,5 @@
 require 'inventory'
+require 'actionButtons'
 
 Hud={}
 
@@ -14,7 +15,7 @@ function Hud:load()
     }
 
     --action 'buttons' cluster
-    
+    ActionButtons:load()
 
     --inventory
     Inventory:load()
@@ -22,6 +23,7 @@ end
 
 function Hud:update()
     Inventory:update()
+    ActionButtons:update()
 end
 
 function Hud:draw()
@@ -37,7 +39,7 @@ function Hud:draw()
     )
 
     --action buttons
-    
+    ActionButtons:draw()
 
     --inventory
     Inventory:draw()
