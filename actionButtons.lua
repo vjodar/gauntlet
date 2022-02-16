@@ -21,6 +21,13 @@ function ActionButtons:draw()
     self.supplies:draw()
     self.protectionMagics:draw()
     self.combatInteract:draw()
+
+    -- --testing-------------------------------------------
+    -- love.graphics.print(self.weapons.state.currentWeapon,0,200)
+    -- love.graphics.print(self.supplies.state.currentSupply,0,210)
+    -- love.graphics.print(self.protectionMagics.state.currentSpell,0,220)
+    -- love.graphics.print(self.combatInteract.state.currentAction,0,230)
+    -- --testing-------------------------------------------
 end
 
 --draw blank buttons beneath real buttons to have transparent icons functionality
@@ -59,14 +66,14 @@ function ActionButtons:addActionButtonWeapons()
     button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
     button.animations={}
     button.animations.forward=anim8.newAnimation(
-        button.grid('1-19',1), 0.025,
+        button.grid('1-19',1), 0.015,
         function() --onLoop function
             button.currentAnim=button.animations.backward 
             button.currentAnim:pauseAtStart()
         end
     )
     button.animations.backward=anim8.newAnimation(
-        button.grid('19-1',1), 0.025,
+        button.grid('19-1',1), 0.015,
         function() --onLoop function
             button.currentAnim=button.animations.forward 
             button.currentAnim:pauseAtStart()
@@ -74,10 +81,10 @@ function ActionButtons:addActionButtonWeapons()
     )
     button.currentAnim=button.animations.forward
     button.currentAnim:pause() --immediately pause animation until input is read
-    button.animationTime=0.475 --time it takes for animation to finish (19*0.025s)
+    button.animationTime=0.285 --time it takes for animation to finish (19*0.025s)
 
     --button data
-    button.buttonProgress=0 --used to differentiate between button taps and holds
+    button.buttonDuration=0 --used to differentiate between button taps and holds
     button.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state={} --state metatable
     button.state.hasBow=true --player has a bow
@@ -90,11 +97,11 @@ function ActionButtons:addActionButtonWeapons()
 
         if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
             if love.keyboard.isDown('a') then 
-                button.buttonProgress=button.buttonProgress+dt 
+                button.buttonDuration=button.buttonDuration+dt 
             end 
 
             if releasedKey=='a' then 
-                if button.buttonProgress<0.2 then --button tap
+                if button.buttonDuration<0.2 then --button tap
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.acceptInput=false --won't accept input until animation is done
                     --TODO
@@ -102,12 +109,18 @@ function ActionButtons:addActionButtonWeapons()
                     --TODO
 
                     --set timer to restore input accepting
-                    TimerState:after(button.animationTime, function() button.acceptInput=true end)
-                    button.buttonProgress=0 --reset buttonProgress
+                    TimerState:after(button.animationTime, function()
+                        button.acceptInput=true 
+                        --swap current weapons
+                        if button.state.currentWeapon=='bow' then 
+                            button.state.currentWeapon='staff'
+                        else button.state.currentWeapon='bow' end 
+                    end)
+                    button.buttonDuration=0 --reset buttonDuration
 
-                elseif button.buttonProgress>=0.2 then --button hold
+                elseif button.buttonDuration>=0.2 then --button hold
                     --CURRENTLY NO BUTTON HOLD ACTIONS SET FOR THIS BUTTON
-                    button.buttonProgress=0 --reset buttonProgress
+                    button.buttonDuration=0 --reset buttonDuration
                 end
             end
         end
@@ -133,14 +146,14 @@ function ActionButtons:addActionButtonSupplies()
     button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
     button.animations={}
     button.animations.forward=anim8.newAnimation(
-        button.grid('1-19',1), 0.025,
+        button.grid('1-19',1), 0.015,
         function() --onLoop function
             button.currentAnim=button.animations.backward 
             button.currentAnim:pauseAtStart()
         end
     )
     button.animations.backward=anim8.newAnimation(
-        button.grid('19-1',1), 0.025,
+        button.grid('19-1',1), 0.015,
         function() --onLoop function
             button.currentAnim=button.animations.forward 
             button.currentAnim:pauseAtStart()
@@ -148,10 +161,10 @@ function ActionButtons:addActionButtonSupplies()
     )
     button.currentAnim=button.animations.forward
     button.currentAnim:pause() --immediately pause animation until input is read
-    button.animationTime=0.475 --time it takes for animation to finish (19*0.025s)
+    button.animationTime=0.285 --time it takes for animation to finish (19*0.025s)
 
     --button data
-    button.buttonProgress=0 --used to differentiate between button taps and holds
+    button.buttonDuration=0 --used to differentiate between button taps and holds
     button.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state={} --state metatable
     button.state.hasFish=true --player has a bow
@@ -164,11 +177,11 @@ function ActionButtons:addActionButtonSupplies()
 
         if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
             if love.keyboard.isDown('z') then 
-                button.buttonProgress=button.buttonProgress+dt 
+                button.buttonDuration=button.buttonDuration+dt 
             end 
 
             if releasedKey=='z' then 
-                if button.buttonProgress<0.2 then --button tap
+                if button.buttonDuration<0.2 then --button tap
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.acceptInput=false --won't accept input until animation is done
                     --TODO
@@ -176,12 +189,18 @@ function ActionButtons:addActionButtonSupplies()
                     --TODO
 
                     --set timer to restore input accepting
-                    TimerState:after(button.animationTime, function() button.acceptInput=true end)
-                    button.buttonProgress=0 --reset buttonProgress
+                    TimerState:after(button.animationTime, function() 
+                        button.acceptInput=true 
+                        --swap current supply
+                        if button.state.currentSupply=='fish' then 
+                            button.state.currentSupply='potion'
+                        else button.state.currentSupply='fish' end 
+                    end)
+                    button.buttonDuration=0 --reset buttonDuration
 
-                elseif button.buttonProgress>=0.2 then --button hold
+                elseif button.buttonDuration>=0.2 then --button hold
                     --TODO eat the fish/drink the potion
-                    button.buttonProgress=0 --reset buttonProgress
+                    button.buttonDuration=0 --reset buttonDuration
                 end
             end
         end
@@ -207,14 +226,14 @@ function ActionButtons:addActionButtonProtectionMagics()
     button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
     button.animations={}
     button.animations.forward=anim8.newAnimation(
-        button.grid('1-19',1), 0.025,
+        button.grid('1-19',1), 0.015,
         function() --onLoop function
             button.currentAnim=button.animations.backward 
             button.currentAnim:pauseAtStart()
         end
     )
     button.animations.backward=anim8.newAnimation(
-        button.grid('19-1',1), 0.025,
+        button.grid('19-1',1), 0.015,
         function() --onLoop function
             button.currentAnim=button.animations.forward 
             button.currentAnim:pauseAtStart()
@@ -222,10 +241,10 @@ function ActionButtons:addActionButtonProtectionMagics()
     )
     button.currentAnim=button.animations.forward
     button.currentAnim:pause() --immediately pause animation until input is read
-    button.animationTime=0.475 --time it takes for animation to finish (19*0.025s)
+    button.animationTime=0.285 --time it takes for animation to finish (19*0.025s)
 
     --button data
-    button.buttonProgress=0 --used to differentiate between button taps and holds
+    button.buttonDuration=0 --used to differentiate between button taps and holds
     button.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state={} --state metatable
     button.state.currentSpell='protect physical' --either 'physical' or 'magical'
@@ -236,11 +255,11 @@ function ActionButtons:addActionButtonProtectionMagics()
 
         if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
             if love.keyboard.isDown('s') then 
-                button.buttonProgress=button.buttonProgress+dt 
+                button.buttonDuration=button.buttonDuration+dt 
             end 
 
             if releasedKey=='s' then 
-                if button.buttonProgress<0.2 then --button tap
+                if button.buttonDuration<0.2 then --button tap
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.acceptInput=false --won't accept input until animation is done
                     --TODO
@@ -248,12 +267,18 @@ function ActionButtons:addActionButtonProtectionMagics()
                     --TODO
 
                     --set timer to restore input accepting
-                    TimerState:after(button.animationTime, function() button.acceptInput=true end)
-                    button.buttonProgress=0 --reset buttonProgress
+                    TimerState:after(button.animationTime, function() 
+                        button.acceptInput=true 
+                        --swap current protection spell
+                        if button.state.currentSpell=='protect physical' then 
+                            button.state.currentSpell='protect magical'
+                        else button.state.currentSpell='protect physical' end 
+                    end)
+                    button.buttonDuration=0 --reset buttonDuration
 
-                elseif button.buttonProgress>=0.2 then --button hold
+                elseif button.buttonDuration>=0.2 then --button hold
                     --TODO start/stop casting protection spell
-                    button.buttonProgress=0 --reset buttonProgress
+                    button.buttonDuration=0 --reset buttonDuration
                 end
             end
         end
@@ -279,14 +304,14 @@ function ActionButtons:addActionButtonCombatInteract()
     button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
     button.animations={}
     button.animations.forward=anim8.newAnimation(
-        button.grid('1-19',1), 0.025,
+        button.grid('1-19',1), 0.015,
         function() --onLoop function
             button.currentAnim=button.animations.backward 
             button.currentAnim:pauseAtStart()
         end
     )
     button.animations.backward=anim8.newAnimation(
-        button.grid('19-1',1), 0.025,
+        button.grid('19-1',1), 0.015,
         function() --onLoop function
             button.currentAnim=button.animations.forward 
             button.currentAnim:pauseAtStart()
@@ -294,37 +319,63 @@ function ActionButtons:addActionButtonCombatInteract()
     )
     button.currentAnim=button.animations.backward --default to combat until near interactable node
     button.currentAnim:pause() --immediately pause animation until input is read
-    button.animationTime=0.475 --time it takes for animation to finish (19*0.025s)
+    button.animationTime=0.285 --time it takes for animation to finish (19*0.025s)
 
     --button data
-    button.buttonProgress=0 --used to differentiate between button taps and holds
+    button.buttonDuration=0 --used to differentiate between button taps and holds
     button.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state={} --state metatable
-    button.state.currentSupply='combat' --either 'combat' or 'interact'
+    button.state.isAnimating=false --used to prevent button from switching until animation ends
+    button.state.nodeNearPlayer=false --is the player near a resource/crafting node
+    button.state.currentAction='combat' --either 'combat' or 'interact'
     
 
     function button:update()
         button.currentAnim:update(dt)
 
-        if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
-            if love.keyboard.isDown('x') then 
-                button.buttonProgress=button.buttonProgress+dt 
-            end 
+        -- if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
+        --     if love.keyboard.isDown('x') then 
+        --         button.buttonDuration=button.buttonDuration+dt 
+        --     end 
 
-            if releasedKey=='x' then 
-                if button.buttonProgress<0.2 then --button tap
-                    button.currentAnim:resume() --resume animation to go to next icon
-                    button.acceptInput=false --won't accept input until animation is done
+        --     if releasedKey=='x' then 
+        --         if button.buttonDuration<0.2 then --button tap
+        --             button.currentAnim:resume() --resume animation to go to next icon
+        --             button.acceptInput=false --won't accept input until animation is done
 
-                    --set timer to restore input accepting
-                    TimerState:after(button.animationTime, function() button.acceptInput=true end)
-                    button.buttonProgress=0 --reset buttonProgress
+        --             --set timer to restore input accepting
+        --             TimerState:after(button.animationTime, function() button.acceptInput=true end)
+        --             button.buttonDuration=0 --reset buttonDuration
 
-                elseif button.buttonProgress>=0.2 then --button hold
-                    --TODO engage/disengae combat or interact with resource/crafting nodes
-                    button.buttonProgress=0 --reset buttonProgress
-                end
-            end
+        --         elseif button.buttonDuration>=0.2 then --button hold
+        --             --TODO engage/disengae combat or interact with resource/crafting nodes
+        --             button.buttonDuration=0 --reset buttonDuration
+        --         end
+        --     end
+        -- end
+
+        --if the player is near a resource/crafting node, switch to 'interact' but only if button
+        --is currently in 'combat' state and button is not currently animating.
+        if button.state.nodeNearPlayer 
+        and button.state.currentAction=='combat' 
+        and not button.state.isAnimating then
+            button.currentAnim:resume()
+            button.state.currentAction='interact'
+            button.state.isAnimating=true 
+            --set timer to make isAnimating false after animation time is complete
+            TimerState:after(button.animationTime, function() button.state.isAnimating=false end)
+        end
+
+        --if the button is currently 'interact' and the player is not near a resource/crafting node,
+        --switch back to 'combat'
+        if not button.state.nodeNearPlayer 
+        and button.state.currentAction=='interact' 
+        and not button.state.isAnimating then
+            button.currentAnim:resume()
+            button.state.currentAction='combat'
+            button.state.isAnimating=true 
+            --set timer to make isAnimating false after animation time is complete
+            TimerState:after(button.animationTime, function() button.state.isAnimating=false end)
         end
     end
 
@@ -336,6 +387,9 @@ function ActionButtons:addActionButtonCombatInteract()
             nil,windowScaleX,windowScaleY,0,0
         )
     end
+
+    --sets nodeNearPlayer state to _bool. Called be Player
+    function button:setNodeNearPlayer(_bool) button.state.nodeNearPlayer=_bool end
 
     return button 
 end

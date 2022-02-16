@@ -27,6 +27,7 @@ function Player:load()
     self.state.moving=false
     self.state.movingHorizontally=false 
     self.state.movingVertially=false 
+    self.state.isNearNode=false 
 
     table.insert(Entities.entitiesTable,self)
 end
@@ -109,19 +110,29 @@ end
 
 --Query the world for any nearby resource nodes. If there is one nearby,
 --begin harvesting it's resource by calling the node's harvestResource function
+--called by the combatInteract Action Button
 function Player:query()
-    if love.keyboard.isDown('x') then 
-        local nodeColliders=world:queryRectangleArea(self.xPos-9,self.yPos-6,18,12,{'resourceNode'})
+    local nodeColliders=world:queryRectangleArea(self.xPos-9,self.yPos-6,18,12,{'resourceNode'})
         if #nodeColliders>0 then --found a resource node
             --gets the resourceNode object attached to the collider
             local nearbyNode=nodeColliders[1]:getObject()
 
-            --face player toward that node
-            if nearbyNode.xPos<self.xPos then self.state.facing='left' 
-            else self.state.facing='right' end
+            --set combatInteract button state to update sprite 
+            ActionButtons.combatInteract:setNodeNearPlayer(true)
 
-            --harvest the node
-            nearbyNode:harvestResource()
+            if love.keyboard.isDown('x') then 
+                --face player toward that node
+                if nearbyNode.xPos<self.xPos then self.state.facing='left' 
+                else self.state.facing='right' end
+
+                --harvest the node
+                nearbyNode:harvestResource()
+            end
+        else
+            --set combatInteract button state to update sprite 
+            ActionButtons.combatInteract:setNodeNearPlayer(false)
         end 
-    end
 end
+
+--Called by items when they collide with player
+function Player:addToInventory(_item) Inventory:addItem(_item) end

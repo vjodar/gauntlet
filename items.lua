@@ -167,7 +167,7 @@ function Items:spawn_item(_x,_y,_name)
             --remove item from entities table
             self.removeEntity=true
             --add item to player's inventory
-            Inventory:addItem(self.name)
+            Player:addToInventory(self.name)
         end
     end
 
