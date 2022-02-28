@@ -3,7 +3,7 @@ PlayState={}
 function PlayState:load()
     cam=camera()
     --1x zoom for every 400px width and 300px height
-    cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600))
+    -- cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600))
 
     world=wf.newWorld() --initialize physics world which handles colliders
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
@@ -64,7 +64,7 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        -- world:draw() --draws all physics colliders
+        world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
     cam:detach()
