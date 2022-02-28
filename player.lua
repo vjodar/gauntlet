@@ -2,7 +2,7 @@ Player={}
 
 function Player:load()
     --setup player's physics collider and position, velocity vectors
-    self.collider=world:newRectangleCollider(600,100,12,5)
+    self.collider=world:newRectangleCollider(1536,1280,12,5)
     self.xPos, self.yPos=self.collider:getPosition()
     self.xVel, self.yVel=self.collider:getLinearVelocity()
     self.collider:setLinearDamping(20) --apply increased 'friction'

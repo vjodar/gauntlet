@@ -1,7 +1,6 @@
 PlayState={}
 
 function PlayState:load()
-    gameMap=sti('assets/maps/testMap.lua')
     cam=camera()
     --1x zoom for every 400px width and 300px height
     cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600))
@@ -13,9 +12,9 @@ function PlayState:load()
     world:addCollisionClass('resourceNode')
     world:addCollisionClass('depletedNode')
 
+    Dungeon:load() --initialize dungeon
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
-    Walls:load() --create colliders for all walls in map
     Player:load() --initialize player character
     Items:load() --initialize items
     Hud:load() --initialize Heads Up Display
@@ -44,6 +43,8 @@ function PlayState:update()
 
     world:update(dt) --update physics colliders
 
+    Dungeon:update() --update dungeon
+
     Entities:update() --update all entities
 
     cam:lookAt(Player.xPos,Player.yPos) --update camera
@@ -62,14 +63,13 @@ end
 --Draw state associated with playState
 function PlayState:draw()
     cam:attach()
-        gameMap:drawLayer(gameMap.layers['Ground'])
-        gameMap:drawLayer(gameMap.layers['Walls'])
+        Dungeon:draw() --draw the dungeon's rooms
         -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
-        gameMap:drawLayer(gameMap.layers['Foreground'])
+        Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
     cam:detach()
 
-    Hud:draw() --draw up outside of camera
+    Hud:draw() --draw hud outside of camera
 
     --debug---------------
     -- love.graphics.print(Player.xPos,10,0)

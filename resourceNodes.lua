@@ -21,10 +21,10 @@ function ResourceNodes:add_tree(_x,_y)
 
         --particles
         self.particles=love.graphics.newParticleSystem(self.spriteParticle,100)
-        self.particles:setParticleLifetime(0.5,1) --particles live 0.5s - 1s
+        self.particles:setParticleLifetime(0.3,0.7) --particles live 0.5s - 1s
         self.particles:setSpeed(100,200) --min and max speed
-        self.particles:setLinearDamping(10) --'friction'
-        self.particles:setLinearAcceleration(0,100,0,200) --min and max acceleration
+        self.particles:setLinearDamping(5) --'friction'
+        self.particles:setLinearAcceleration(0,50,0,200) --x,y min and x,y max acceleration
         self.particles:setDirection(1.6)
         self.particles:setSpread(2*math.pi) --particles will spread 360degrees
         self.particles:setEmissionArea('ellipse',3,5) 

@@ -2,7 +2,7 @@ require 'timerState'
 require 'playState'
 require 'entities'
 require 'player'
-require 'walls'
+require 'dungeon'
 require 'enemies'
 require 'resourceNodes'
 require 'items'
@@ -16,7 +16,7 @@ function love.load()
     --libraries
     wf=require 'libraries/windfield'
     anim8=require 'libraries/anim8'
-    sti=require 'libraries/sti'
+    -- sti=require 'libraries/sti'
     camera=require 'libraries/camera'
 
     dt=0 --delta time global
