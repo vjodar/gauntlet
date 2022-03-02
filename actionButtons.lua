@@ -21,13 +21,6 @@ function ActionButtons:draw()
     self.supplies:draw()
     self.protectionMagics:draw()
     self.combatInteract:draw()
-
-    -- --testing-------------------------------------------
-    -- love.graphics.print(self.weapons.state.currentWeapon,0,200)
-    -- love.graphics.print(self.supplies.state.currentSupply,0,210)
-    -- love.graphics.print(self.protectionMagics.state.currentSpell,0,220)
-    -- love.graphics.print(self.combatInteract.state.currentAction,0,230)
-    -- --testing-------------------------------------------
 end
 
 --draw blank buttons beneath real buttons to have transparent icons functionality

@@ -1,3 +1,5 @@
+require 'doorButton'
+
 Rooms={}
 
 function Rooms:load()
@@ -31,6 +33,8 @@ function Rooms:load()
     --cornerBottomRight
     self.roomSprites.cornerBottomRight=love.graphics.newImage('assets/maps/room_cornerBottomRight.png')
     self.roomSprites.cornerBottomRightForeground=love.graphics.newImage('assets/maps/room_cornerBottomRight_foreground.png')
+
+    DoorButton:load() --load the DoorButton class
 end
 
 function Rooms:newRoom(_coordinates)
@@ -39,63 +43,79 @@ function Rooms:newRoom(_coordinates)
     room.xPos=_coordinates[1]*self.ROOMWIDTH
     room.yPos=_coordinates[2]*self.ROOMHEIGHT
 
+    room.doorButtons={} --table to hold this room's door buttons
+
     if _coordinates[1]==1 then 
         --room is on leftmost position
         if _coordinates[2]==1 then 
             --room is topleft corner
+            room.type='cornerTopLeft'
             room.backgroundSprite=self.roomSprites.cornerTopLeft 
             room.foregroundSprite=self.roomSprites.cornerTopLeftForeground
-            self:generateWalls(room.xPos,room.yPos,'cornerTopLeft')
+            self:generateWalls(room.xPos,room.yPos,room.type)
         elseif _coordinates[2]==7 then 
             --room is bottomleft corner
+            room.type='cornerBottomLeft'
             room.backgroundSprite=self.roomSprites.cornerBottomLeft 
             room.foregroundSprite=self.roomSprites.cornerBottomLeftForeground
-            self:generateWalls(room.xPos,room.yPos,'cornerBottomLeft')
+            self:generateWalls(room.xPos,room.yPos,room.type)
         else
             --room is left side
+            room.type='sideLeft'
             room.backgroundSprite=self.roomSprites.sideLeft
             room.foregroundSprite=self.roomSprites.sideLeftForeground
-            self:generateWalls(room.xPos,room.yPos,'sideLeft')
+            self:generateWalls(room.xPos,room.yPos,room.type)
         end
     elseif _coordinates[1]==7 then 
         --room is on rightmost position
         if _coordinates[2]==1 then 
             --room is topright corner
+            room.type='cornerTopRight'
             room.backgroundSprite=self.roomSprites.cornerTopRight
             room.foregroundSprite=self.roomSprites.cornerTopRightForeground
-            self:generateWalls(room.xPos,room.yPos,'cornerTopRight')
+            self:generateWalls(room.xPos,room.yPos,room.type)
         elseif _coordinates[2]==7 then 
             --room is bottomright corner
+            room.type='cornerBottomRight'
             room.backgroundSprite=self.roomSprites.cornerBottomRight
             room.foregroundSprite=self.roomSprites.cornerBottomRightForeground
-            self:generateWalls(room.xPos,room.yPos,'cornerBottomRight')
+            self:generateWalls(room.xPos,room.yPos,room.type)
         else
             --room is right side
+            room.type='sideRight'
             room.backgroundSprite=self.roomSprites.sideRight
             room.foregroundSprite=self.roomSprites.sideRightForeground
-            self:generateWalls(room.xPos,room.yPos,'sideRight')
+            self:generateWalls(room.xPos,room.yPos,room.type)
         end
     elseif _coordinates[2]==1 then 
         --room is top side
+        room.type='sideTop'
         room.backgroundSprite=self.roomSprites.sideTop
         room.foregroundSprite=self.roomSprites.sideTopForeground
-        self:generateWalls(room.xPos,room.yPos,'sideTop')
+        self:generateWalls(room.xPos,room.yPos,room.type)
     elseif _coordinates[2]==7 then 
         --room is bottom side
+        room.type='sideBottom'
         room.backgroundSprite=self.roomSprites.sideBottom
         room.foregroundSprite=self.roomSprites.sideBottomForeground
-        self:generateWalls(room.xPos,room.yPos,'sideBottom')
+        self:generateWalls(room.xPos,room.yPos,room.type)
     else
         --room is a middle room
+        room.type='middle'
         room.backgroundSprite=self.roomSprites.middle 
         room.foregroundSprite=self.roomSprites.middleForeground
-        self:generateWalls(room.xPos,room.yPos,'middle')
+        self:generateWalls(room.xPos,room.yPos,room.type)
+        self:generateDoorButtons(room.xPos,room.yPos,room.type,room.doorButtons)
     end
 
-    function room:update() end
+    function room:update() 
+        --update all buttons in this room
+        for i,button in pairs(self.doorButtons) do button:update() end
+    end
 
     function room:draw() 
         love.graphics.draw(self.backgroundSprite,self.xPos,self.yPos)
+        for i,button in pairs(self.doorButtons) do button:draw() end 
     end
 
     function room:drawForeground() 
@@ -207,5 +227,18 @@ function Rooms:generateWalls(_xPos,_yPos,_type)
         --right walls
         world:newBSGRectangleCollider(_xPos+347,_yPos,37,320,3):setType('static') 
         world:newBSGRectangleCollider(_xPos+219,_yPos,128,48,3):setType('static') 
+    end
+end
+
+--takes a room's doorButtons table, its position, and its type/layout, 
+--generates the appropriate set of door button objects, and fills the _table with them
+function Rooms:generateDoorButtons(_xPos,_yPos,_type,_table)
+    local xPos=_xPos 
+    local yPos=_yPos 
+    local type=_type 
+    local tab=_table  
+
+    if type=='middle' then 
+        table.insert(tab,DoorButton:newDoorButton(xPos+131,yPos+32))
     end
 end
