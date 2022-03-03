@@ -4,11 +4,18 @@
 DoorButton={}
 
 function DoorButton:load()
-    --sprite and animations
+    --sprite and animations (front facing button)
     self.doorButtonSpriteSheet=love.graphics.newImage('assets/maps/door_button.png')
     self.grid=anim8.newGrid(
         12,14,
         self.doorButtonSpriteSheet:getWidth(),self.doorButtonSpriteSheet:getHeight()
+    )    
+    
+    --sprite and animations (side facing button)
+    self.doorButtonSpriteSheetSide=love.graphics.newImage('assets/maps/door_button_side.png')
+    self.gridSide=anim8.newGrid(
+        6,12,
+        self.doorButtonSpriteSheetSide:getWidth(),self.doorButtonSpriteSheetSide:getHeight()
     )    
 end
 
@@ -22,22 +29,37 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
     button.pressed=false --button state
 
     --physics collider
-    button.collider=world:newBSGRectangleCollider(button.xPos,button.yPos,12,19,3)
+    if button.name=='doorButtonTop' or button.name=='doorButtonBottom' then 
+        button.collider=world:newBSGRectangleCollider(button.xPos,button.yPos,12,19,3)
+    elseif button.name=='doorButtonLeft' or button.name=='doorButtonRight' then
+        button.collider=world:newBSGRectangleCollider(button.xPos-4,button.yPos,8,14,4)
+    end
     button.collider:setType('static')
     button.collider:setCollisionClass('doorButton')
     button.collider:setObject(button)
 
     --sprite and animations
-    button.spriteSheet=self.doorButtonSpriteSheet
-    button.grid=self.grid
-    button.currentAnim=anim8.newAnimation(
-        self.grid('1-4',1),0.05,
-        function() --onLoop function
-            button.currentAnim:pauseAtEnd() --will only animate once
-            --after animation, move collider away (destroy() doesn't work for some reason)
-            button.collider:setPosition(0,0)
-        end
-    )
+    if button.name=='doorButtonTop' or button.name=='doorButtonBottom' then 
+        button.spriteSheet=self.doorButtonSpriteSheet
+        button.grid=self.grid
+        button.currentAnim=anim8.newAnimation(
+            button.grid('1-4',1),0.05,
+            function() --onLoop function
+                button.currentAnim:pauseAtEnd() --will only animate once
+                button.collider:destroy() --destroy collider once animation ends
+            end
+        )
+    elseif button.name=='doorButtonLeft' or button.name=='doorButtonRight' then 
+        button.spriteSheet=self.doorButtonSpriteSheetSide
+        button.grid=self.gridSide
+        button.currentAnim=anim8.newAnimation(
+            button.grid('1-4',1),0.05,
+            function() --onLoop function
+                button.currentAnim:pauseAtEnd() --will only animate once
+                button.collider:destroy() --destroy collider once animation ends
+            end
+        )
+    end
     button.currentAnim:pause() --immediately pause animation
     
     function button:update()
@@ -45,7 +67,12 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
     end
 
     function button:draw()
-        button.currentAnim:draw(button.spriteSheet,_xPos,_yPos)
+        if button.name=='doorButtonRight' then 
+            --flip sprite
+            button.currentAnim:draw(button.spriteSheet,button.xPos,button.yPos,nil,-1,1)
+        else
+            button.currentAnim:draw(button.spriteSheet,button.xPos,button.yPos)
+        end 
     end
 
     --called by player's query function. Sets this button's pressed state to true,

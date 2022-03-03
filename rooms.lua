@@ -37,6 +37,9 @@ function Rooms:load()
     DoorButton:load() --load the DoorButton class
 end
 
+--Creates a new dungeon room of the correct type given dungeon coordinates.
+--First creates an emtpy room, then populates it with obstacles, enemies, 
+--and resource nodes at random.
 function Rooms:newRoom(_coordinates)
     local room={}
 
@@ -48,6 +51,7 @@ function Rooms:newRoom(_coordinates)
 
     room.doorButtons={} --table to hold this room's door buttons
 
+    --create and emtpy room complete with collision boxes that fit the room layout
     if _coordinates[1]==1 then 
         --room is on leftmost position
         if _coordinates[2]==1 then 
@@ -111,11 +115,31 @@ function Rooms:newRoom(_coordinates)
         self:generateDoorButtons(room.xPos,room.yPos,room.type,room.doorButtons)
     end
 
+    --TODO
+    --Randomly select a layout of obstacles that entities cannot pass nor spawn in
+    --TODO
+
+    --TODO
+    --Randomly spawn some resource nodes
+        --resource nodes shouldn't spawn too close to any other resource nodes or doorButtons
+    --TODO
+
+    --TODO
+    --Randomly spawn some enemies
+        --Only t1 enemies can spawn in the innermost ring of rooms
+        --t2 enemies can spawn anywhere past the innermost ring except for rooms with mini bosses
+        --if a Mage spawns, only t1 enemies can spawn alongside it (because it uses magical projectile)
+        --t3 enemies/Mini bosses should only spawn on the outermost rooms
+    --TODO
+
     function room:update() 
         --update all buttons in this room
         for i,button in pairs(self.doorButtons) do 
             button:update()
+
+            --check if a doorButton has been pressed by the player
             if button.pressed==true then 
+                button.pressed=false --prevent infinite loops
                 local pressedButtonName=button.name 
                 --one of the doorButtons have been pressed by the player, activate
                 --it and its sister button on opposite side of the doorway
@@ -123,6 +147,17 @@ function Rooms:newRoom(_coordinates)
                     if b.name==pressedButtonName then 
                         b.currentAnim:resume() --animate button press
                     end
+                end
+
+                --create a new room adjacent to the pressed doorButtons
+                if pressedButtonName=='doorButtonTop' then 
+                    Rooms:newRoom({self.coordinates[1],self.coordinates[2]-1})
+                elseif pressedButtonName=='doorButtonBottom' then 
+                    Rooms:newRoom({self.coordinates[1],self.coordinates[2]+1})
+                elseif pressedButtonName=='doorButtonLeft' then 
+                    Rooms:newRoom({self.coordinates[1]-1,self.coordinates[2]})
+                elseif pressedButtonName=='doorButtonRight' then 
+                    Rooms:newRoom({self.coordinates[1]+1,self.coordinates[2]})
                 end
             end
         end
@@ -251,10 +286,14 @@ function Rooms:generateDoorButtons(_xPos,_yPos,_type,_table)
     local xPos=_xPos 
     local yPos=_yPos 
     local type=_type 
-    local tab=_table  
+    local tab=_table
 
     if type=='middle' then 
         table.insert(tab,DoorButton:newDoorButton(xPos+131,yPos+32,'doorButtonTop'))
         table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop'))
+        table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+114,'doorButtonLeft'))
+        table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+226,'doorButtonLeft'))
+        table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+114,'doorButtonRight'))
+        table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+226,'doorButtonRight'))
     end
 end
