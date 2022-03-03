@@ -112,7 +112,7 @@ function Rooms:newRoom(_coordinates)
         room.backgroundSprite=self.roomSprites.middle 
         room.foregroundSprite=self.roomSprites.middleForeground
         self:generateWalls(room.xPos,room.yPos,room.type)
-        self:generateDoorButtons(room.xPos,room.yPos,room.type,room.doorButtons)
+        self:generateDoorButtons(room.xPos,room.yPos,room.type,room.doorButtons,room.coordinates)
     end
 
     --TODO
@@ -135,7 +135,6 @@ function Rooms:newRoom(_coordinates)
     function room:update() 
         --update all buttons in this room
         for i,button in pairs(self.doorButtons) do 
-            button:update()
 
             --check if a doorButton has been pressed by the player
             if button.pressed==true then 
@@ -160,6 +159,9 @@ function Rooms:newRoom(_coordinates)
                     Rooms:newRoom({self.coordinates[1]+1,self.coordinates[2]})
                 end
             end
+            
+            --update buttons, remove any button that was pressed and finished its animation
+            if button:update()==false then table.remove(self.doorButtons,i) end
         end
     end
 
@@ -282,18 +284,79 @@ end
 
 --takes a room's doorButtons table, its position, and its type/layout, 
 --generates the appropriate set of door button objects, and fills the _table with them
-function Rooms:generateDoorButtons(_xPos,_yPos,_type,_table)
+function Rooms:generateDoorButtons(_xPos,_yPos,_type,_table,_coordinates)
     local xPos=_xPos 
     local yPos=_yPos 
     local type=_type 
     local tab=_table
+    local x=_coordinates[1]
+    local y=_coordinates[2]
+    --adjacent rooms flag
+    local roomAbove,roomBelow,roomOnLeft,roomOnRight=false,false,false,false 
+    --adjacent rooms store here
+    local adjRoomTop,adjRoomBottom,adjRoomLeft,adjRoomRight=nil,nil,nil,nil
 
+    --see what existing rooms are adjacent to this room
+    for i,room in pairs(Dungeon.roomsTable) do 
+        if room.coordinates[1]==x and room.coordinates[2]==y-1 then 
+            roomAbove=true 
+            adjRoomTop=room --store room
+        end
+        if room.coordinates[1]==x and room.coordinates[2]==y+1 then 
+            roomBelow=true 
+            adjRoomBottom=room  --store room
+        end 
+        if room.coordinates[1]==x-1 and room.coordinates[2]==y then 
+            roomOnLeft=true 
+            adjRoomLeft=room  --store room
+        end 
+        if room.coordinates[1]==x+1 and room.coordinates[2]==y then 
+            roomOnRight=true 
+            adjRoomRight=room  --store room
+        end 
+    end
+
+    --create doorButtons only for those that don't already have existing adjacent rooms
     if type=='middle' then 
-        table.insert(tab,DoorButton:newDoorButton(xPos+131,yPos+32,'doorButtonTop'))
-        table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop'))
-        table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+114,'doorButtonLeft'))
-        table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+226,'doorButtonLeft'))
-        table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+114,'doorButtonRight'))
-        table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+226,'doorButtonRight'))
+        if not roomAbove then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+32,'doorButtonTop'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop')) 
+        end 
+        if not roomOnLeft then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+114,'doorButtonLeft'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+226,'doorButtonLeft'))
+        end
+        if not roomOnRight then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+114,'doorButtonRight'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+226,'doorButtonRight'))
+        end
+        if not roomBelow then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+295,'doorButtonBottom'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+295,'doorButtonBottom'))
+        end
+    end
+
+    --go through any adjacent rooms and 'press' any buttons that should be pressed
+    --i.e. if the player goes left>up>right instead of just up, the top doorButtons
+    --     won't be pressed but the room above would be spawned.
+    if roomAbove then 
+        for i,button in pairs(adjRoomTop.doorButtons) do 
+            if button.name=='doorButtonBelow' then button.currentAnim:resume() end 
+        end
+    end
+    if roomBelow then 
+        for i,button in pairs(adjRoomBottom.doorButtons) do 
+            if button.name=='doorButtonTop' then button.currentAnim:resume() end 
+        end
+    end
+    if roomOnLeft then 
+        for i,button in pairs(adjRoomLeft.doorButtons) do 
+            if button.name=='doorButtonRight' then button.currentAnim:resume() end 
+        end
+    end
+    if roomOnRight then 
+        for i,button in pairs(adjRoomRight.doorButtons) do 
+            if button.name=='doorButtonLeft' then button.currentAnim:resume() end 
+        end
     end
 end

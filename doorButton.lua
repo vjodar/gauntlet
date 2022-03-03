@@ -27,6 +27,7 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
     button.yPos=_yPos
     button.name=_name 
     button.pressed=false --button state
+    button.deleteMe=false --when true, remove button from parent room
 
     --physics collider
     if button.name=='doorButtonTop' or button.name=='doorButtonBottom' then 
@@ -46,7 +47,7 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
             button.grid('1-4',1),0.05,
             function() --onLoop function
                 button.currentAnim:pauseAtEnd() --will only animate once
-                button.collider:destroy() --destroy collider once animation ends
+                button.deleteMe=true --button will be removed from game
             end
         )
     elseif button.name=='doorButtonLeft' or button.name=='doorButtonRight' then 
@@ -56,7 +57,7 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
             button.grid('1-4',1),0.05,
             function() --onLoop function
                 button.currentAnim:pauseAtEnd() --will only animate once
-                button.collider:destroy() --destroy collider once animation ends
+                button.deleteMe=true --button will be removed from game
             end
         )
     end
@@ -64,6 +65,12 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
     
     function button:update()
         button.currentAnim:update(dt)
+
+        --when button is ready to be deleted, destroy its collider and return false
+        if button.deleteMe then 
+            button.collider:destroy()
+            return false 
+        end 
     end
 
     function button:draw()
