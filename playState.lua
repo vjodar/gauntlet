@@ -11,6 +11,8 @@ function PlayState:load()
     world:addCollisionClass('enemy')
     world:addCollisionClass('resourceNode')
     world:addCollisionClass('depletedNode')
+    world:addCollisionClass('doorButton')
+    world:addCollisionClass('doorButtonActivated')
 
     Dungeon:load() --initialize dungeon
     Shadows:load() --initialize shadows

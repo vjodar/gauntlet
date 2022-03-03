@@ -40,8 +40,11 @@ end
 function Rooms:newRoom(_coordinates)
     local room={}
 
-    room.xPos=_coordinates[1]*self.ROOMWIDTH
-    room.yPos=_coordinates[2]*self.ROOMHEIGHT
+    --coordinates in dungeon
+    room.coordinates=_coordinates
+    --absolute position in pixels
+    room.xPos=room.coordinates[1]*self.ROOMWIDTH
+    room.yPos=room.coordinates[2]*self.ROOMHEIGHT
 
     room.doorButtons={} --table to hold this room's door buttons
 
@@ -110,7 +113,19 @@ function Rooms:newRoom(_coordinates)
 
     function room:update() 
         --update all buttons in this room
-        for i,button in pairs(self.doorButtons) do button:update() end
+        for i,button in pairs(self.doorButtons) do 
+            button:update()
+            if button.pressed==true then 
+                local pressedButtonName=button.name 
+                --one of the doorButtons have been pressed by the player, activate
+                --it and its sister button on opposite side of the doorway
+                for i,b in pairs(self.doorButtons) do 
+                    if b.name==pressedButtonName then 
+                        b.currentAnim:resume() --animate button press
+                    end
+                end
+            end
+        end
     end
 
     function room:draw() 
@@ -239,6 +254,7 @@ function Rooms:generateDoorButtons(_xPos,_yPos,_type,_table)
     local tab=_table  
 
     if type=='middle' then 
-        table.insert(tab,DoorButton:newDoorButton(xPos+131,yPos+32))
+        table.insert(tab,DoorButton:newDoorButton(xPos+131,yPos+32,'doorButtonTop'))
+        table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop'))
     end
 end

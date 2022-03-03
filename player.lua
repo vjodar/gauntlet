@@ -110,9 +110,11 @@ end
 
 --Query the world for any nearby resource nodes. If there is one nearby,
 --begin harvesting it's resource by calling the node's harvestResource function
---called by the combatInteract Action Button
+--also used for door buttons to open/reveal adjacent rooms.
 function Player:query()
-    local nodeColliders=world:queryRectangleArea(self.xPos-9,self.yPos-6,18,12,{'resourceNode'})
+    local nodeColliders=world:queryRectangleArea(
+        self.xPos-9,self.yPos-6,18,12,{'resourceNode','doorButton'}
+    )
         if #nodeColliders>0 then --found a resource node
             --gets the resourceNode object attached to the collider
             local nearbyNode=nodeColliders[1]:getObject()
@@ -125,8 +127,8 @@ function Player:query()
                 if nearbyNode.xPos<self.xPos then self.state.facing='left' 
                 else self.state.facing='right' end
 
-                --harvest the node
-                nearbyNode:harvestResource()
+                --interact with node by calling its 'nodeInteract' function
+                nearbyNode:nodeInteract()
             end
         else
             --set combatInteract button state to update sprite 

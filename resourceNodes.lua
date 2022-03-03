@@ -97,7 +97,7 @@ function ResourceNodes:add_tree(_x,_y)
         love.graphics.draw(self.particles,self.xPos,self.yPos-20)
     end
 
-    function node:harvestResource()
+    function node:nodeInteract()
         self.state.harvestProgress=self.state.harvestProgress+dt
     end
 
@@ -223,7 +223,7 @@ function ResourceNodes:add_rock(_x,_y)
         love.graphics.draw(self.particles,self.xPos,self.yPos-3)
     end
 
-    function node:harvestResource()
+    function node:nodeInteract()
         self.state.harvestProgress=self.state.harvestProgress+dt
     end
 
@@ -339,7 +339,7 @@ function ResourceNodes:add_vine(_x,_y)
         love.graphics.draw(self.particles,self.xPos,self.yPos)
     end
 
-    function node:harvestResource()
+    function node:nodeInteract()
         self.state.harvestProgress=self.state.harvestProgress+dt
         -- print(self.state.harvestProgress)
     end
@@ -439,7 +439,7 @@ function ResourceNodes:add_fungi(_x,_y)
     end
 
     --this function is called through world queries done by the player
-    function node:harvestResource()
+    function node:nodeInteract()
         --increment current harvestProgress
         self.state.harvestProgress=self.state.harvestProgress+dt
     end
@@ -554,7 +554,7 @@ function ResourceNodes:add_fishing_hole(_x,_y)
         love.graphics.draw(self.particles,self.xPos,self.yPos)
     end
 
-    function node:harvestResource()
+    function node:nodeInteract()
         self.state.harvestProgress=self.state.harvestProgress+dt
     end
 

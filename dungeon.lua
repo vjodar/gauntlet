@@ -7,8 +7,11 @@ function Dungeon:load()
 
     self.roomsTable={} --holds all rooms in a dungeon
 
-    --test all rooms
-    for i=1,7 do for j=1,7 do Rooms:newRoom({i,j}) end end
+    -- --test all rooms
+    -- for i=1,7 do for j=1,7 do Rooms:newRoom({i,j}) end end
+
+    --create starting room
+    Rooms:newRoom({4,4})
 end
 
 function Dungeon:update()
