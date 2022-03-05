@@ -69,6 +69,7 @@ function Rooms:newRoom(_coordinates)
     room.isLit.right=false 
 
     --create and emtpy room complete with collision boxes that fit the room layout
+    --then generate doorButtons and room lights
     if _coordinates[1]==1 then 
         --room is on leftmost position
         if _coordinates[2]==1 then 
@@ -77,18 +78,24 @@ function Rooms:newRoom(_coordinates)
             room.backgroundSprite=self.roomSprites.cornerTopLeft 
             room.foregroundSprite=self.roomSprites.cornerTopLeftForeground
             self:generateWalls(room)
+            self:generateDoorButtons(room)
+            self:generateLights(room)
         elseif _coordinates[2]==7 then 
             --room is bottomleft corner
             room.type='cornerBottomLeft'
             room.backgroundSprite=self.roomSprites.cornerBottomLeft 
             room.foregroundSprite=self.roomSprites.cornerBottomLeftForeground
             self:generateWalls(room)
+            self:generateDoorButtons(room)
+            self:generateLights(room)
         else
             --room is left side
             room.type='sideLeft'
             room.backgroundSprite=self.roomSprites.sideLeft
             room.foregroundSprite=self.roomSprites.sideLeftForeground
             self:generateWalls(room)
+            self:generateDoorButtons(room)
+            self:generateLights(room)
         end
     elseif _coordinates[1]==7 then 
         --room is on rightmost position
@@ -98,18 +105,24 @@ function Rooms:newRoom(_coordinates)
             room.backgroundSprite=self.roomSprites.cornerTopRight
             room.foregroundSprite=self.roomSprites.cornerTopRightForeground
             self:generateWalls(room)
+            self:generateDoorButtons(room)
+            self:generateLights(room)
         elseif _coordinates[2]==7 then 
             --room is bottomright corner
             room.type='cornerBottomRight'
             room.backgroundSprite=self.roomSprites.cornerBottomRight
             room.foregroundSprite=self.roomSprites.cornerBottomRightForeground
             self:generateWalls(room)
+            self:generateDoorButtons(room)
+            self:generateLights(room)
         else
             --room is right side
             room.type='sideRight'
             room.backgroundSprite=self.roomSprites.sideRight
             room.foregroundSprite=self.roomSprites.sideRightForeground
             self:generateWalls(room)
+            self:generateDoorButtons(room)
+            self:generateLights(room)
         end
     elseif _coordinates[2]==1 then 
         --room is top side
@@ -117,12 +130,16 @@ function Rooms:newRoom(_coordinates)
         room.backgroundSprite=self.roomSprites.sideTop
         room.foregroundSprite=self.roomSprites.sideTopForeground
         self:generateWalls(room)
+        self:generateDoorButtons(room)
+        self:generateLights(room)
     elseif _coordinates[2]==7 then 
         --room is bottom side
         room.type='sideBottom'
         room.backgroundSprite=self.roomSprites.sideBottom
         room.foregroundSprite=self.roomSprites.sideBottomForeground
         self:generateWalls(room)
+        self:generateDoorButtons(room)
+        self:generateLights(room)
     else
         --room is a middle room
         room.type='middle'
@@ -132,23 +149,6 @@ function Rooms:newRoom(_coordinates)
         self:generateDoorButtons(room)
         self:generateLights(room)
     end
-
-    --TODO
-    --Randomly select a layout of obstacles that entities cannot pass nor spawn in
-    --TODO
-
-    --TODO
-    --Randomly spawn some resource nodes
-        --resource nodes shouldn't spawn too close to any other resource nodes or doorButtons
-    --TODO
-
-    --TODO
-    --Randomly spawn some enemies
-        --Only t1 enemies can spawn in the innermost ring of rooms
-        --t2 enemies can spawn anywhere past the innermost ring except for rooms with mini bosses
-        --if a Mage spawns, only t1 enemies can spawn alongside it (because it uses magical projectile)
-        --t3 enemies/Mini bosses should only spawn on the outermost rooms
-    --TODO
 
     function room:update() 
         --update all buttons in this room
@@ -214,6 +214,23 @@ function Rooms:newRoom(_coordinates)
             love.graphics.draw(self.lightSprites.right,self.xPos+384,self.yPos+192,nil,-1,1)
         end
     end
+
+    --TODO
+    --Randomly select a layout of obstacles that entities cannot pass nor spawn in
+    --TODO
+
+    --TODO
+    --Randomly spawn some resource nodes
+        --resource nodes shouldn't spawn too close to any other resource nodes or doorButtons
+    --TODO
+
+    --TODO
+    --Randomly spawn some enemies
+        --Only t1 enemies can spawn in the innermost ring of rooms
+        --t2 enemies can spawn anywhere past the innermost ring except for rooms with mini bosses
+        --if a Mage spawns, only t1 enemies can spawn alongside it (because it uses magical projectile)
+        --t3 enemies/Mini bosses should only spawn on the outermost rooms
+    --TODO
 
     table.insert(Dungeon.roomsTable,room) --insert into Dungeon's roomsTable
 end 
@@ -377,6 +394,94 @@ function Rooms:generateDoorButtons(_room)
         if not roomBelow then 
             table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+295,'doorButtonBottom'))
             table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+295,'doorButtonBottom'))
+        end
+    elseif type=='sideTop' then 
+        if not roomOnLeft then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+114,'doorButtonLeft'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+226,'doorButtonLeft'))
+        end
+        if not roomOnRight then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+114,'doorButtonRight'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+226,'doorButtonRight'))
+        end
+        if not roomBelow then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+295,'doorButtonBottom'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+295,'doorButtonBottom'))
+        end
+    elseif type=='sideBottom' then 
+        if not roomAbove then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+32,'doorButtonTop'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop')) 
+        end 
+        if not roomOnLeft then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+114,'doorButtonLeft'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+226,'doorButtonLeft'))
+        end
+        if not roomOnRight then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+114,'doorButtonRight'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+226,'doorButtonRight'))
+        end
+    elseif type=='sideLeft' then 
+        if not roomAbove then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+32,'doorButtonTop'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop')) 
+        end
+        if not roomOnRight then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+114,'doorButtonRight'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+226,'doorButtonRight'))
+        end
+        if not roomBelow then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+295,'doorButtonBottom'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+295,'doorButtonBottom'))
+        end
+    elseif type=='sideRight' then 
+        if not roomAbove then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+32,'doorButtonTop'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop')) 
+        end 
+        if not roomOnLeft then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+114,'doorButtonLeft'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+226,'doorButtonLeft'))
+        end
+        if not roomBelow then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+295,'doorButtonBottom'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+295,'doorButtonBottom'))
+        end
+    elseif type=='cornerTopLeft' then 
+        if not roomOnRight then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+114,'doorButtonRight'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+226,'doorButtonRight'))
+        end
+        if not roomBelow then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+295,'doorButtonBottom'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+295,'doorButtonBottom'))
+        end
+    elseif type=='cornerTopRight' then 
+        if not roomOnLeft then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+114,'doorButtonLeft'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+226,'doorButtonLeft'))
+        end
+        if not roomBelow then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+295,'doorButtonBottom'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+295,'doorButtonBottom'))
+        end
+    elseif type=='cornerBottomLeft' then 
+        if not roomAbove then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+32,'doorButtonTop'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop')) 
+        end 
+        if not roomOnRight then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+114,'doorButtonRight'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+348,yPos+226,'doorButtonRight'))
+        end
+    elseif type=='cornerBottomRight' then 
+        if not roomAbove then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+130,yPos+32,'doorButtonTop'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+242,yPos+32,'doorButtonTop')) 
+        end 
+        if not roomOnLeft then 
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+114,'doorButtonLeft'))
+            table.insert(tab,DoorButton:newDoorButton(xPos+36,yPos+226,'doorButtonLeft'))
         end
     end
 
