@@ -1,4 +1,5 @@
 require 'doorButton'
+require 'walls'
 
 Rooms={}
 
@@ -40,7 +41,8 @@ function Rooms:load()
     self.lightSprites.bottom=love.graphics.newImage('assets/maps/room_light_bottom.png')
     self.lightSprites.side=love.graphics.newImage('assets/maps/room_light_side.png')
     
-    DoorButton:load() --load the DoorButton class
+    DoorButton:load() --initialize DoorButton class
+    Walls:load() --initialize Walls class
 end
 
 --Creates a new dungeon room of the correct type given dungeon coordinates.
@@ -148,6 +150,8 @@ function Rooms:newRoom(_coordinates)
         self:generateWalls(room)
         self:generateDoorButtons(room)
         self:generateLights(room)
+        --choose a random layout for innerroom walls
+        Walls.layouts[love.math.random(#Walls.layouts)](room)
     end
 
     function room:update() 

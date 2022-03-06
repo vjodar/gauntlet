@@ -1,6 +1,7 @@
 PlayState={}
 
 function PlayState:load()
+    love.graphics.setBackgroundColor(2/15,2/15,2/15)
     cam=camera()
     --1x zoom for every 400px width and 300px height
     cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600))
@@ -14,10 +15,10 @@ function PlayState:load()
     world:addCollisionClass('doorButton')
     world:addCollisionClass('doorButtonActivated')
 
-    Dungeon:load() --initialize dungeon
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
     Player:load() --initialize player character
+    Dungeon:load() --initialize dungeon
     Items:load() --initialize items
     Hud:load() --initialize Heads Up Display
 
@@ -66,7 +67,7 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        -- world:draw() --draws all physics colliders
+        world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
     cam:detach()
