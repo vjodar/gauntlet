@@ -151,7 +151,8 @@ function Rooms:newRoom(_coordinates)
         self:generateDoorButtons(room)
         self:generateLights(room)
         --choose a random layout for innerroom walls
-        Walls.layouts[love.math.random(#Walls.layouts)](room)
+        -- Walls.layouts[love.math.random(#Walls.layouts)](room)
+        Walls.layouts[#Walls.layouts](room)
     end
 
     function room:update() 

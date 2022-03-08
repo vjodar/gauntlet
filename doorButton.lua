@@ -33,7 +33,7 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
     if button.name=='doorButtonTop' or button.name=='doorButtonBottom' then 
         button.collider=world:newBSGRectangleCollider(button.xPos,button.yPos,12,19,3)
     elseif button.name=='doorButtonLeft' or button.name=='doorButtonRight' then
-        button.collider=world:newBSGRectangleCollider(button.xPos-4,button.yPos,8,14,4)
+        button.collider=world:newBSGRectangleCollider(button.xPos-5,button.yPos,10,14,4)
     end
     button.collider:setType('static')
     button.collider:setCollisionClass('doorButton')
