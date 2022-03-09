@@ -82,6 +82,8 @@ function Rooms:newRoom(_coordinates)
             self:generateWalls(room)
             self:generateDoorButtons(room)
             self:generateLights(room)
+            --choose a random layout for innerroom walls
+            Walls.layouts[love.math.random(#Walls.layouts)](room)
         elseif _coordinates[2]==7 then 
             --room is bottomleft corner
             room.type='cornerBottomLeft'
@@ -90,6 +92,8 @@ function Rooms:newRoom(_coordinates)
             self:generateWalls(room)
             self:generateDoorButtons(room)
             self:generateLights(room)
+            --choose a random layout for innerroom walls
+            Walls.layouts[love.math.random(#Walls.layouts)](room)
         else
             --room is left side
             room.type='sideLeft'
@@ -98,6 +102,8 @@ function Rooms:newRoom(_coordinates)
             self:generateWalls(room)
             self:generateDoorButtons(room)
             self:generateLights(room)
+            --choose a random layout for innerroom walls
+            Walls.layouts[love.math.random(#Walls.layouts)](room)
         end
     elseif _coordinates[1]==7 then 
         --room is on rightmost position
@@ -109,6 +115,8 @@ function Rooms:newRoom(_coordinates)
             self:generateWalls(room)
             self:generateDoorButtons(room)
             self:generateLights(room)
+            --choose a random layout for innerroom walls
+            Walls.layouts[love.math.random(#Walls.layouts)](room)
         elseif _coordinates[2]==7 then 
             --room is bottomright corner
             room.type='cornerBottomRight'
@@ -117,6 +125,8 @@ function Rooms:newRoom(_coordinates)
             self:generateWalls(room)
             self:generateDoorButtons(room)
             self:generateLights(room)
+            --choose a random layout for innerroom walls
+            Walls.layouts[love.math.random(#Walls.layouts)](room)
         else
             --room is right side
             room.type='sideRight'
@@ -125,6 +135,8 @@ function Rooms:newRoom(_coordinates)
             self:generateWalls(room)
             self:generateDoorButtons(room)
             self:generateLights(room)
+            --choose a random layout for innerroom walls
+            Walls.layouts[love.math.random(#Walls.layouts)](room)
         end
     elseif _coordinates[2]==1 then 
         --room is top side
@@ -134,6 +146,8 @@ function Rooms:newRoom(_coordinates)
         self:generateWalls(room)
         self:generateDoorButtons(room)
         self:generateLights(room)
+        --choose a random layout for innerroom walls
+        Walls.layouts[love.math.random(#Walls.layouts)](room)
     elseif _coordinates[2]==7 then 
         --room is bottom side
         room.type='sideBottom'
@@ -142,6 +156,8 @@ function Rooms:newRoom(_coordinates)
         self:generateWalls(room)
         self:generateDoorButtons(room)
         self:generateLights(room)
+        --choose a random layout for innerroom walls
+        Walls.layouts[love.math.random(#Walls.layouts)](room)
     else
         --room is a middle room
         room.type='middle'
@@ -151,8 +167,8 @@ function Rooms:newRoom(_coordinates)
         self:generateDoorButtons(room)
         self:generateLights(room)
         --choose a random layout for innerroom walls
-        -- Walls.layouts[love.math.random(#Walls.layouts)](room)
-        Walls.layouts[#Walls.layouts](room)
+        Walls.layouts[love.math.random(#Walls.layouts)](room)
+        -- Walls.layouts[#Walls.layouts](room)
     end
 
     function room:update() 
