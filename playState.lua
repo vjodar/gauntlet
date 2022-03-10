@@ -34,11 +34,7 @@ function PlayState:load()
     --Testing enemies------------------
 
     --Testing resource nodes-----------
-    ResourceNodes:add_tree(580,80)
-    ResourceNodes:add_rock(640,75)
-    ResourceNodes:add_vine(700,17)
-    ResourceNodes:add_fungi(600,130)
-    ResourceNodes:add_fishing_hole(710,135)
+    -- ResourceNodes.nodeSpawnFunctions[5](1600,1400)
     --Testing resource nodes-----------
 end
 
@@ -67,7 +63,7 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        -- world:draw() --draws all physics colliders
+        world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
     cam:detach()

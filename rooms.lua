@@ -71,7 +71,6 @@ function Rooms:newRoom(_coordinates)
     room.isLit.right=false 
 
     --create and emtpy room complete with collision boxes that fit the room layout
-    --then generate doorButtons and room lights
     if _coordinates[1]==1 then 
         --room is on leftmost position
         if _coordinates[2]==1 then 
@@ -79,31 +78,16 @@ function Rooms:newRoom(_coordinates)
             room.type='cornerTopLeft'
             room.backgroundSprite=self.roomSprites.cornerTopLeft 
             room.foregroundSprite=self.roomSprites.cornerTopLeftForeground
-            self:generateWalls(room)
-            self:generateDoorButtons(room)
-            self:generateLights(room)
-            --choose a random layout for innerroom walls
-            Walls.layouts[love.math.random(#Walls.layouts)](room)
         elseif _coordinates[2]==7 then 
             --room is bottomleft corner
             room.type='cornerBottomLeft'
             room.backgroundSprite=self.roomSprites.cornerBottomLeft 
             room.foregroundSprite=self.roomSprites.cornerBottomLeftForeground
-            self:generateWalls(room)
-            self:generateDoorButtons(room)
-            self:generateLights(room)
-            --choose a random layout for innerroom walls
-            Walls.layouts[love.math.random(#Walls.layouts)](room)
         else
             --room is left side
             room.type='sideLeft'
             room.backgroundSprite=self.roomSprites.sideLeft
             room.foregroundSprite=self.roomSprites.sideLeftForeground
-            self:generateWalls(room)
-            self:generateDoorButtons(room)
-            self:generateLights(room)
-            --choose a random layout for innerroom walls
-            Walls.layouts[love.math.random(#Walls.layouts)](room)
         end
     elseif _coordinates[1]==7 then 
         --room is on rightmost position
@@ -112,64 +96,47 @@ function Rooms:newRoom(_coordinates)
             room.type='cornerTopRight'
             room.backgroundSprite=self.roomSprites.cornerTopRight
             room.foregroundSprite=self.roomSprites.cornerTopRightForeground
-            self:generateWalls(room)
-            self:generateDoorButtons(room)
-            self:generateLights(room)
-            --choose a random layout for innerroom walls
-            Walls.layouts[love.math.random(#Walls.layouts)](room)
         elseif _coordinates[2]==7 then 
             --room is bottomright corner
             room.type='cornerBottomRight'
             room.backgroundSprite=self.roomSprites.cornerBottomRight
             room.foregroundSprite=self.roomSprites.cornerBottomRightForeground
-            self:generateWalls(room)
-            self:generateDoorButtons(room)
-            self:generateLights(room)
-            --choose a random layout for innerroom walls
-            Walls.layouts[love.math.random(#Walls.layouts)](room)
         else
             --room is right side
             room.type='sideRight'
             room.backgroundSprite=self.roomSprites.sideRight
             room.foregroundSprite=self.roomSprites.sideRightForeground
-            self:generateWalls(room)
-            self:generateDoorButtons(room)
-            self:generateLights(room)
-            --choose a random layout for innerroom walls
-            Walls.layouts[love.math.random(#Walls.layouts)](room)
         end
     elseif _coordinates[2]==1 then 
         --room is top side
         room.type='sideTop'
         room.backgroundSprite=self.roomSprites.sideTop
         room.foregroundSprite=self.roomSprites.sideTopForeground
-        self:generateWalls(room)
-        self:generateDoorButtons(room)
-        self:generateLights(room)
-        --choose a random layout for innerroom walls
-        Walls.layouts[love.math.random(#Walls.layouts)](room)
     elseif _coordinates[2]==7 then 
         --room is bottom side
         room.type='sideBottom'
         room.backgroundSprite=self.roomSprites.sideBottom
         room.foregroundSprite=self.roomSprites.sideBottomForeground
-        self:generateWalls(room)
-        self:generateDoorButtons(room)
-        self:generateLights(room)
-        --choose a random layout for innerroom walls
-        Walls.layouts[love.math.random(#Walls.layouts)](room)
     else
         --room is a middle room
         room.type='middle'
         room.backgroundSprite=self.roomSprites.middle 
         room.foregroundSprite=self.roomSprites.middleForeground
-        self:generateWalls(room)
-        self:generateDoorButtons(room)
-        self:generateLights(room)
-        --choose a random layout for innerroom walls
-        Walls.layouts[love.math.random(#Walls.layouts)](room)
-        -- Walls.layouts[#Walls.layouts](room)
     end
+
+    --generate doorButtons and room lights
+    self:generateWalls(room)
+    self:generateDoorButtons(room)
+    self:generateLights(room)
+
+    --next choose a random inner wall layout to generate
+    Walls.layouts[love.math.random(#Walls.layouts)](room)
+    -- Walls.layouts[#Walls.layouts](room)
+
+    --choose a random amount of resource nodes and enemies to spawn (up to 6 total)
+    local numNodes=love.math.random(7)-1
+    local numEnemies=6-numNodes 
+    self:spawnResourceNodes(room,numNodes)    
 
     function room:update() 
         --update all buttons in this room
@@ -234,24 +201,7 @@ function Rooms:newRoom(_coordinates)
             love.graphics.draw(self.lightSprites.right,self.xPos+384,self.yPos+83,nil,-1,1)
             love.graphics.draw(self.lightSprites.right,self.xPos+384,self.yPos+192,nil,-1,1)
         end
-    end
-
-    --TODO
-    --Randomly select a layout of obstacles that entities cannot pass nor spawn in
-    --TODO
-
-    --TODO
-    --Randomly spawn some resource nodes
-        --resource nodes shouldn't spawn too close to any other resource nodes or doorButtons
-    --TODO
-
-    --TODO
-    --Randomly spawn some enemies
-        --Only t1 enemies can spawn in the innermost ring of rooms
-        --t2 enemies can spawn anywhere past the innermost ring except for rooms with mini bosses
-        --if a Mage spawns, only t1 enemies can spawn alongside it (because it uses magical projectile)
-        --t3 enemies/Mini bosses should only spawn on the outermost rooms
-    --TODO
+    end   
 
     table.insert(Dungeon.roomsTable,room) --insert into Dungeon's roomsTable
 end 
@@ -567,4 +517,70 @@ function Rooms:generateLights(_room)
     if room.type=='cornerBottomLeft' then room.isLit.bottom=false room.isLit.left=false end
     if room.type=='cornerTopRight' then room.isLit.top=false room.isLit.right=false end
     if room.type=='cornerBottomRight' then room.isLit.bottom=false room.isLit.right=false end
+end
+
+function Rooms:spawnResourceNodes(_room,_numNodes)
+    local spawnZone={} --designated spawning area
+    spawnZone.x1=_room.xPos+64
+    spawnZone.x2=spawnZone.x1+256
+    spawnZone.y1=_room.yPos+80
+    spawnZone.y2=spawnZone.y1+192
+
+    local spawnZoneVineA={} --right side of doorway
+    spawnZoneVineA.x1=_room.xPos+259
+    spawnZoneVineA.x2=_room.xPos+332
+    spawnZoneVineA.y=_room.yPos+17
+
+    local spawnZoneVineB={} --left side of doorway
+    spawnZoneVineB.x1=_room.xPos+36
+    spawnZoneVineB.x2=_room.xPos+109
+
+    local spawnZoneVineC={} --for top corners and side rooms
+    spawnZoneVineC.x1=_room.xPos+36
+    spawnZoneVineC.x2=_room.xPos+332
+
+    for i=1,_numNodes do 
+        local selectedFunction=love.math.random(5) --select a random spawn function
+
+        --if spawn vine function is selected, spawn it within vine spawn zone
+        if selectedFunction==3 then 
+            if _room.coordinates[2]==1 then --top side or corner room
+                ResourceNodes.nodeSpawnFunctions[selectedFunction](
+                        love.math.random(spawnZoneVineC.x1,spawnZoneVineC.x2),
+                        --add decimal value to yPos to prevent visual stutter
+                        spawnZoneVineA.y+love.math.random()
+                    )
+            else --any other room with top doorway
+                if love.math.random(2)==1 then --spawn in vine zone A
+                    ResourceNodes.nodeSpawnFunctions[selectedFunction](
+                        love.math.random(spawnZoneVineA.x1,spawnZoneVineA.x2),
+                        --add decimal value to yPos to prevent visual stutter
+                        spawnZoneVineA.y+love.math.random()
+                    )
+                else --spawn in vine zone B
+                    ResourceNodes.nodeSpawnFunctions[selectedFunction](
+                        love.math.random(spawnZoneVineB.x1,spawnZoneVineB.x2),
+                        --add decimal value to yPos to prevent visual stutter
+                        spawnZoneVineA.y+love.math.random()
+                    )
+                end
+            end
+        else         
+            --otherwise spawn the resource node within the general spawn zone
+            ResourceNodes.nodeSpawnFunctions[selectedFunction](
+                love.math.random(spawnZone.x1,spawnZone.x2),
+                love.math.random(spawnZone.y1,spawnZone.y2)
+            )
+        end
+    end
+end
+
+function Rooms:spawnEnemies(_room,_numEnemies)
+    --TODO
+    --Randomly spawn some enemies
+        --Only t1 enemies can spawn in the innermost ring of rooms
+        --t2 enemies can spawn anywhere past the innermost ring except for rooms with mini bosses
+        --if a Mage spawns, only t1 enemies can spawn alongside it (because it uses magical projectile)
+        --t3 enemies/Mini bosses should only spawn on the outermost rooms
+    --TODO
 end

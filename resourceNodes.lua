@@ -1,13 +1,15 @@
 ResourceNodes={}
 
-function ResourceNodes:add_tree(_x,_y) 
+ResourceNodes.nodeSpawnFunctions={}
+
+ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
     local node={}
 
     function node:load() 
         --setup collider and position vectors
         self.collider=world:newBSGRectangleCollider(_x,_y,14,8,3)
         self.xPos, self.yPos = self.collider:getPosition()
-        self.collider:setType('static')
+        self.collider:setFixedRotation(true)
         self.collider:setCollisionClass('resourceNode')
         self.collider:setObject(self) --attach collider to this object
 
@@ -38,7 +40,12 @@ function ResourceNodes:add_tree(_x,_y)
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
 
+        --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
+
+        --After 1s from spawning, make the collider static. This is to allow
+        --physics engine to push node out of other colliders
+        TimerState:after(1,function() self.collider:setType('static') end)
     end
 
     function node:update() 
@@ -47,6 +54,8 @@ function ResourceNodes:add_tree(_x,_y)
         else
             self.state.beingHarvested=false
         end
+
+        self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
             --spawn appropriate item, restart harvest progress
@@ -125,14 +134,14 @@ function ResourceNodes:add_tree(_x,_y)
     node:load()
 end 
 
-function ResourceNodes:add_rock(_x,_y) 
+ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock 
     local node={}
 
     function node:load() 
         --setup collider and position vectors
         self.collider=world:newBSGRectangleCollider(_x,_y,16,8,2)
         self.xPos, self.yPos = self.collider:getPosition()
-        self.collider:setType('static')
+        self.collider:setFixedRotation(true)
         self.collider:setCollisionClass('resourceNode')
         self.collider:setObject(self) --attach collider to this object
 
@@ -162,7 +171,12 @@ function ResourceNodes:add_rock(_x,_y)
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
 
+        --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
+
+        --After 1s from spawning, make the collider static. This is to allow
+        --physics engine to push node out of other colliders
+        TimerState:after(1,function() self.collider:setType('static') end)
     end
 
     function node:update() 
@@ -171,6 +185,8 @@ function ResourceNodes:add_rock(_x,_y)
         else
             self.state.beingHarvested=false
         end
+
+        self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
             --spawn appropriate item, restart harvest progress
@@ -251,13 +267,14 @@ function ResourceNodes:add_rock(_x,_y)
     node:load()
 end 
 
-function ResourceNodes:add_vine(_x,_y) 
+ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine 
     local node={}
 
     function node:load() 
         --setup collider and position vectors
         self.collider=world:newBSGRectangleCollider(_x,_y,16,32,4)
         self.xPos, self.yPos = self.collider:getPosition()
+        self.collider:setFixedRotation(true)
         self.collider:setType('static')
         self.collider:setCollisionClass('resourceNode')
         self.collider:setObject(self) --attach collider to this object
@@ -295,6 +312,8 @@ function ResourceNodes:add_vine(_x,_y)
         else
             self.state.beingHarvested=false
         end
+
+        self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
             --spawn appropriate item, restart harvest progress
@@ -347,14 +366,14 @@ function ResourceNodes:add_vine(_x,_y)
     node:load()
 end 
 
-function ResourceNodes:add_fungi(_x,_y) 
+ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi 
     local node={}
 
     function node:load() 
         --setup collider and position vectors
         self.collider=world:newBSGRectangleCollider(_x,_y,14,8,3)
         self.xPos, self.yPos = self.collider:getPosition()
-        self.collider:setType('static')
+        self.collider:setFixedRotation(true)
         self.collider:setCollisionClass('resourceNode')
         self.collider:setObject(self) --attach collider to this object
 
@@ -383,7 +402,12 @@ function ResourceNodes:add_fungi(_x,_y)
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
 
+        --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
+
+        --After 1s from spawning, make the collider static. This is to allow
+        --physics engine to push node out of other colliders
+        TimerState:after(1,function() self.collider:setType('static') end)
     end
 
     function node:update() 
@@ -393,6 +417,8 @@ function ResourceNodes:add_fungi(_x,_y)
         else
             self.state.beingHarvested=false
         end
+
+        self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
             --spawn appropriate item, restart harvest progress
@@ -447,14 +473,14 @@ function ResourceNodes:add_fungi(_x,_y)
     node:load()
 end 
 
-function ResourceNodes:add_fishing_hole(_x,_y) 
+ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole 
     local node={}
 
     function node:load() 
         --setup collider and position vectors
         self.collider=world:newBSGRectangleCollider(_x,_y,16,8,2)
         self.xPos, self.yPos = self.collider:getPosition()
-        self.collider:setType('static')
+        self.collider:setFixedRotation(true)
         self.collider:setCollisionClass('resourceNode')
         self.collider:setObject(self) --attach collider to this object
 
@@ -491,7 +517,12 @@ function ResourceNodes:add_fishing_hole(_x,_y)
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
 
+        --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
+
+        --After 1s from spawning, make the collider static. This is to allow
+        --physics engine to push node out of other colliders
+        TimerState:after(1,function() self.collider:setType('static') end)
     end
 
     function node:update() 
@@ -506,6 +537,8 @@ function ResourceNodes:add_fishing_hole(_x,_y)
         else
             self.state.beingHarvested=false
         end
+
+        self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
             --spawn appropriate item, restart harvest progress
