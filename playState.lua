@@ -18,6 +18,7 @@ function PlayState:load()
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
     Player:load() --initialize player character
+    ResourceNodes:load() --initialize resource nodes
     Dungeon:load() --initialize dungeon
     Items:load() --initialize items
     Hud:load() --initialize Heads Up Display

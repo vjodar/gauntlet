@@ -1,5 +1,35 @@
 ResourceNodes={}
 
+function ResourceNodes:load()
+    self.tree={} --stores tree sprites
+    self.tree.sprite=love.graphics.newImage('assets/tree.png')
+    self.tree.spriteDepleted=love.graphics.newImage('assets/tree_depleted.png')
+    self.tree.spriteTool=love.graphics.newImage('assets/tool_hatchet.png')
+    self.tree.spriteParticle=love.graphics.newImage('assets/tree_particle.png')
+
+    self.rock={} --stores rock sprites
+    self.rock.sprite=love.graphics.newImage('assets/rock.png')
+    self.rock.spriteTool=love.graphics.newImage('assets/tool_pickaxe.png')
+    self.rock.spriteDepleted=love.graphics.newImage('assets/rock_depleted.png')
+    self.rock.spriteParticle=love.graphics.newImage('assets/rock_particle.png')
+
+    self.vine={} --stores vine sprites
+    self.vine.sprite=love.graphics.newImage('assets/vine.png')
+    self.vine.spriteDepleted=love.graphics.newImage('assets/vine_depleted.png')
+    self.vine.spriteParticle=love.graphics.newImage('assets/vine_particle.png')
+
+    self.fungi={} --stores fungi sprites
+    self.fungi.sprite=love.graphics.newImage('assets/fungi.png')
+    self.fungi.spriteDepleted=love.graphics.newImage('assets/fungi_depleted.png')
+    self.fungi.spriteParticle=love.graphics.newImage('assets/fungi_particle.png')
+
+    self.fishingHole={} --store fishing hole sprites
+    self.fishingHole.spriteSheet=love.graphics.newImage('assets/fishing_hole.png')
+    self.fishingHole.spriteSheetTool=love.graphics.newImage('assets/tool_harpoon.png')
+    self.fishingHole.spriteDepleted=love.graphics.newImage('assets/fishing_hole_depleted.png')
+    self.fishingHole.spriteParticle=love.graphics.newImage('assets/fishing_hole_particle.png')
+end
+
 ResourceNodes.nodeSpawnFunctions={}
 
 ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
@@ -14,10 +44,10 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
         self.collider:setObject(self) --attach collider to this object
 
         --sprites
-        self.sprite=love.graphics.newImage('assets/tree.png')
-        self.spriteDepleted=love.graphics.newImage('assets/tree_depleted.png')
-        self.spriteTool=love.graphics.newImage('assets/tool_hatchet.png')
-        self.spriteParticle=love.graphics.newImage('assets/tree_particle.png')
+        self.sprite=ResourceNodes.tree.sprite
+        self.spriteDepleted=ResourceNodes.tree.spriteDepleted
+        self.spriteTool=ResourceNodes.tree.spriteTool
+        self.spriteParticle=ResourceNodes.tree.spriteParticle
         self.shadow=Shadows:newShadow('tree') --shadow
         self.spriteShake=0
 
@@ -146,10 +176,10 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         self.collider:setObject(self) --attach collider to this object
 
         --sprites
-        self.sprite=love.graphics.newImage('assets/rock.png')
-        self.spriteTool=love.graphics.newImage('assets/tool_pickaxe.png')
-        self.spriteDepleted=love.graphics.newImage('assets/rock_depleted.png')
-        self.spriteParticle=love.graphics.newImage('assets/rock_particle.png')
+        self.sprite=ResourceNodes.rock.sprite
+        self.spriteTool=ResourceNodes.rock.spriteTool
+        self.spriteDepleted=ResourceNodes.rock.spriteDepleted
+        self.spriteParticle=ResourceNodes.rock.spriteParticle
         self.shadow=Shadows:newShadow('rock') --shadow
         self.spriteShake=0
 
@@ -280,9 +310,9 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
         self.collider:setObject(self) --attach collider to this object
 
         --sprites
-        self.sprite=love.graphics.newImage('assets/vine.png')
-        self.spriteDepleted=love.graphics.newImage('assets/vine_depleted.png')
-        self.spriteParticle=love.graphics.newImage('assets/vine_particle.png')
+        self.sprite=ResourceNodes.vine.sprite 
+        self.spriteDepleted=ResourceNodes.vine.spriteDepleted
+        self.spriteParticle=ResourceNodes.vine.spriteParticle
 
         --particles
         self.particles=love.graphics.newParticleSystem(self.spriteParticle,100)
@@ -378,9 +408,9 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         self.collider:setObject(self) --attach collider to this object
 
         --sprites
-        self.sprite=love.graphics.newImage('assets/fungi.png')
-        self.spriteDepleted=love.graphics.newImage('assets/fungi_depleted.png')
-        self.spriteParticle=love.graphics.newImage('assets/fungi_particle.png')
+        self.sprite=ResourceNodes.fungi.sprite 
+        self.spriteDepleted=ResourceNodes.fungi.spriteDepleted
+        self.spriteParticle=ResourceNodes.fungi.spriteParticle
         self.shadow=Shadows:newShadow('fungi') --shadow
 
         --particles
@@ -485,8 +515,8 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
-        self.spriteSheet=love.graphics.newImage('assets/fishing_hole.png')
-        self.spriteSheetTool=love.graphics.newImage('assets/tool_harpoon.png')
+        self.spriteSheet=ResourceNodes.fishingHole.spriteSheet
+        self.spriteSheetTool=ResourceNodes.fishingHole.spriteSheetTool
         --  animation grid for fishing hole
         self.grid=anim8.newGrid(16,9,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         --  animation grid for harpoon
@@ -494,8 +524,8 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         self.animations={}
         self.animations.fishing_hole=anim8.newAnimation(self.grid('1-4',1), 0.15)
         self.animations.tool_harpoon=anim8.newAnimation(self.gridTool('1-20',1), 0.05)
-        self.spriteDepleted=love.graphics.newImage('assets/fishing_hole_depleted.png')
-        self.spriteParticle=love.graphics.newImage('assets/fishing_hole_particle.png')
+        self.spriteDepleted=ResourceNodes.fishingHole.spriteDepleted
+        self.spriteParticle=ResourceNodes.fishingHole.spriteParticle
 
         --particles
         self.particles=love.graphics.newParticleSystem(self.spriteParticle,100)
