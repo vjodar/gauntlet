@@ -18,25 +18,19 @@ function PlayState:load()
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
     Player:load() --initialize player character
+    Enemies:load() --initialize enemies
     ResourceNodes:load() --initialize resource nodes
     Dungeon:load() --initialize dungeon
     Items:load() --initialize items
     Hud:load() --initialize Heads Up Display
 
-    --Testing enemies------------------
-    Enemies:add_orc_t1(350,170)
-    Enemies:add_demon_t1(400,170)
-    Enemies:add_skeleton_t1(450,170)
-    Enemies:add_orc_t2(350,120)
-    Enemies:add_demon_t2(400,120)
-    Enemies:add_mage_t2(450,120)
-    Enemies:add_orc_t3(375,70)
-    Enemies:add_demon_t3(435,70)
-    --Testing enemies------------------
+    -- --Testing enemies------------------
+    -- Enemies.enemySpawner.t3[2](1600,1400)
+    -- --Testing enemies------------------
 
-    --Testing resource nodes-----------
+    -- --Testing resource nodes-----------
     -- ResourceNodes.nodeSpawnFunctions[5](1600,1400)
-    --Testing resource nodes-----------
+    -- --Testing resource nodes-----------
 end
 
 function PlayState:update()

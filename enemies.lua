@@ -1,6 +1,21 @@
 Enemies={}
 
-function Enemies:add_orc_t1(_x,_y)
+function Enemies:load()
+    self.spriteSheets={} --stores spriteSheets of enemies
+    self.spriteSheets.orcT1=love.graphics.newImage('assets/orc_t1.png')
+    self.spriteSheets.demonT1=love.graphics.newImage('assets/demon_t1.png')
+    self.spriteSheets.skeletonT1=love.graphics.newImage('assets/skeleton_t1.png')
+    self.spriteSheets.orcT2=love.graphics.newImage('assets/orc_t2.png')
+    self.spriteSheets.demonT2=love.graphics.newImage('assets/demon_t2.png')
+    self.spriteSheets.mageT2=love.graphics.newImage('assets/mage_t2.png')
+    self.spriteSheets.orcT3=love.graphics.newImage('assets/orc_t3.png')
+    self.spriteSheets.demonT3=love.graphics.newImage('assets/demon_t3.png')
+end
+
+--holds spawn functions for each tier of enemy
+Enemies.enemySpawner={t1={}, t2={}, t3={}}
+
+Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
@@ -13,7 +28,7 @@ function Enemies:add_orc_t1(_x,_y)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
-        self.spriteSheet=love.graphics.newImage('assets/orc_t1.png')
+        self.spriteSheet=Enemies.spriteSheets.orcT1
         self.grid=anim8.newGrid(16,16,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
@@ -59,7 +74,7 @@ function Enemies:add_orc_t1(_x,_y)
     enemy:load() --initialize enemy
 end
 
-function Enemies:add_demon_t1(_x,_y)
+Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
@@ -72,7 +87,7 @@ function Enemies:add_demon_t1(_x,_y)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
-        self.spriteSheet=love.graphics.newImage('assets/demon_t1.png')
+        self.spriteSheet=Enemies.spriteSheets.demonT1
         self.grid=anim8.newGrid(16,16,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
@@ -118,7 +133,7 @@ function Enemies:add_demon_t1(_x,_y)
     enemy:load() --initialize enemy
 end
 
-function Enemies:add_skeleton_t1(_x,_y)
+Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
@@ -131,7 +146,7 @@ function Enemies:add_skeleton_t1(_x,_y)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
-        self.spriteSheet=love.graphics.newImage('assets/skeleton_t1.png')
+        self.spriteSheet=Enemies.spriteSheets.skeletonT1
         self.grid=anim8.newGrid(16,16,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
@@ -177,7 +192,7 @@ function Enemies:add_skeleton_t1(_x,_y)
     enemy:load() --initialize enemy
 end
 
-function Enemies:add_orc_t2(_x,_y)
+Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
@@ -190,7 +205,7 @@ function Enemies:add_orc_t2(_x,_y)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
-        self.spriteSheet=love.graphics.newImage('assets/orc_t2.png')
+        self.spriteSheet=Enemies.spriteSheets.orcT2
         self.grid=anim8.newGrid(16,17,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
@@ -236,7 +251,7 @@ function Enemies:add_orc_t2(_x,_y)
     enemy:load() --initialize enemy
 end
 
-function Enemies:add_demon_t2(_x,_y)
+Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
@@ -249,7 +264,7 @@ function Enemies:add_demon_t2(_x,_y)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
-        self.spriteSheet=love.graphics.newImage('assets/demon_t2.png')
+        self.spriteSheet=Enemies.spriteSheets.demonT2
         self.grid=anim8.newGrid(16,23,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
@@ -295,7 +310,7 @@ function Enemies:add_demon_t2(_x,_y)
     enemy:load() --initialize enemy
 end
 
-function Enemies:add_mage_t2(_x,_y)
+Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
@@ -309,7 +324,7 @@ function Enemies:add_mage_t2(_x,_y)
 
         --sprites and animations
         --Mage idle/moving animations are the same
-        self.spriteSheet=love.graphics.newImage('assets/mage_t2.png')
+        self.spriteSheet=Enemies.spriteSheets.mageT2
         self.grid=anim8.newGrid(16,24,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
@@ -347,7 +362,7 @@ function Enemies:add_mage_t2(_x,_y)
     enemy:load() --initialize enemy
 end
 
-function Enemies:add_orc_t3(_x,_y)
+Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
@@ -360,7 +375,7 @@ function Enemies:add_orc_t3(_x,_y)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
-        self.spriteSheet=love.graphics.newImage('assets/orc_t3.png')
+        self.spriteSheet=Enemies.spriteSheets.orcT3
         self.grid=anim8.newGrid(32,32,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
@@ -406,7 +421,7 @@ function Enemies:add_orc_t3(_x,_y)
     enemy:load() --initialize enemy
 end
 
-function Enemies:add_demon_t3(_x,_y)
+Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
     local enemy={} --create enemy instance
     function enemy:load() 
         --setup physics collider
@@ -419,7 +434,7 @@ function Enemies:add_demon_t3(_x,_y)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
-        self.spriteSheet=love.graphics.newImage('assets/demon_t3.png')
+        self.spriteSheet=Enemies.spriteSheets.demonT3
         self.grid=anim8.newGrid(32,32,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)

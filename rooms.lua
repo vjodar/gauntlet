@@ -540,7 +540,7 @@ function Rooms:spawnResourceNodes(_room,_numNodes)
     spawnZoneVineC.x2=_room.xPos+332
 
     for i=1,_numNodes do 
-        local selectedFunction=5 --select a random spawn function
+        local selectedFunction=love.math.random(5) --select a random spawn function
 
         --if spawn vine function is selected, spawn it within vine spawn zone
         if selectedFunction==3 then 
