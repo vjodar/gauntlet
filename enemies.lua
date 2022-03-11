@@ -479,3 +479,54 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
 
     enemy:load() --initialize enemy
 end
+
+--takes a spawn area and fills it with a random number of random T1 enemies
+function Enemies:fillRoomT1(spawnZone)
+    local numEnemies=love.math.random(3) --choose how many enemies to spawn
+    for i=1,numEnemies do 
+        --spawn numEnemies amount of random T1 enemies inside the spawn zone
+        self.enemySpawner.t1[love.math.random(3)](
+            love.math.random(spawnZone.x1,spawnZone.x2),
+            love.math.random(spawnZone.y1,spawnZone.y2)
+        )
+    end
+end
+
+--takes a spawn area and fills it with a random number of random T2 enemies
+--if a mage spawns, it can only be accompanied by T1 skeleton enemies
+--otherwise, T2 demons and orcs will spawn
+function Enemies:fillRoomT2(spawnZone)
+    local numEnemies=love.math.random(3) --choose how many enemies to spawn
+    local spawnMage=(love.math.random(2)==1) --50% chance to spawn mage
+    if spawnMage then 
+        --if mages spawn, only T1 skeletons can accompany it
+        if numEnemies>0 then 
+            self.enemySpawner.t2[3]( --spawn the mage
+                love.math.random(spawnZone.x1,spawnZone.x2),
+                love.math.random(spawnZone.y1,spawnZone.y2)
+            )
+            for i=2,numEnemies do --spawn T1 skeletons
+                self.enemySpawner.t1[3](
+                    love.math.random(spawnZone.x1,spawnZone.x2),
+                    love.math.random(spawnZone.y1,spawnZone.y2)
+                )
+            end
+        end
+    else
+        for i=1,numEnemies do 
+            --spawn only tier 2 demons or orcs
+            self.enemySpawner.t2[love.math.random(2)](
+                love.math.random(spawnZone.x1,spawnZone.x2),
+                love.math.random(spawnZone.y1,spawnZone.y2)
+            )
+        end
+    end
+end
+
+--takes a spawn zone and fills it with a T3 orc or demon
+function Enemies:fillRoomT3(spawnZone)
+    self.enemySpawner.t3[love.math.random(2)](
+        love.math.random(spawnZone.x1,spawnZone.x2),
+        love.math.random(spawnZone.y1,spawnZone.y2)
+    )
+end

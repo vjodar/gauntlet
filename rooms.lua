@@ -129,14 +129,12 @@ function Rooms:newRoom(_coordinates)
     self:generateDoorButtons(room)
     self:generateLights(room)
 
-    --next choose a random inner wall layout to generate
+    --choose a random inner wall layout to generate
     Walls.layouts[love.math.random(#Walls.layouts)](room)
     -- Walls.layouts[#Walls.layouts](room)
 
-    --choose a random amount of resource nodes and enemies to spawn (up to 6 total)
-    local numNodes=love.math.random(7)-1
-    local numEnemies=6-numNodes 
-    self:spawnResourceNodes(room,numNodes)    
+    self:spawnResourceNodes(room) --spawn resource nodes
+    self:spawnEnemies(room) --spawn enemies
 
     function room:update() 
         --update all buttons in this room
@@ -519,32 +517,37 @@ function Rooms:generateLights(_room)
     if room.type=='cornerBottomRight' then room.isLit.bottom=false room.isLit.right=false end
 end
 
-function Rooms:spawnResourceNodes(_room,_numNodes)
+--takes a room and fills it with a random assortment of up to 6 resource nodes
+function Rooms:spawnResourceNodes(_room)
+    local room=_room
+    --choose how many nodes should spawn (0-6)
+    local numNodes=love.math.random(0,6)
+
     local spawnZone={} --designated spawning area
-    spawnZone.x1=_room.xPos+64
+    spawnZone.x1=room.xPos+64
     spawnZone.x2=spawnZone.x1+256
-    spawnZone.y1=_room.yPos+80
+    spawnZone.y1=room.yPos+80
     spawnZone.y2=spawnZone.y1+192
 
     local spawnZoneVineA={} --right side of doorway
-    spawnZoneVineA.x1=_room.xPos+259
-    spawnZoneVineA.x2=_room.xPos+332
-    spawnZoneVineA.y=_room.yPos+17
+    spawnZoneVineA.x1=room.xPos+259
+    spawnZoneVineA.x2=room.xPos+332
+    spawnZoneVineA.y=room.yPos+17
 
     local spawnZoneVineB={} --left side of doorway
-    spawnZoneVineB.x1=_room.xPos+36
-    spawnZoneVineB.x2=_room.xPos+109
+    spawnZoneVineB.x1=room.xPos+36
+    spawnZoneVineB.x2=room.xPos+109
 
     local spawnZoneVineC={} --for top corners and side rooms
-    spawnZoneVineC.x1=_room.xPos+36
-    spawnZoneVineC.x2=_room.xPos+332
+    spawnZoneVineC.x1=room.xPos+36
+    spawnZoneVineC.x2=room.xPos+332
 
-    for i=1,_numNodes do 
+    for i=1,numNodes do 
         local selectedFunction=love.math.random(5) --select a random spawn function
 
         --if spawn vine function is selected, spawn it within vine spawn zone
         if selectedFunction==3 then 
-            if _room.coordinates[2]==1 then --top side or corner room
+            if room.coordinates[2]==1 then --top side or corner room
                 ResourceNodes.nodeSpawnFunctions[selectedFunction](
                         love.math.random(spawnZoneVineC.x1,spawnZoneVineC.x2),
                         --add decimal value to yPos to prevent visual stutter
@@ -575,12 +578,51 @@ function Rooms:spawnResourceNodes(_room,_numNodes)
     end
 end
 
-function Rooms:spawnEnemies(_room,_numEnemies)
-    --TODO
-    --Randomly spawn some enemies
-        --Only t1 enemies can spawn in the innermost ring of rooms
-        --t2 enemies can spawn anywhere past the innermost ring except for rooms with mini bosses
-        --if a Mage spawns, only t1 enemies can spawn alongside it (because it uses magical projectile)
-        --t3 enemies/Mini bosses should only spawn on the outermost rooms
-    --TODO
+--takes a room and fills it with up to 3 of the appropriate teir of enemies 
+--based on the room's coordinates.
+function Rooms:spawnEnemies(_room)
+    local room=_room --store room
+    local spawnZone={} --designated spawning area
+    spawnZone.x1=room.xPos+37
+    spawnZone.x2=spawnZone.x1+310
+    spawnZone.y1=room.yPos+48
+    spawnZone.y2=spawnZone.y1+220
+
+    local spawnZoneT3={} --smaller spawning area for T3 enemies    
+    spawnZoneT3.x1=room.xPos+96
+    spawnZoneT3.x2=spawnZoneT3.x1+192
+    spawnZoneT3.y1=room.yPos+96
+    spawnZoneT3.y2=spawnZoneT3.y1+128
+
+    --choose the tier of enemies to spawn based on the room coordinates
+    if room.coordinates[1]==4 and room.coordinates[2]==4 then --boss room
+
+    --inner ring, only spawn T1 enemies
+    elseif (room.coordinates[1]==3 or room.coordinates[1]==4 or room.coordinates[1]==5) 
+        and (room.coordinates[2]==3 or room.coordinates[2]==4 or room.coordinates[2]==5) then
+        Enemies:fillRoomT1(spawnZone)
+
+    --outer ring, can spawn T1, T2,or T3 enemies
+    elseif room.coordinates[1]==1 or room.coordinates[2]==1 
+        or room.coordinates[1]==7 or room.coordinates[2]==7 then
+        local spawnDemiBoss=(love.math.random(3)==1) --33% chance to spawn T3 enemy
+        if spawnDemiBoss then 
+            Enemies:fillRoomT3(spawnZoneT3)
+        else
+            local enemyTierSelection=love.math.random(2) --choose between T1 and T2 enemies
+            if enemyTierSelection==1 then --fill with T1 enemies
+                Enemies:fillRoomT1(spawnZone)
+            else --fill with T2 enemies
+                Enemies:fillRoomT2(spawnZone)
+            end
+        end
+
+    else --middle ring, can spawn T1 or T2 enemies
+        local enemyTierSelection=love.math.random(2) --choose what enemy tier to spawn
+        if enemyTierSelection==1 then --fill with T1 enemies
+            Enemies:fillRoomT1(spawnZone)
+        else --fill with T2 enemies
+            Enemies:fillRoomT2(spawnZone)
+        end
+    end
 end
