@@ -24,13 +24,7 @@ function PlayState:load()
     Items:load() --initialize items
     Hud:load() --initialize Heads Up Display
 
-    -- --Testing enemies------------------
-    -- Enemies.enemySpawner.t3[2](1600,1400)
-    -- --Testing enemies------------------
-
-    -- --Testing resource nodes-----------
-    -- ResourceNodes.nodeSpawnFunctions[5](1600,1400)
-    -- --Testing resource nodes-----------
+    self:start()
 end
 
 function PlayState:update()
@@ -64,10 +58,11 @@ function PlayState:draw()
     cam:detach()
 
     Hud:draw() --draw hud outside of camera
+end
 
-    --debug---------------
-    -- love.graphics.print(Player.xPos,10,0)
-    -- love.graphics.print(Player.yPos,10,10)
-    -- love.graphics.print(#Entities.entitiesTable,0,500)
-    --debug---------------
+--start the playstate
+function PlayState:start()
+    local playerStartX=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256)
+    local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
+    Player.collider:setPosition(playerStartX,playerStartY)
 end

@@ -520,14 +520,18 @@ end
 --takes a room and fills it with a random assortment of up to 6 resource nodes
 function Rooms:spawnResourceNodes(_room)
     local room=_room
-    --choose how many nodes should spawn (0-6)
-    local numNodes=love.math.random(0,6)
+
+    --80% chance to spawn resource nodes, 20% chance to spawn none
+    if love.math.random(5)==1 then return end
+
+    --spawn in groups of 3, 50% chance to spawn a second group.
+    local numNodes=3+(3*love.math.random(0,1))
 
     local spawnZone={} --designated spawning area
     spawnZone.x1=room.xPos+64
     spawnZone.x2=spawnZone.x1+256
     spawnZone.y1=room.yPos+80
-    spawnZone.y2=spawnZone.y1+192
+    spawnZone.y2=spawnZone.y1+184
 
     local spawnZoneVineA={} --right side of doorway
     spawnZoneVineA.x1=room.xPos+259
@@ -581,6 +585,9 @@ end
 --takes a room and fills it with up to 3 of the appropriate teir of enemies 
 --based on the room's coordinates.
 function Rooms:spawnEnemies(_room)
+    --80% chance to spawn an enemy/group, 20% chance to spawn none.
+    if love.math.random(5)==1 then return end
+
     local room=_room --store room
     local spawnZone={} --designated spawning area
     spawnZone.x1=room.xPos+37

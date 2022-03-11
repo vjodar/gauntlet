@@ -7,11 +7,16 @@ function Dungeon:load()
 
     self.roomsTable={} --holds all rooms in a dungeon
 
-    -- --test all rooms
-    -- for i=1,7 do for j=1,7 do Rooms:newRoom({i,j}) end end
+    --choose a random starting room that's adjacent to the boss room
+    local startRoomsTable={{3,4},{4,3},{4,5},{5,4}}
+    self.startRoom=startRoomsTable[love.math.random(4)]
 
-    --create starting room
-    Rooms:newRoom({4,4})
+    --randomly choose what demi boss will spawn first.
+    --will also be used to alternate demi boss spawns
+    self.nextDemiBoss=love.math.random(2)
+
+    Rooms:newRoom({4,4}) --create boss room
+    Rooms:newRoom({self.startRoom[1],self.startRoom[2]}) --create starting room
 end
 
 function Dungeon:update()
