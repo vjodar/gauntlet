@@ -160,21 +160,35 @@ function Rooms:newRoom(_coordinates)
                     end
                 end
 
-                --create a new room adjacent to the pressed doorButtons
+                --insert new gamestate to handle camera panning and to suspend 
+                --control from player until camera returns
+                table.insert(gameStates,CamPanState)
+                --used to store what the camera will pan to. Offset to center
+                local adjRoomX=self.xPos+(Rooms.ROOMWIDTH/2)
+                local adjRoomY=self.yPos+(Rooms.ROOMHEIGHT/2)
+
+                --create a new room adjacent to the pressed doorButton
                 --also update current room's lights
+                --pan camera to room and back using CamPanState
                 if pressedButtonName=='doorButtonTop' then 
                     Rooms:newRoom({self.coordinates[1],self.coordinates[2]-1})
                     self.isLit.top=true 
+                    adjRoomY=adjRoomY-Rooms.ROOMHEIGHT
                 elseif pressedButtonName=='doorButtonBottom' then 
                     Rooms:newRoom({self.coordinates[1],self.coordinates[2]+1})
                     self.isLit.bottom=true 
+                    adjRoomY=adjRoomY+Rooms.ROOMHEIGHT
                 elseif pressedButtonName=='doorButtonLeft' then 
                     Rooms:newRoom({self.coordinates[1]-1,self.coordinates[2]})
                     self.isLit.left=true 
+                    adjRoomX=adjRoomX-Rooms.ROOMWIDTH
                 elseif pressedButtonName=='doorButtonRight' then 
                     Rooms:newRoom({self.coordinates[1]+1,self.coordinates[2]})
                     self.isLit.right=true 
+                    adjRoomX=adjRoomX+Rooms.ROOMWIDTH
                 end
+
+                CamPanState:pan(adjRoomX,adjRoomY)
             end
             
             --update buttons, remove any button that was pressed and finished its animation

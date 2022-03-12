@@ -36,7 +36,12 @@ function Player:update()
     --update position and velocity vectors
     self.xPos, self.yPos=self.collider:getPosition()
     self.xVel, self.yVel=self.collider:getLinearVelocity()
-
+    
+    --default movement states to idle
+    self.state.moving=false 
+    self.state.movingHorizontally=false 
+    self.state.movingVertically=false 
+    
     --Only accept inputs when currently on top of state stack
     if acceptInput then 
         self:move() --movement
@@ -66,10 +71,6 @@ function Player:draw()
 end
 
 function Player:move()
-    --default movement states to idle
-    self.state.moving=false 
-    self.state.movingHorizontally=false 
-    self.state.movingVertically=false 
 
     if love.keyboard.isDown('left') then 
         self.xVel=self.xVel-self.moveSpeed

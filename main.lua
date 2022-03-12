@@ -1,5 +1,6 @@
 require 'timerState'
 require 'playState'
+require 'camPanState'
 require 'entities'
 require 'player'
 require 'dungeon'
@@ -16,7 +17,6 @@ function love.load()
     --libraries
     wf=require 'libraries/windfield'
     anim8=require 'libraries/anim8'
-    -- sti=require 'libraries/sti'
     camera=require 'libraries/camera'
 
     dt=0 --delta time global
@@ -35,7 +35,7 @@ function love.load()
     table.insert(gameStates,TimerState) --timer state is always first on gamestates stack
 
     --Initial game state 
-    table.insert(gameStates,PlayState) --only allow input to be accepted in gamestates[2]
+    table.insert(gameStates,PlayState)
 
     --Initialize all states in gamestates
     for i,state in pairs(gameStates) do state:load() end

@@ -3,6 +3,7 @@ PlayState={}
 function PlayState:load()
     love.graphics.setBackgroundColor(2/15,2/15,2/15)
     cam=camera()
+    camTarget={} --camera will look at this object's position
     --1x zoom for every 400px width and 300px height
     cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600))
 
@@ -36,7 +37,7 @@ function PlayState:update()
 
     Entities:update() --update all entities
 
-    cam:lookAt(Player.xPos,Player.yPos) --update camera
+    cam:lookAt(camTarget.xPos,camTarget.yPos) --update camera
 
     Hud:update() --update Heads Up Display
 
@@ -53,7 +54,7 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        world:draw() --draws all physics colliders
+        -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
     cam:detach()
@@ -72,4 +73,7 @@ function PlayState:start()
     local playerStartX=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256)
     local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     Player.collider:setPosition(playerStartX,playerStartY)
+
+    --set camera target to be the player's position
+    camTarget=Player
 end
