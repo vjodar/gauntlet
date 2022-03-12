@@ -135,7 +135,7 @@ function Rooms:newRoom(_coordinates)
     elseif room.coordinates[1]==Dungeon.startRoom[1] 
         and room.coordinates[2]==Dungeon.startRoom[2] then 
         --base/starting room, spawn only crafting nodes
-        
+
     else
         --regular room, spawn walls, resource nodes, and/or enemies
         --choose a random inner wall layout to generate

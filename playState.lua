@@ -59,6 +59,11 @@ function PlayState:draw()
     cam:detach()
 
     Hud:draw() --draw hud outside of camera
+
+    --testing-----------------------------------
+    love.graphics.print(love.timer.getFPS(),0,0)
+    love.graphics.print(#Entities.entitiesTable,0,20)
+    --testing-----------------------------------
 end
 
 --start the playstate
