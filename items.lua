@@ -39,27 +39,19 @@ function Items:spawn_item(_x,_y,_name)
     local item={}
 
     function item:load() 
-        self.xPos,self.yPos=_x,_y 
         self.name=_name
-        self.shadow=Shadows:newShadow(self.name) --shadow
-        --choose a random x,y velocity to shoot out of node
-        --multiply by framerate 
-        self.xVel=(8-love.math.random()*16)*framerate
-        self.yVel=(7-love.math.random()*14)*framerate
+        self.size=4 --size of item's collider (defaults to small)
 
         --Select appropriate sprite for item
-        if self.name=='tree_wood' then self.sprite=Items.tree_wood
+        if self.name=='tree_wood' then self.sprite=Items.tree_wood self.size=6
         elseif self.name=='tree_planks' then self.sprite=Items.tree_planks
-        elseif self.name=='rock_ore' then self.sprite=Items.rock_ore           
+        elseif self.name=='rock_ore' then self.sprite=Items.rock_ore self.size=6 
         elseif self.name=='rock_metal' then self.sprite=Items.rock_metal           
-        elseif self.name=='fungi_mushroom' then self.sprite=Items.fungi_mushroom       
+        elseif self.name=='fungi_mushroom' then self.sprite=Items.fungi_mushroom self.size=5  
         elseif self.name=='fish_raw' then self.sprite=Items.fish_raw    
         elseif self.name=='fish_cooked' then self.sprite=Items.fish_cooked
         elseif self.name=='vine_thread' then self.sprite=Items.vine_thread
-        elseif self.name=='vine_fiber' then 
-            self.sprite=Items.vine_fiber
-            --Because vines are only on top walls, vine fibers can only spawn below.
-            self.yVel=(3+love.math.random()*4)*framerate
+        elseif self.name=='vine_fiber' then self.sprite=Items.vine_fiber self.size=6
         elseif self.name=='vial' then self.sprite=Items.vial 
         elseif self.name=='potion' then self.sprite=Items.potion 
 
@@ -86,6 +78,17 @@ function Items:spawn_item(_x,_y,_name)
         elseif self.name=='armor_legs_t2' then self.sprite=Items.armor_legs_t2
         elseif self.name=='armor_legs_t3' then self.sprite=Items.armor_legs_t3
         end
+        
+        --collider
+        self.collider=world:newCircleCollider(_x,_y,self.size)
+        self.collider:setMass(0.1) --set standard mass
+        self.collider:setObject(self)
+        self.collider:setCollisionClass('item')
+        self.collider:setLinearDamping(4) --set 'friction'
+        self.collider:setRestitution(0.5) --set bounce
+        self.xPos,self.yPos=self.collider:getPosition()
+
+        self.shadow=Shadows:newShadow(self.name) --shadow
 
         --Offset sprite's origin to its center
         self.xOffset=self.sprite:getWidth()*0.5
@@ -93,17 +96,29 @@ function Items:spawn_item(_x,_y,_name)
         self.oscillation=0
 
         self.isCollectable=false --boolean determines when the item can be collected
-        self.restTimer=0 --timer to allow item to rest before being collectable
         self.removeEntity=false --should item be removed from entities table
+
+        --choose a random x,y velocity to shoot out of node
+        self.xVel=(8-love.math.random()*16)*framerate
+        self.yVel=(7-love.math.random()*14)*framerate
+
+        self.collider:setLinearVelocity(self.xVel,self.yVel) --launch item from node
         
         table.insert(Entities.entitiesTable,self)
     end 
 
     function item:update()
-        --item will pop out and travel from its node for a bit
-        if self.isCollectable==false then self:travelFromNode() end
+        self.xPos,self.yPos=self.collider:getPosition() --update position
+        self.xVel,self.yVel=self.collider:getLinearVelocity() --update velocity
 
-        if self.isCollectable  then 
+        --once item stops moving, it becomes collectable
+        if not self.isCollectable then 
+            if math.abs(self.xVel)<2 and math.abs(self.yVel)<2 then
+                self.isCollectable=true 
+            end
+        end
+
+        if self.isCollectable then 
             self:gravitateToPlayer()
             self:addToPlayer()
         end
@@ -113,7 +128,11 @@ function Items:spawn_item(_x,_y,_name)
         self.yOffset=self.yOffset+0.25*math.sin(self.oscillation)
 
         --return false when item should be removed from entitiesTable
-        if self.removeEntity==true then return false end 
+        --destroy item's collider
+        if self.removeEntity==true then 
+            self.collider:destroy()
+            return false 
+        end 
     end 
 
     function item:draw() 
@@ -121,44 +140,21 @@ function Items:spawn_item(_x,_y,_name)
         love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,self.xOffset,self.yOffset)
     end 
 
-    function item:travelFromNode()
-        if self.xVel~=0 and self.yVel~=0 then 
-            self:move()
-            --slow down item
-            self.xVel=self.xVel*0.8
-            self.yVel=self.yVel*0.8
-            --stop moving when sufficiently slow
-            if math.abs(self.xVel)<0.01 then self.xVel=0 end
-            if math.abs(self.yVel)<0.01 then self.yVel=0 end
-        else --when item is no longer moving, wait ~0.25s using restTimer
-            self.restTimer=self.restTimer+dt
-        end
-        --item is ready to be picked up by player after resting for ~0.2s
-        if self.restTimer>0.25 then self.isCollectable=true end 
-    end
-
     --move item toward the player when they are in range
     function item:gravitateToPlayer()
-        if math.abs(self.xPos-Player.xPos)<40 and math.abs(self.yPos-Player.yPos)<30 then
-            --accelerate toward player
-            if self.xPos > Player.xPos then self.xVel=self.xVel-0.1*framerate end
-            if self.xPos < Player.xPos then self.xVel=self.xVel+0.1*framerate end
-            if self.yPos > Player.yPos then self.yVel=self.yVel-0.1*framerate end 
-            if self.yPos < Player.yPos then self.yVel=self.yVel+0.1*framerate end 
 
-            --restrict velocity
-            if self.xVel>0 then self.xVel=math.min(self.xVel,2*framerate) end  
-            if self.xVel<0 then self.xVel=math.max(self.xVel,-2*framerate) end  
-            if self.yVel>0 then self.yVel=math.min(self.yVel,2*framerate) end 
-            if self.yVel<0 then self.yVel=math.max(self.yVel,-2*framerate) end 
-        else --when out of range, slow velocity down
-            self.xVel=self.xVel*0.9
-            self.yVel=self.yVel*0.9
-            --stop moving when sufficiently slow
-            if math.abs(self.xVel)<0.01 then self.xVel=0 end 
-            if math.abs(self.yVel)<0.01 then self.yVel=0 end 
+        if math.abs(self.xPos-Player.xPos)<40 and math.abs(self.yPos-Player.yPos)<30 then
+            if self.xPos<Player.xPos then --item is left of player
+                self.collider:applyLinearImpulse(0.75,0)
+            else --item is right of player
+                self.collider:applyLinearImpulse(-0.75,0)
+            end
+            if self.yPos<Player.yPos then --item is above player
+                self.collider:applyLinearImpulse(0,0.75)
+            else --item is below player
+                self.collider:applyLinearImpulse(0,-0.75)
+            end
         end
-        self:move() --continue to move whenever item has velocity
     end
 
     --when item and player collide, "remove" and add item to player inventory
@@ -169,13 +165,6 @@ function Items:spawn_item(_x,_y,_name)
             --add item to player's inventory
             Player:addToInventory(self.name)
         end
-    end
-
-    --move item by adding its velocity to its position
-    --multiply by dt to remain fps independent
-    function item:move()
-        self.xPos=self.xPos+self.xVel*dt
-        self.yPos=self.yPos+self.yVel*dt
     end
 
     item:load()

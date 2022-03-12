@@ -88,8 +88,13 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
         self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+
+            --choose a starting point around node for the item to spawn
+            local startX=love.math.random(self.xPos-7,self.xPos+5)
+            local startY=love.math.random(self.yPos-7,self.yPos+5)
+
             --spawn appropriate item, restart harvest progress
-            Items:spawn_item(self.xPos,self.yPos,'tree_wood')
+            Items:spawn_item(startX,startY,'tree_wood')
             self.state.harvestProgress=0
 
             --after spawning item, reduce available resources by 1
@@ -219,8 +224,13 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+
+            --choose a starting point around node for the item to spawn
+            local startX=love.math.random(self.xPos-7,self.xPos+5)
+            local startY=love.math.random(self.yPos-7,self.yPos+5)
+
             --spawn appropriate item, restart harvest progress
-            Items:spawn_item(self.xPos,self.yPos,'rock_ore')
+            Items:spawn_item(startX,startY,'rock_ore')
             self.state.harvestProgress=0 --reset harvestProgress
 
             --after spawning item, reduce available resources by 1
@@ -346,8 +356,9 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
         self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+
             --spawn appropriate item, restart harvest progress
-            Items:spawn_item(self.xPos,self.yPos,'vine_fiber')
+            Items:spawn_item(self.xPos,self.yPos+16,'vine_fiber')
             self.state.harvestProgress=0
             self.particles:emit(10) --emit particles
 
@@ -451,8 +462,13 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+
+            --choose a starting point around node for the item to spawn
+            local startX=love.math.random(self.xPos-7,self.xPos+5)
+            local startY=love.math.random(self.yPos-7,self.yPos+5)
+
             --spawn appropriate item, restart harvest progress
-            Items:spawn_item(self.xPos,self.yPos,'fungi_mushroom')
+            Items:spawn_item(startX,startY,'fungi_mushroom')
             self.state.harvestProgress=0
             self.particles:emit(20) --emit particles
 
@@ -571,8 +587,13 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         self.xPos, self.yPos = self.collider:getPosition() --update position
 
         if self.state.harvestProgress>1.5 then --takes ~1.5s to harvest
+
+            --choose a starting point around node for the item to spawn
+            local startX=love.math.random(self.xPos-7,self.xPos+5)
+            local startY=love.math.random(self.yPos-7,self.yPos+5)
+
             --spawn appropriate item, restart harvest progress
-            Items:spawn_item(self.xPos,self.yPos,'fish_raw')
+            Items:spawn_item(startX,startY,'fish_raw')
             self.state.harvestProgress=0
 
             --after spawning item, reduce available resources by 1

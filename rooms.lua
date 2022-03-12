@@ -129,12 +129,20 @@ function Rooms:newRoom(_coordinates)
     self:generateDoorButtons(room)
     self:generateLights(room)
 
-    --choose a random inner wall layout to generate
-    Walls.layouts[love.math.random(#Walls.layouts)](room)
-    -- Walls.layouts[#Walls.layouts](room)
-
-    self:spawnResourceNodes(room) --spawn resource nodes
-    self:spawnEnemies(room) --spawn enemies
+    if room.coordinates[1]==4 and room.coordinates[2]==4 then
+        --boss room, spawn only the boss
+        self:spawnEnemies(room) 
+    elseif room.coordinates[1]==Dungeon.startRoom[1] 
+        and room.coordinates[2]==Dungeon.startRoom[2] then 
+        --base/starting room, spawn only crafting nodes
+        
+    else
+        --regular room, spawn walls, resource nodes, and/or enemies
+        --choose a random inner wall layout to generate
+        Walls.layouts[love.math.random(#Walls.layouts)](room)
+        self:spawnResourceNodes(room) --spawn resource nodes
+        self:spawnEnemies(room) --spawn enemies
+    end
 
     function room:update() 
         --update all buttons in this room
@@ -603,6 +611,8 @@ function Rooms:spawnEnemies(_room)
 
     --choose the tier of enemies to spawn based on the room coordinates
     if room.coordinates[1]==4 and room.coordinates[2]==4 then --boss room
+        Enemies:fillRoomT3(spawnZone)
+        Enemies:fillRoomT3(spawnZone)
 
     --inner ring, only spawn T1 enemies
     elseif (room.coordinates[1]==3 or room.coordinates[1]==4 or room.coordinates[1]==5) 

@@ -14,6 +14,7 @@ function PlayState:load()
     world:addCollisionClass('depletedNode')
     world:addCollisionClass('doorButton')
     world:addCollisionClass('doorButtonActivated')
+    world:addCollisionClass('item', {ignores={'player'}})
 
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
