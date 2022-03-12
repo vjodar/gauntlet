@@ -63,6 +63,7 @@ end
 
 --start the playstate
 function PlayState:start()
+    --move the player to the starting room
     local playerStartX=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256)
     local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     Player.collider:setPosition(playerStartX,playerStartY)
