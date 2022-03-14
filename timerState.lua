@@ -69,3 +69,20 @@ function TimerState:tweenPos(_obj,_endPos,_time)
         end
     })
 end
+
+--Creates a timer to "tween" the value of a property over _time seconds
+function TimerState:tweenVal(_obj,_property,_endVal,_time)
+    table.insert(self.timers,{
+        t=_time,
+        obj=_obj,
+        prop=_property,
+        delta=(_endVal-_obj[_property])/_time,
+        update=function(self)
+            if self.t<=0 then return false end --timer complete, remove from state
+            --increment object's property by delta
+            self.obj[self.prop]=self.obj[self.prop]+self.delta
+            self.t=self.t-dt 
+            return true --remain on state
+        end
+    })
+end

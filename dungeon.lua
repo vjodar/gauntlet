@@ -15,7 +15,7 @@ function Dungeon:load()
     --will also be used to alternate demi boss spawns
     self.nextDemiBoss=love.math.random(2)
 
-    Rooms:newRoom({4,4}) --create boss room
+    -- Rooms:newRoom({4,4}) --create boss room
     Rooms:newRoom({self.startRoom[1],self.startRoom[2]}) --create starting room
 end
 

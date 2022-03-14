@@ -59,6 +59,7 @@ function Rooms:newRoom(_coordinates)
 
     room.doorButtons={} --table to hold this room's door buttons
 
+    --room lighting
     room.lightSprites={}
     room.lightSprites.top=self.lightSprites.top
     room.lightSprites.bottom=self.lightSprites.bottom
@@ -69,6 +70,11 @@ function Rooms:newRoom(_coordinates)
     room.isLit.bottom=false 
     room.isLit.left=false 
     room.isLit.right=false 
+
+    --fog
+    room.fogTable={top={},bottom={},left={},right={}}
+    room.fogColor=2/15 --palette black
+    room.fogAlpha=0.5
 
     --create and emtpy room complete with collision boxes that fit the room layout
     if _coordinates[1]==1 then 
@@ -124,10 +130,11 @@ function Rooms:newRoom(_coordinates)
         room.foregroundSprite=self.roomSprites.middleForeground
     end
 
-    --generate doorButtons and room lights
+    --generate doorButtons, room lights, and fog
     self:generateWalls(room)
     self:generateDoorButtons(room)
     self:generateLights(room)
+    self:generateFog(room)
 
     if room.coordinates[1]==4 and room.coordinates[2]==4 then
         --boss room, spawn only the boss
@@ -168,28 +175,38 @@ function Rooms:newRoom(_coordinates)
                 local adjRoomY=self.yPos+(Rooms.ROOMHEIGHT/2)
 
                 --create a new room adjacent to the pressed doorButton
-                --also update current room's lights
+                --also update current room's lights and fog
                 --pan camera to room and back using CamPanState
                 if pressedButtonName=='doorButtonTop' then 
                     Rooms:newRoom({self.coordinates[1],self.coordinates[2]-1})
                     self.isLit.top=true 
+                    Rooms:removeFog(room,'top')
                     adjRoomY=adjRoomY-Rooms.ROOMHEIGHT
                 elseif pressedButtonName=='doorButtonBottom' then 
                     Rooms:newRoom({self.coordinates[1],self.coordinates[2]+1})
                     self.isLit.bottom=true 
+                    Rooms:removeFog(room,'bottom')
                     adjRoomY=adjRoomY+Rooms.ROOMHEIGHT
                 elseif pressedButtonName=='doorButtonLeft' then 
                     Rooms:newRoom({self.coordinates[1]-1,self.coordinates[2]})
                     self.isLit.left=true 
+                    Rooms:removeFog(room,'left')
                     adjRoomX=adjRoomX-Rooms.ROOMWIDTH
                 elseif pressedButtonName=='doorButtonRight' then 
                     Rooms:newRoom({self.coordinates[1]+1,self.coordinates[2]})
                     self.isLit.right=true 
+                    Rooms:removeFog(room,'right')
                     adjRoomX=adjRoomX+Rooms.ROOMWIDTH
                 end
 
                 CamPanState:pan(adjRoomX,adjRoomY)
             end
+
+            --update fog 
+            if self.isLit.top and #self.fogTable.top>0 then Rooms:removeFog(room,'top') end 
+            if self.isLit.bottom and #self.fogTable.bottom>0 then Rooms:removeFog(room,'bottom') end 
+            if self.isLit.left and #self.fogTable.left>0 then Rooms:removeFog(room,'left') end 
+            if self.isLit.right and #self.fogTable.right>0 then Rooms:removeFog(room,'right') end 
             
             --update buttons, remove any button that was pressed and finished its animation
             if button:update()==false then table.remove(self.doorButtons,i) end            
@@ -215,16 +232,42 @@ function Rooms:newRoom(_coordinates)
         if self.isLit.left then 
             love.graphics.draw(self.lightSprites.left,self.xPos,self.yPos+83)
             love.graphics.draw(self.lightSprites.left,self.xPos,self.yPos+192)
-        end
-        
+        end        
         if self.isLit.right then --must flip horizontally
             love.graphics.draw(self.lightSprites.right,self.xPos+384,self.yPos+83,nil,-1,1)
             love.graphics.draw(self.lightSprites.right,self.xPos+384,self.yPos+192,nil,-1,1)
         end
+
+        --draw fog
+        if #room.fogTable.top>0 then 
+            love.graphics.setColor(room.fogColor,room.fogColor,room.fogColor,room.fogAlpha)
+            for i,fog in pairs(room.fogTable.top) do 
+                love.graphics.rectangle('fill',fog.x,fog.y,fog.w,fog.h)
+            end
+        end
+        if #room.fogTable.bottom>0 then 
+            love.graphics.setColor(room.fogColor,room.fogColor,room.fogColor,room.fogAlpha)
+            for i,fog in pairs(room.fogTable.bottom) do 
+                love.graphics.rectangle('fill',fog.x,fog.y,fog.w,fog.h)
+            end
+        end
+        if #room.fogTable.left>0 then 
+            love.graphics.setColor(room.fogColor,room.fogColor,room.fogColor,room.fogAlpha)
+            for i,fog in pairs(room.fogTable.left) do 
+                love.graphics.rectangle('fill',fog.x,fog.y,fog.w,fog.h)
+            end
+        end
+        if #room.fogTable.right>0 then 
+            love.graphics.setColor(room.fogColor,room.fogColor,room.fogColor,room.fogAlpha)
+            for i,fog in pairs(room.fogTable.right) do 
+                love.graphics.rectangle('fill',fog.x,fog.y,fog.w,fog.h)
+            end
+        end
+        love.graphics.setColor(1,1,1,1) --reset colors and alpha
     end   
 
     table.insert(Dungeon.roomsTable,room) --insert into Dungeon's roomsTable
-end 
+end
 
 --generates the appropriate pattern of collision boxes for the _type room
 function Rooms:generateWalls(_room)
@@ -537,6 +580,66 @@ function Rooms:generateLights(_room)
     if room.type=='cornerBottomLeft' then room.isLit.bottom=false room.isLit.left=false end
     if room.type=='cornerTopRight' then room.isLit.top=false room.isLit.right=false end
     if room.type=='cornerBottomRight' then room.isLit.bottom=false room.isLit.right=false end
+end
+
+--generates 'fog' that creates an alpha gradient between a room and any empty space
+--surrounding it. Uses a room's lighting to determine where there should be no fog. 
+function Rooms:generateFog(_room)
+    local room=_room  
+
+    --any doorway that isn't lit should have fog. 
+    --Also take into account what room types don't have certain doorways.
+    if not room.isLit.top and 
+    not (room.type=='sideTop' or room.type=='cornerTopLeft' or room.type=='cornerTopRight')
+    then      
+        for i=1,8 do 
+            room.fogTable.top[i]={
+                x=room.xPos+32,
+                y=room.yPos,
+                w=320,h=34-(2*i)
+            }
+        end 
+    end
+    if not room.isLit.bottom and 
+    not (room.type=='sideBottom' or room.type=='cornerBottomLeft' or room.type=='cornerBottomRight')
+    then     
+        for i=1,8 do 
+            room.fogTable.bottom[i]={
+                x=room.xPos+129,
+                y=room.yPos+278+(2*i),
+                w=126,h=42-(2*i)
+            }
+        end 
+    end
+    if not room.isLit.left and 
+    not (room.type=='sideLeft' or room.type=='cornerBottomLeft' or room.type=='cornerTopLeft')
+    then     
+        for i=1,8 do 
+            room.fogTable.left[i]={
+                x=room.xPos,
+                y=room.yPos+82,
+                w=26-(2*i),h=122
+            }
+        end 
+    end
+    if not room.isLit.right and 
+    not (room.type=='sideRight' or room.type=='cornerBottomRight' or room.type=='cornerTopRight')
+    then       
+        for i=1,8 do 
+            room.fogTable.right[i]={
+                x=room.xPos+358+(2*i),
+                y=room.yPos+82,
+                w=26-(2*i),h=122
+            }
+        end 
+    end
+end
+
+--gradually removes the fog from the _dir doorway by removing its fog rectangles over time
+function Rooms:removeFog(_room,_dir)
+    for i=1,10 do 
+        TimerState:after((0.015*i),function() table.remove(_room.fogTable[_dir],1) end)
+    end
 end
 
 --takes a room and fills it with a random assortment of up to 6 resource nodes
