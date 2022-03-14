@@ -75,6 +75,11 @@ function Rooms:newRoom(_coordinates)
     room.fogTable={top={},bottom={},left={},right={}}
     room.fogColor=2/15 --palette black
     room.fogAlpha=0.5
+    --fog states to prevent unnecessary additional function calls 
+    --fog will be removed next frame
+    room.fogTable.toRemove={top=false,bottom=false,left=false,right=false}
+    --fog is already in the process of being removed
+    room.fogTable.beingRemoved={top=false,bottom=false,left=false,right=false}
 
     --create and emtpy room complete with collision boxes that fit the room layout
     if _coordinates[1]==1 then 
@@ -180,36 +185,58 @@ function Rooms:newRoom(_coordinates)
                 if pressedButtonName=='doorButtonTop' then 
                     Rooms:newRoom({self.coordinates[1],self.coordinates[2]-1})
                     self.isLit.top=true 
+                    self.fogTable.toRemove.top=true
                     Rooms:removeFog(room,'top')
                     adjRoomY=adjRoomY-Rooms.ROOMHEIGHT
                 elseif pressedButtonName=='doorButtonBottom' then 
                     Rooms:newRoom({self.coordinates[1],self.coordinates[2]+1})
                     self.isLit.bottom=true 
-                    Rooms:removeFog(room,'bottom')
+                    self.fogTable.toRemove.bottom=true
                     adjRoomY=adjRoomY+Rooms.ROOMHEIGHT
                 elseif pressedButtonName=='doorButtonLeft' then 
                     Rooms:newRoom({self.coordinates[1]-1,self.coordinates[2]})
                     self.isLit.left=true 
-                    Rooms:removeFog(room,'left')
+                    self.fogTable.toRemove.left=true
                     adjRoomX=adjRoomX-Rooms.ROOMWIDTH
                 elseif pressedButtonName=='doorButtonRight' then 
                     Rooms:newRoom({self.coordinates[1]+1,self.coordinates[2]})
                     self.isLit.right=true 
-                    Rooms:removeFog(room,'right')
+                    self.fogTable.toRemove.right=true
                     adjRoomX=adjRoomX+Rooms.ROOMWIDTH
                 end
 
                 CamPanState:pan(adjRoomX,adjRoomY)
             end
-
-            --update fog 
-            if self.isLit.top and #self.fogTable.top>0 then Rooms:removeFog(room,'top') end 
-            if self.isLit.bottom and #self.fogTable.bottom>0 then Rooms:removeFog(room,'bottom') end 
-            if self.isLit.left and #self.fogTable.left>0 then Rooms:removeFog(room,'left') end 
-            if self.isLit.right and #self.fogTable.right>0 then Rooms:removeFog(room,'right') end 
             
             --update buttons, remove any button that was pressed and finished its animation
-            if button:update()==false then table.remove(self.doorButtons,i) end            
+            if button:update()==false then table.remove(self.doorButtons,i) end   
+
+            --update fog 
+            if self.isLit.top and #self.fogTable.top>0 then self.fogTable.toRemove.top=true end 
+            if self.isLit.bottom and #self.fogTable.bottom>0 then self.fogTable.toRemove.bottom=true end
+            if self.isLit.left and #self.fogTable.left>0 then self.fogTable.toRemove.left=true end 
+            if self.isLit.right and #self.fogTable.right>0 then self.fogTable.toRemove.right=true end 
+            --remove any fog that should be removed, but don't remove fog that's currently being removed
+            if self.fogTable.toRemove.top and 
+            not self.fogTable.beingRemoved.top then 
+                Rooms:removeFog(room,'top')
+                self.fogTable.beingRemoved.top=true
+            end
+            if self.fogTable.toRemove.bottom and 
+            not self.fogTable.beingRemoved.bottom then 
+                Rooms:removeFog(room,'bottom')
+                self.fogTable.beingRemoved.bottom=true
+            end    
+            if self.fogTable.toRemove.left and 
+            not self.fogTable.beingRemoved.left then 
+                Rooms:removeFog(room,'left')
+                self.fogTable.beingRemoved.left=true
+            end    
+            if self.fogTable.toRemove.right and 
+            not self.fogTable.beingRemoved.right then 
+                Rooms:removeFog(room,'right')
+                self.fogTable.beingRemoved.right=true
+            end         
         end
     end
 
