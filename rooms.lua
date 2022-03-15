@@ -81,6 +81,9 @@ function Rooms:newRoom(_coordinates)
     --fog is already in the process of being removed
     room.fogTable.beingRemoved={top=false,bottom=false,left=false,right=false}
 
+    --invisible doorway barriers
+    room.doorBarriers={top={},bottom={},left={},right={}}
+
     --create and emtpy room complete with collision boxes that fit the room layout
     if _coordinates[1]==1 then 
         --room is on leftmost position
@@ -135,11 +138,13 @@ function Rooms:newRoom(_coordinates)
         room.foregroundSprite=self.roomSprites.middleForeground
     end
 
-    --generate doorButtons, room lights, and fog
+    --generate doorButtons, room lights, fog, and doorway barriers
     self:generateWalls(room)
     self:generateDoorButtons(room)
     self:generateLights(room)
     self:generateFog(room)
+    self:generateDoorBarriers(room)
+    self:manageAdjacentBarriers(room)
 
     if room.coordinates[1]==4 and room.coordinates[2]==4 then
         --boss room, spawn only the boss
@@ -180,28 +185,31 @@ function Rooms:newRoom(_coordinates)
                 local adjRoomY=self.yPos+(Rooms.ROOMHEIGHT/2)
 
                 --create a new room adjacent to the pressed doorButton
-                --also update current room's lights and fog
+                --also update current room's lights, fog, and doorBarriers
                 --pan camera to room and back using CamPanState
                 if pressedButtonName=='doorButtonTop' then 
                     Rooms:newRoom({self.coordinates[1],self.coordinates[2]-1})
                     self.isLit.top=true 
                     self.fogTable.toRemove.top=true
-                    Rooms:removeFog(room,'top')
+                    self.doorBarriers.top:setActive(false)
                     adjRoomY=adjRoomY-Rooms.ROOMHEIGHT
                 elseif pressedButtonName=='doorButtonBottom' then 
                     Rooms:newRoom({self.coordinates[1],self.coordinates[2]+1})
                     self.isLit.bottom=true 
                     self.fogTable.toRemove.bottom=true
+                    self.doorBarriers.bottom:setActive(false)
                     adjRoomY=adjRoomY+Rooms.ROOMHEIGHT
                 elseif pressedButtonName=='doorButtonLeft' then 
                     Rooms:newRoom({self.coordinates[1]-1,self.coordinates[2]})
                     self.isLit.left=true 
                     self.fogTable.toRemove.left=true
+                    self.doorBarriers.left:setActive(false)
                     adjRoomX=adjRoomX-Rooms.ROOMWIDTH
                 elseif pressedButtonName=='doorButtonRight' then 
                     Rooms:newRoom({self.coordinates[1]+1,self.coordinates[2]})
                     self.isLit.right=true 
                     self.fogTable.toRemove.right=true
+                    self.doorBarriers.right:setActive(false)
                     adjRoomX=adjRoomX+Rooms.ROOMWIDTH
                 end
 
@@ -236,8 +244,8 @@ function Rooms:newRoom(_coordinates)
             not self.fogTable.beingRemoved.right then 
                 Rooms:removeFog(room,'right')
                 self.fogTable.beingRemoved.right=true
-            end         
-        end
+            end            
+        end        
     end
 
     function room:draw() 
@@ -666,6 +674,95 @@ end
 function Rooms:removeFog(_room,_dir)
     for i=1,10 do 
         TimerState:after((0.015*i),function() table.remove(_room.fogTable[_dir],1) end)
+    end
+end
+
+--generate invisible barriers in doorways which are not yet lit and don't yet lead into other rooms
+--only generate barriers if the room type has a doorway there.
+function Rooms:generateDoorBarriers(_room)
+    if not _room.isLit.top and 
+    not (_room.type=='sideTop' or _room.type=='cornerTopLeft' or _room.type=='cornerTopRight')
+    then
+        _room.doorBarriers.top=world:newRectangleCollider(_room.xPos+165,_room.yPos,54,32)
+        _room.doorBarriers.top:setType('static')
+        _room.doorBarriers.top:setCollisionClass('doorBarrier')
+    end
+    if not _room.isLit.bottom and 
+    not (_room.type=='sideBottom' or _room.type=='cornerBottomLeft' or _room.type=='cornerBottomRight')
+    then 
+        _room.doorBarriers.bottom=world:newRectangleCollider(_room.xPos+165,_room.yPos+288,54,32) 
+        _room.doorBarriers.bottom:setType('static')
+        _room.doorBarriers.bottom:setCollisionClass('doorBarrier')
+    end
+    if not _room.isLit.left and 
+    not (_room.type=='sideLeft' or _room.type=='cornerBottomLeft' or _room.type=='cornerTopLeft')
+    then 
+        _room.doorBarriers.left=world:newRectangleCollider(_room.xPos,_room.yPos+144,16,60) 
+        _room.doorBarriers.left:setType('static')
+        _room.doorBarriers.left:setCollisionClass('doorBarrier')
+    end
+    if not _room.isLit.right and 
+    not (_room.type=='sideRight' or _room.type=='cornerBottomRight' or _room.type=='cornerTopRight')
+    then 
+        _room.doorBarriers.right=world:newRectangleCollider(_room.xPos+368,_room.yPos+144,16,60) 
+        _room.doorBarriers.right:setType('static')
+        _room.doorBarriers.right:setCollisionClass('doorBarrier')
+    end
+end
+
+--takes a room and checks if any adjacent room has doorBarriers that should be cleared
+--this can happen when a doorway is indirectly opened. 
+--I.E. the player goes up>right>down instead of just right
+function Rooms:manageAdjacentBarriers(_room)
+    local x=_room.coordinates[1]
+    local y=_room.coordinates[2]
+    local adjRooms={top=nil,bottom=nil,left=nil,right=nil}
+
+    --store any existing rooms that are adjacent to this room
+    for i,room in pairs(Dungeon.roomsTable) do 
+        if room.coordinates[1]==x and room.coordinates[2]==y-1 then 
+            adjRooms.top=room --store room
+        end
+        if room.coordinates[1]==x and room.coordinates[2]==y+1 then 
+            adjRooms.bottom=room  --store room
+        end 
+        if room.coordinates[1]==x-1 and room.coordinates[2]==y then 
+            adjRooms.left=room  --store room
+        end 
+        if room.coordinates[1]==x+1 and room.coordinates[2]==y then 
+            adjRooms.right=room  --store room
+        end 
+    end
+
+    --go through all existing adjacent rooms, query the world for any doorBarriers
+    --that exist in doorways that are already lit, and make them inactive
+    for dir,val in pairs(adjRooms) do
+        if adjRooms[dir] then
+            local topDoorBarriers=world:queryRectangleArea(
+                adjRooms[dir].xPos+184,adjRooms[dir].yPos+7,32,32,{'doorBarrier'}
+            )
+            local bottomDoorBarriers=world:queryRectangleArea(
+                adjRooms[dir].xPos+184,adjRooms[dir].yPos+295,32,32,{'doorBarrier'}
+            )
+            local leftDoorBarriers=world:queryRectangleArea(
+                adjRooms[dir].xPos+8,adjRooms[dir].yPos+160,32,32,{'doorBarrier'}
+            )
+            local rightDoorBarriers=world:queryRectangleArea(
+                adjRooms[dir].xPos+360,adjRooms[dir].yPos+160,32,32,{'doorBarrier'}
+            )
+            if dir=='top' and adjRooms[dir].isLit.bottom and #bottomDoorBarriers>0 then 
+                bottomDoorBarriers[1]:setActive(false)
+            end
+            if dir=='bottom' and adjRooms[dir].isLit.top and #topDoorBarriers>0 then 
+                topDoorBarriers[1]:setActive(false)
+            end
+            if dir=='left' and adjRooms[dir].isLit.right and #rightDoorBarriers>0 then 
+                rightDoorBarriers[1]:setActive(false)
+            end
+            if dir=='right' and adjRooms[dir].isLit.left and #leftDoorBarriers>0 then 
+                leftDoorBarriers[1]:setActive(false)
+            end
+        end
     end
 end
 
