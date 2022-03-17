@@ -13,6 +13,7 @@ function PlayState:load()
     world:addCollisionClass('enemy')
     world:addCollisionClass('resourceNode')
     world:addCollisionClass('depletedNode')
+    world:addCollisionClass('craftingNode')
     world:addCollisionClass('doorButton')
     world:addCollisionClass('doorButtonActivated')
     world:addCollisionClass('item', {ignores={'player'}})
@@ -23,6 +24,7 @@ function PlayState:load()
     Player:load() --initialize player character
     Enemies:load() --initialize enemies
     ResourceNodes:load() --initialize resource nodes
+    CraftingNodes:load()
     Dungeon:load() --initialize dungeon
     Items:load() --initialize items
     Hud:load() --initialize Heads Up Display

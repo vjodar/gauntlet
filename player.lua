@@ -29,6 +29,28 @@ function Player:load()
     self.state.movingVertially=false 
     self.state.isNearNode=false 
 
+    self.inventory={
+        arcane_shards=0,
+        vial=0,
+        broken_bow=0,
+        broken_staff=0,
+        arcane_orb=0,
+        arcane_bowstring=0,
+        tree_wood=0,
+        rock_ore=0,
+        vine_fiber=0,
+        fungi_mushroom=0,
+        fish_raw=0,
+        rock_metal=0,
+        tree_planks=0,
+        vine_thread=0,
+    }
+
+    self.suppliesPouch={
+        fish_cooked=0,
+        potion=0
+    }
+
     table.insert(Entities.entitiesTable,self)
 end
 
@@ -114,7 +136,7 @@ end
 --also used for door buttons to open/reveal adjacent rooms.
 function Player:query()
     local nodeColliders=world:queryRectangleArea(
-        self.xPos-9,self.yPos-6,18,12,{'resourceNode','doorButton'}
+        self.xPos-9,self.yPos-6,18,12,{'resourceNode','doorButton','craftingNode'}
     )
         if #nodeColliders>0 then --found a resource node
             --gets the resourceNode object attached to the collider
@@ -138,4 +160,14 @@ function Player:query()
 end
 
 --Called by items when they collide with player
-function Player:addToInventory(_item) Inventory:addItem(_item) end
+--increases the amount of an item in the players inventory as well as in the HUD
+function Player:addToInventory(_item)
+    --add supplies only to supply pouch
+    if _item=='fish_cooked' or _item=='potion' then 
+        self.suppliesPouch[_item]=self.suppliesPouch[_item]+1
+    else
+        --all other items get added to inventory and HUD
+        self.inventory[_item]=self.inventory[_item]+1
+        Inventory:addItem(_item)
+    end
+end

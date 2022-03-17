@@ -17,6 +17,16 @@ function Dungeon:load()
 
     -- Rooms:newRoom({4,4}) --create boss room
     Rooms:newRoom({self.startRoom[1],self.startRoom[2]}) --create starting room
+    
+    --populate starting room with crafting nodes
+    self:spawnCraftingNodes(self.startRoom[1]*Rooms.ROOMWIDTH,self.startRoom[2]*Rooms.ROOMHEIGHT)
+end
+
+function Dungeon:spawnCraftingNodes(_x,_y)
+    CraftingNodes:spawnCraftingNode('furnace',_x+50,_y+70)
+    CraftingNodes:spawnCraftingNode('grill',_x+150,_y+70)
+    CraftingNodes:spawnCraftingNode('sawmill',_x+50,_y+170)
+    CraftingNodes:spawnCraftingNode('spinning_wheel',_x+150,_y+170)
 end
 
 function Dungeon:update()
