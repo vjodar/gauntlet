@@ -18,6 +18,11 @@ function Shadows:load()
     self.vine_thread=love.graphics.newImage('assets/shadow_vine_thread.png') --8,5
     self.fish_raw=love.graphics.newImage('assets/shadow_fish_raw.png') --10,5  
     self.fish_cooked=love.graphics.newImage('assets/shadow_fish_raw.png') --10,5
+    
+    self.furnace=love.graphics.newImage('assets/shadow_large.png') --placeholder
+    self.grill=love.graphics.newImage('assets/shadow_grill.png') --17,8
+    self.sawmill=love.graphics.newImage('assets/shadow_large.png') --placeholder
+    self.spinning_wheel=love.graphics.newImage('assets/shadow_large.png') --placeholder
 
     self.arcane_bowstring=love.graphics.newImage('assets/shadow_tiny.png') --11,6
     self.arcane_orb=love.graphics.newImage('assets/shadow_vial.png') --10,6
