@@ -4,7 +4,7 @@ function CraftingNodes:load()
     self.sprites={} --stores sprites
     self.sprites.furnace=love.graphics.newImage('assets/crafting_furnace.png')
     self.sprites.grill=love.graphics.newImage('assets/crafting_grill.png')
-    self.sprites.sawmill=love.graphics.newImage('assets/crafting_furnace.png')
+    self.sprites.sawmill=love.graphics.newImage('assets/crafting_sawmill.png')
     self.sprites.spinning_wheel=love.graphics.newImage('assets/crafting_spinning_wheel.png')
 
     self.particles={} --particle sprites
@@ -17,16 +17,16 @@ function CraftingNodes:load()
         19,16,self.sprites.grill:getWidth(),self.sprites.grill:getHeight()
     )
     self.grids.sawmill=anim8.newGrid(
-        25,25,self.sprites.sawmill:getWidth(),self.sprites.sawmill:getHeight()
+        23,13,self.sprites.sawmill:getWidth(),self.sprites.sawmill:getHeight()
     )
     self.grids.spinning_wheel=anim8.newGrid(
         20,16,self.sprites.spinning_wheel:getWidth(),self.sprites.spinning_wheel:getHeight()
     )
 
-    self.animations={}
+    self.animations={} --idle and crafting animations
     self.animations.furnace={
-        idle=anim8.newAnimation(self.grids.furnace('1-1',1), 0.15),
-        crafting=anim8.newAnimation(self.grids.furnace('1-4',1), 0.15)
+        idle=anim8.newAnimation(self.grids.furnace('1-2',1), 0.5),
+        crafting=anim8.newAnimation(self.grids.furnace('3-6',1), 0.2)
     }
     self.animations.grill={
         idle=anim8.newAnimation(self.grids.grill('1-1',1), 0.15),
@@ -34,7 +34,7 @@ function CraftingNodes:load()
     }
     self.animations.sawmill={
         idle=anim8.newAnimation(self.grids.sawmill('1-1',1), 0.1),
-        crafting=anim8.newAnimation(self.grids.sawmill('1-4',1), 0.1)
+        crafting=anim8.newAnimation(self.grids.sawmill('1-2',1), 0.1)
     }
     self.animations.spinning_wheel={
         idle=anim8.newAnimation(self.grids.spinning_wheel('1-1',1), 0.1),
@@ -42,9 +42,9 @@ function CraftingNodes:load()
     }
 
     self.offsets={} --offset each sprite to have its collider be at its shadow
-    self.offsets.furnace={x=12,y=20}
-    self.offsets.grill={x=9.5,y=15}
-    self.offsets.sawmill={x=12,y=20}
+    self.offsets.furnace={x=12.5,y=22}
+    self.offsets.grill={x=9.5,y=14.5}
+    self.offsets.sawmill={x=11.5,y=13}
     self.offsets.spinning_wheel={x=10,y=15}
 
     self.items={} --items the crafting node will spawn
@@ -59,11 +59,11 @@ function CraftingNodes:load()
     self.shadows.sawmill=Shadows:newShadow('sawmill')
     self.shadows.spinning_wheel=Shadows:newShadow('spinning_wheel')
 
-    self.colliderSizes={} --collider widths and heights
-    self.colliderSizes.furnace={w=19,h=8}
-    self.colliderSizes.grill={w=19,h=8}
-    self.colliderSizes.sawmill={w=19,h=8}
-    self.colliderSizes.spinning_wheel={w=19,h=8}
+    self.colliderSizes={} --collider widths, heights, and corner sizes
+    self.colliderSizes.furnace={w=25,h=8,c=3}
+    self.colliderSizes.grill={w=19,h=8,c=3}
+    self.colliderSizes.sawmill={w=23,h=4,c=1}
+    self.colliderSizes.spinning_wheel={w=20,h=4,c=1}
 end
 
 function CraftingNodes:spawnCraftingNode(_type,_x,_y)
@@ -75,7 +75,7 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
             _x,_y, --position vectors
             CraftingNodes.colliderSizes[_type].w, --width
             CraftingNodes.colliderSizes[_type].h, --height
-            3 --corner size
+            CraftingNodes.colliderSizes[_type].c --corner size
         )
         self.collider:setType('static')
         self.collider:setCollisionClass('craftingNode')

@@ -690,7 +690,7 @@ function Rooms:generateDoorBarriers(_room)
     if not _room.isLit.bottom and 
     not (_room.type=='sideBottom' or _room.type=='cornerBottomLeft' or _room.type=='cornerBottomRight')
     then 
-        _room.doorBarriers.bottom=world:newRectangleCollider(_room.xPos+165,_room.yPos+288,54,32) 
+        _room.doorBarriers.bottom=world:newRectangleCollider(_room.xPos+165,_room.yPos+298,54,22) 
         _room.doorBarriers.bottom:setType('static')
         _room.doorBarriers.bottom:setCollisionClass('doorBarrier')
     end

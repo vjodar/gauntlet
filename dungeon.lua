@@ -15,7 +15,6 @@ function Dungeon:load()
     --will also be used to alternate demi boss spawns
     self.nextDemiBoss=love.math.random(2)
 
-    -- Rooms:newRoom({4,4}) --create boss room
     Rooms:newRoom({self.startRoom[1],self.startRoom[2]}) --create starting room
     
     --populate starting room with crafting nodes
@@ -23,10 +22,10 @@ function Dungeon:load()
 end
 
 function Dungeon:spawnCraftingNodes(_x,_y)
-    CraftingNodes:spawnCraftingNode('furnace',_x+50,_y+70)
-    CraftingNodes:spawnCraftingNode('grill',_x+150,_y+70)
-    CraftingNodes:spawnCraftingNode('sawmill',_x+50,_y+170)
-    CraftingNodes:spawnCraftingNode('spinning_wheel',_x+150,_y+170)
+    CraftingNodes:spawnCraftingNode('furnace',_x+130,_y+130)
+    CraftingNodes:spawnCraftingNode('grill',_x+230,_y+130)
+    CraftingNodes:spawnCraftingNode('sawmill',_x+130,_y+230)
+    CraftingNodes:spawnCraftingNode('spinning_wheel',_x+230,_y+230)
 end
 
 function Dungeon:update()
