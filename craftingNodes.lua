@@ -7,8 +7,6 @@ function CraftingNodes:load()
     self.sprites.sawmill=love.graphics.newImage('assets/crafting_sawmill.png')
     self.sprites.spinning_wheel=love.graphics.newImage('assets/crafting_spinning_wheel.png')
 
-    self.particles={} --particle sprites
-
     self.grids={} --animation grids
     self.grids.furnace=anim8.newGrid(
         25,25,self.sprites.furnace:getWidth(),self.sprites.furnace:getHeight()
@@ -20,7 +18,7 @@ function CraftingNodes:load()
         23,13,self.sprites.sawmill:getWidth(),self.sprites.sawmill:getHeight()
     )
     self.grids.spinning_wheel=anim8.newGrid(
-        20,16,self.sprites.spinning_wheel:getWidth(),self.sprites.spinning_wheel:getHeight()
+        21,16,self.sprites.spinning_wheel:getWidth(),self.sprites.spinning_wheel:getHeight()
     )
 
     self.animations={} --idle and crafting animations
@@ -53,6 +51,12 @@ function CraftingNodes:load()
     self.items.sawmill='tree_planks'
     self.items.spinning_wheel='vine_thread'
 
+    self.reqItems={} --items the crafting node will take from player
+    self.reqItems.rock_metal='rock_ore'
+    self.reqItems.fish_cooked='fish_raw'
+    self.reqItems.tree_planks='tree_wood'
+    self.reqItems.vine_thread='vine_fiber'
+
     self.shadows={} --shadows
     self.shadows.furnace=Shadows:newShadow('furnace')
     self.shadows.grill=Shadows:newShadow('grill')
@@ -64,6 +68,60 @@ function CraftingNodes:load()
     self.colliderSizes.grill={w=19,h=8,c=3}
     self.colliderSizes.sawmill={w=23,h=4,c=1}
     self.colliderSizes.spinning_wheel={w=20,h=4,c=1}
+
+    self.particleSprites={} --particle sprites
+    self.particleSprites.furnace=love.graphics.newImage('assets/crafting_furnace_particle.png')
+    self.particleSprites.grill=love.graphics.newImage('assets/crafting_grill_particle.png')
+    self.particleSprites.sawmill=love.graphics.newImage('assets/crafting_sawmill_particle.png')
+    self.particleSprites.spinning_wheel=love.graphics.newImage('assets/tree_particle.png')
+
+    self.particleOffsets={ --offsets to draw particles in correct area with respect to node
+        furnace={x=0,y=-7},
+        grill={x=0,y=-11},
+        sawmill={x=0,y=-10},
+        spinning_wheel={x=0,y=0}
+    } 
+
+    self.particleEmissionRates={ --how many frames between particle emission
+        furnace=8,
+        grill=5,
+        sawmill=2,
+        spinning_wheel=5
+    } 
+
+    self.particleSystems={} --particle systems
+    self.particleSystems.furnace=love.graphics.newParticleSystem(self.particleSprites.furnace,50)
+    self.particleSystems.furnace:setParticleLifetime(0.8) 
+    self.particleSystems.furnace:setSpeed(25,80) 
+    self.particleSystems.furnace:setDirection(1.6) --shoot downward
+    self.particleSystems.furnace:setSpread(1) --60degree spread
+    self.particleSystems.furnace:setLinearAcceleration(0,-200) --accelerate upward
+    self.particleSystems.furnace:setEmissionArea('uniform',6,4)
+    self.particleSystems.furnace:setRelativeRotation(true)
+    self.particleSystems.furnace:setColors(1,1,1,0.8, 1,1,1,0) --particles will fade out
+    self.particleSystems.furnace:setSizes(0.5,3) --particles will grow
+
+    self.particleSystems.grill=love.graphics.newParticleSystem(self.particleSprites.grill,50)
+    self.particleSystems.grill:setParticleLifetime(0.6) 
+    self.particleSystems.grill:setDirection(4.7) --shoot upward
+    self.particleSystems.grill:setLinearAcceleration(0,0,0,-150)
+    self.particleSystems.grill:setEmissionArea('uniform',7,4)
+    self.particleSystems.grill:setRotation(0,6.3)
+    self.particleSystems.grill:setColors(1,1,1,0.2, 1,1,1,0) --particles will fade out
+    self.particleSystems.grill:setSizes(0.1,2) --particles will grow
+
+    self.particleSystems.sawmill=love.graphics.newParticleSystem(self.particleSprites.sawmill,50)
+    self.particleSystems.sawmill:setParticleLifetime(0.2,0.4) 
+    self.particleSystems.sawmill:setSpeed(100,150) 
+    self.particleSystems.sawmill:setDirection(4.7) --shoot upward
+    self.particleSystems.sawmill:setSpread(1.5) --90degree spread
+    self.particleSystems.sawmill:setEmissionArea('uniform',4,4)
+    self.particleSystems.sawmill:setRelativeRotation(true)
+    self.particleSystems.sawmill:setColors(1,1,1,1, 1,1,1,0) --particles will fade out
+
+    --currently no particle system for spinning wheel, so immediately stop
+    self.particleSystems.spinning_wheel=love.graphics.newParticleSystem(self.particleSprites.spinning_wheel,50)
+    self.particleSystems.spinning_wheel:stop()
 end
 
 function CraftingNodes:spawnCraftingNode(_type,_x,_y)
@@ -93,14 +151,24 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
 
         --item that will spawn from node
         self.item=CraftingNodes.items[_type]
+        self.reqItem=CraftingNodes.reqItems[self.item] 
 
         --shadow
         self.shadow=CraftingNodes.shadows[_type]
 
+        --particles
+        self.particles=CraftingNodes.particleSystems[_type]
+        self.particleOffsets={
+            x=CraftingNodes.particleOffsets[_type].x,
+            y=CraftingNodes.particleOffsets[_type].y
+        }
+        self.particleEmissionRate=CraftingNodes.particleEmissionRates[_type]
+        self.particleTimer=0
+
         --metatable
         self.state={}
         self.state.craftProgress=0
-        self.state.craftProgressPrev=0 
+        self.state.craftProgressPrev=0
 
         --insert into entities table to have dynamic draw order
         table.insert(Entities.entitiesTable,node) 
@@ -114,9 +182,16 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
             self.currentAnim=self.animations.idle
         else
             self.currentAnim=self.animations.crafting
+
+            self.particleTimer=self.particleTimer+1
+            if self.particleTimer>=self.particleEmissionRate then 
+                self.particles:emit(1)
+                self.particleTimer=0
+            end
         end
         
-        self.currentAnim:update(dt) --animate
+        self.currentAnim:update(dt) --update animations
+        self.particles:update(dt) --update particle system
 
         --spawn an item 
         if self.state.craftProgress>0.7 then --takes ~0.7s to craft
@@ -125,9 +200,13 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
             local startX=love.math.random(self.xPos-7,self.xPos+5)
             local startY=love.math.random(self.yPos-7,self.yPos+5)
 
-            --spawn appropriate item, restart craft progress
+            --spawn appropriate item
             Items:spawn_item(startX,startY,self.item)
-            self.state.craftProgress=0
+
+            --decrease count of the required item from player and HUD
+            Player:removeFromInventory(self.reqItem)
+
+            self.state.craftProgress=0 --reset craftProgress
         end
 
         --update crafting progress
@@ -139,11 +218,21 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
 
         --draw node
         self.currentAnim:draw(self.spriteSheet,self.xPos,self.yPos,nil,1,1,self.xOffset,self.yOffset)
+        
+        --draw particles
+        love.graphics.draw(
+            self.particles,
+            self.xPos+self.particleOffsets.x,
+            self.yPos+self.particleOffsets.y
+        )
     end
 
     --called by Player, increases craftProgress by time delta
+    --player can only craft items that the player possesses.
     function node:nodeInteract()
-        self.state.craftProgress=self.state.craftProgress+dt 
+        if Player.inventory[self.reqItem]>0 then 
+            self.state.craftProgress=self.state.craftProgress+dt
+        end
     end
 
     node:load()

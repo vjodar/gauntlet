@@ -237,3 +237,10 @@ function Inventory:addItem(_item)
         if item.name==_item then item.count=item.count+1 end 
     end
 end
+
+--decreases the count of a given item in inventoryItems table
+function Inventory:removeItem(_item)
+    for i,item in pairs(self.inventoryItems) do 
+        if item.name==_item then item.count=item.count-1 end 
+    end
+end

@@ -160,7 +160,7 @@ function Player:query()
 end
 
 --Called by items when they collide with player
---increases the amount of an item in the players inventory as well as in the HUD
+--increases the amount of an item in the player's inventory as well as in the HUD
 function Player:addToInventory(_item)
     --add supplies only to supply pouch
     if _item=='fish_cooked' or _item=='potion' then 
@@ -170,4 +170,11 @@ function Player:addToInventory(_item)
         self.inventory[_item]=self.inventory[_item]+1
         Inventory:addItem(_item)
     end
+end
+
+--Called by crafting nodes when they take an item to give its processed version.
+--decreases the amount of an item in player's inventory and the HUD
+function Player:removeFromInventory(_item)
+    self.inventory[_item]=self.inventory[_item]-1
+    Inventory:removeItem(_item)
 end
