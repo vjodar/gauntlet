@@ -79,4 +79,13 @@ function PlayState:start()
 
     --set camera target to be the player's position
     camTarget=Player
+
+    --testing------------------------------------
+    for i=1,10 do 
+        Player:addToInventory('tree_wood')
+        Player:addToInventory('rock_ore')
+        Player:addToInventory('vine_fiber')
+        Player:addToInventory('fish_raw')
+    end
+    --testing------------------------------------
 end

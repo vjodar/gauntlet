@@ -90,15 +90,16 @@ function CraftingNodes:load()
     } 
 
     self.particleSystems={} --particle systems
+
     self.particleSystems.furnace=love.graphics.newParticleSystem(self.particleSprites.furnace,50)
     self.particleSystems.furnace:setParticleLifetime(0.8) 
     self.particleSystems.furnace:setSpeed(25,80) 
     self.particleSystems.furnace:setDirection(1.6) --shoot downward
     self.particleSystems.furnace:setSpread(1) --60degree spread
     self.particleSystems.furnace:setLinearAcceleration(0,-200) --accelerate upward
-    self.particleSystems.furnace:setEmissionArea('uniform',6,4)
+    self.particleSystems.furnace:setEmissionArea('uniform',8,4)
     self.particleSystems.furnace:setRelativeRotation(true)
-    self.particleSystems.furnace:setColors(1,1,1,0.8, 1,1,1,0) --particles will fade out
+    self.particleSystems.furnace:setColors(1,1,1,0.9, 1,1,1,0) --particles will fade out
     self.particleSystems.furnace:setSizes(0.5,3) --particles will grow
 
     self.particleSystems.grill=love.graphics.newParticleSystem(self.particleSprites.grill,50)
