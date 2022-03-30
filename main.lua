@@ -23,8 +23,8 @@ function love.load()
 
     dt=0 --delta time global
     framerate=60 --60fps global var
-    windowScaleX=love.graphics.getWidth()/400 --1x scale per 400px width
-    windowScaleY=love.graphics.getHeight()/300 --1x scale per 300px width
+    WINDOWSCALE_X=love.graphics.getWidth()/400 --1x scale per 400px width
+    WINDOWSCALE_Y=love.graphics.getHeight()/300 --1x scale per 300px width
     gameStates={} --state stack
     acceptInput=false --flag to restrict inputs to one state at a time
 

@@ -5,7 +5,7 @@ function PlayState:load()
     cam=camera()
     camTarget={} --camera will look at this object's position
     --1x zoom for every 400px width and 300px height
-    cam:zoom((love.graphics.getWidth()/800)+(love.graphics.getHeight()/600))
+    cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5))
 
     world=wf.newWorld() --initialize physics world which handles colliders
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames

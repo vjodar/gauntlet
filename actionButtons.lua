@@ -27,27 +27,27 @@ end
 function ActionButtons:drawBlankButtons()
     love.graphics.draw( --top button
         self.blank,
-        love.graphics.getWidth()-60*windowScaleX,
-        love.graphics.getHeight()-70*windowScaleY,
-        nil,windowScaleX,windowScaleY,0,0
+        love.graphics.getWidth()-60*WINDOWSCALE_X,
+        love.graphics.getHeight()-70*WINDOWSCALE_Y,
+        nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
     )
     love.graphics.draw( --bottom button
         self.blank,
-        love.graphics.getWidth()-60*windowScaleX,
-        love.graphics.getHeight()-30*windowScaleY,
-        nil,windowScaleX,windowScaleY,0,0
+        love.graphics.getWidth()-60*WINDOWSCALE_X,
+        love.graphics.getHeight()-30*WINDOWSCALE_Y,
+        nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
     )
     love.graphics.draw( --left button
         self.blank,
-        love.graphics.getWidth()-80*windowScaleX,
-        love.graphics.getHeight()-50*windowScaleY,
-        nil,windowScaleX,windowScaleY,0,0
+        love.graphics.getWidth()-80*WINDOWSCALE_X,
+        love.graphics.getHeight()-50*WINDOWSCALE_Y,
+        nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
     )
     love.graphics.draw( --right button
         self.blank,
-        love.graphics.getWidth()-40*windowScaleX,
-        love.graphics.getHeight()-50*windowScaleY,
-        nil,windowScaleX,windowScaleY,0,0
+        love.graphics.getWidth()-40*WINDOWSCALE_X,
+        love.graphics.getHeight()-50*WINDOWSCALE_Y,
+        nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
     )
 end
 
@@ -122,9 +122,9 @@ function ActionButtons:addActionButtonWeapons()
     function button:draw()
         button.currentAnim:draw(
             button.spriteSheet,
-            love.graphics.getWidth()-60*windowScaleX,
-            love.graphics.getHeight()-70*windowScaleY,
-            nil,windowScaleX,windowScaleY,0,0
+            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            love.graphics.getHeight()-70*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
     end
 
@@ -202,9 +202,9 @@ function ActionButtons:addActionButtonSupplies()
     function button:draw()
         button.currentAnim:draw(
             button.spriteSheet,
-            love.graphics.getWidth()-80*windowScaleX,
-            love.graphics.getHeight()-50*windowScaleY,
-            nil,windowScaleX,windowScaleY,0,0
+            love.graphics.getWidth()-80*WINDOWSCALE_X,
+            love.graphics.getHeight()-50*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
     end
 
@@ -280,9 +280,9 @@ function ActionButtons:addActionButtonProtectionMagics()
     function button:draw()
         button.currentAnim:draw(
             button.spriteSheet,
-            love.graphics.getWidth()-40*windowScaleX,
-            love.graphics.getHeight()-50*windowScaleY,
-            nil,windowScaleX,windowScaleY,0,0
+            love.graphics.getWidth()-40*WINDOWSCALE_X,
+            love.graphics.getHeight()-50*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
     end
 
@@ -375,9 +375,9 @@ function ActionButtons:addActionButtonCombatInteract()
     function button:draw()
         button.currentAnim:draw(
             button.spriteSheet,
-            love.graphics.getWidth()-60*windowScaleX,
-            love.graphics.getHeight()-30*windowScaleY,
-            nil,windowScaleX,windowScaleY,0,0
+            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            love.graphics.getHeight()-30*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
     end
 

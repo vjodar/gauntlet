@@ -1,31 +1,31 @@
 Inventory={}
 
 function Inventory:load() 
-    self.inv_yPos=love.graphics.getHeight()-30*windowScaleY --yPos for all segments and icons
+    self.inv_yPos=love.graphics.getHeight()-30*WINDOWSCALE_Y --yPos for all segments and icons
     self.inv_middle=love.graphics.newImage('assets/hud_inv_middle.png') --middle segment sprite
-    self.defaultClosed=7*windowScaleX --xPos_closed for all segments and icons except endpieces
+    self.defaultClosed=7*WINDOWSCALE_X --xPos_closed for all segments and icons except endpieces
 
     self.inventorySegments={} --holds all middle and end inventory segments
     self.inventoryItems={} --holds all item icons/sprites
 
     self.inventorySegments.endLeft={} --left endpiece segment
     self.inventorySegments.endLeft.sprite=love.graphics.newImage('assets/hud_inv_endleft.png')
-    self.inventorySegments.endLeft.xPos_open=2*windowScaleX
-    self.inventorySegments.endLeft.xPos_current=2*windowScaleX
-    self.inventorySegments.endLeft.xPos_closed=2*windowScaleX
-    self.inventorySegments.endLeft.yPos=self.inv_yPos-windowScaleX
+    self.inventorySegments.endLeft.xPos_open=2*WINDOWSCALE_X
+    self.inventorySegments.endLeft.xPos_current=2*WINDOWSCALE_X
+    self.inventorySegments.endLeft.xPos_closed=2*WINDOWSCALE_X
+    self.inventorySegments.endLeft.yPos=self.inv_yPos-WINDOWSCALE_X
 
     self.inventorySegments.endRight={} --right endpiece segment
     self.inventorySegments.endRight.sprite=love.graphics.newImage('assets/hud_inv_endright.png')
-    self.inventorySegments.endRight.xPos_open=292*windowScaleX
-    self.inventorySegments.endRight.xPos_current=26*windowScaleX
-    self.inventorySegments.endRight.xPos_closed=26*windowScaleX
-    self.inventorySegments.endRight.yPos=self.inv_yPos-windowScaleX
+    self.inventorySegments.endRight.xPos_open=292*WINDOWSCALE_X
+    self.inventorySegments.endRight.xPos_current=26*WINDOWSCALE_X
+    self.inventorySegments.endRight.xPos_closed=26*WINDOWSCALE_X
+    self.inventorySegments.endRight.yPos=self.inv_yPos-WINDOWSCALE_X
 
     for i=0,14 do --add 15 inventory middle segments
         local middleSegment={}
         middleSegment.sprite=self.inv_middle 
-        middleSegment.xPos_open=(7+19*i)*windowScaleX 
+        middleSegment.xPos_open=(7+19*i)*WINDOWSCALE_X 
         middleSegment.xPos_closed=self.defaultClosed
         middleSegment.xPos_current=middleSegment.xPos_closed
         middleSegment.yPos=self.inv_yPos 
@@ -36,91 +36,91 @@ function Inventory:load()
     table.insert(self.inventoryItems, 1, {
         name="chest",
         sprite=love.graphics.newImage('assets/hud_inv_chest.png'),
-        xPos_open=7*windowScaleX, xPos_current=7*windowScaleX, 
+        xPos_open=7*WINDOWSCALE_X, xPos_current=7*WINDOWSCALE_X, 
         xPos_closed=self.defaultClosed
     })
     table.insert(self.inventoryItems, 1, {
         name="arcane_shards",
         sprite=love.graphics.newImage('assets/hud_inv_arcane_shards.png'),
-        xPos_open=26*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=26*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="vial",
         sprite=love.graphics.newImage('assets/hud_inv_vial.png'),
-        xPos_open=45*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=45*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="broken_bow",
         sprite=love.graphics.newImage('assets/hud_inv_broken_bow.png'),
-        xPos_open=64*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=64*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="broken_staff",
         sprite=love.graphics.newImage('assets/hud_inv_broken_staff.png'),
-        xPos_open=83*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=83*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="arcane_orb",
         sprite=love.graphics.newImage('assets/hud_inv_arcane_orb.png'),
-        xPos_open=102*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=102*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="arcane_bowstring",
         sprite=love.graphics.newImage('assets/hud_inv_arcane_bowstring.png'),
-        xPos_open=121*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=121*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="tree_wood",
         sprite=love.graphics.newImage('assets/hud_inv_wood.png'),
-        xPos_open=140*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=140*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="rock_ore",
         sprite=love.graphics.newImage('assets/hud_inv_ore.png'),
-        xPos_open=159*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=159*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="vine_fiber",
         sprite=love.graphics.newImage('assets/hud_inv_fiber.png'),
-        xPos_open=178*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=178*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="fungi_mushroom",
         sprite=love.graphics.newImage('assets/hud_inv_mushroom.png'),
-        xPos_open=197*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=197*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="fish_raw",
         sprite=love.graphics.newImage('assets/hud_inv_fish_raw.png'),
-        xPos_open=216*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=216*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="rock_metal",
         sprite=love.graphics.newImage('assets/hud_inv_metal.png'),
-        xPos_open=235*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=235*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="tree_planks",
         sprite=love.graphics.newImage('assets/hud_inv_planks.png'),
-        xPos_open=254*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=254*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="vine_thread",
         sprite=love.graphics.newImage('assets/hud_inv_thread.png'),
-        xPos_open=273*windowScaleX, xPos_closed=self.defaultClosed,
+        xPos_open=273*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
 
@@ -130,7 +130,7 @@ function Inventory:load()
     self.state.closed=true --start out closed
     self.state.transitioning=false --transitioning between open and closed states
     
-    self.xVel=12*windowScaleX --speed of inventory segments and icons
+    self.xVel=12*WINDOWSCALE_X --speed of inventory segments and icons
     self.MAXNUM=29 --maximum number of open or closed segments and icons
     self.numClosed=self.MAXNUM --number of inventory segments and icons are in their closed position
     self.numOpen=0 --number of inventory segments and icons are in their open position
@@ -149,7 +149,7 @@ function Inventory:draw()
     for i,segment in pairs(self.inventorySegments) do 
         love.graphics.draw(
             segment.sprite,segment.xPos_current,segment.yPos,
-            nil,windowScaleX,windowScaleY
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
         )
     end
 
@@ -160,7 +160,7 @@ function Inventory:draw()
         end
         love.graphics.draw(
             icon.sprite,icon.xPos_current,self.inv_yPos,
-            nil,windowScaleX,windowScaleY
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
         )
         love.graphics.setColor(1,1,1,1)
     end

@@ -7,11 +7,11 @@ function Hud:load()
     --health and mana bar
     self.healthbar={
         sprite=love.graphics.newImage('assets/hud_healthbar.png'),
-        xPos=2*windowScaleX, yPos=2*windowScaleY
+        xPos=2*WINDOWSCALE_X, yPos=2*WINDOWSCALE_Y
     }
     self.manabar={
         sprite=love.graphics.newImage('assets/hud_manabar.png'),
-        xPos=2*windowScaleX, yPos=22*windowScaleY
+        xPos=2*WINDOWSCALE_X, yPos=22*WINDOWSCALE_Y
     }
 
     --action 'buttons' cluster
@@ -30,12 +30,12 @@ function Hud:draw()
     love.graphics.draw( --healthbar
         self.healthbar.sprite,
         self.healthbar.xPos, self.healthbar.yPos,
-        nil,windowScaleX,windowScaleY
+        nil,WINDOWSCALE_X,WINDOWSCALE_Y
     )
     love.graphics.draw( --manabar
         self.manabar.sprite,
         self.manabar.xPos, self.manabar.yPos,
-        nil,windowScaleX,windowScaleY
+        nil,WINDOWSCALE_X,WINDOWSCALE_Y
     )
 
     --action buttons
