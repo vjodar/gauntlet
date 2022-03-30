@@ -6,6 +6,7 @@ function CraftingNodes:load()
     self.sprites.grill=love.graphics.newImage('assets/crafting_grill.png')
     self.sprites.sawmill=love.graphics.newImage('assets/crafting_sawmill.png')
     self.sprites.spinning_wheel=love.graphics.newImage('assets/crafting_spinning_wheel.png')
+    self.sprites.crafting_table=love.graphics.newImage('assets/crafting_table.png')
 
     self.grids={} --animation grids
     self.grids.furnace=anim8.newGrid(
@@ -44,7 +45,8 @@ function CraftingNodes:load()
     self.offsets.grill={x=9.5,y=14.5}
     self.offsets.sawmill={x=11.5,y=13}
     self.offsets.spinning_wheel={x=10,y=15}
-
+    self.offsets.crafting_table={x=16,y=12}
+    
     self.items={} --items the crafting node will spawn
     self.items.furnace='rock_metal'
     self.items.grill='fish_cooked'
@@ -57,17 +59,19 @@ function CraftingNodes:load()
     self.reqItems.tree_planks='tree_wood'
     self.reqItems.vine_thread='vine_fiber'
 
-    self.shadows={} --shadows
+    self.shadows={} --shadows (will cause bugs if more than a single of each node)
     self.shadows.furnace=Shadows:newShadow('furnace')
     self.shadows.grill=Shadows:newShadow('grill')
     self.shadows.sawmill=Shadows:newShadow('sawmill')
     self.shadows.spinning_wheel=Shadows:newShadow('spinning_wheel')
+    self.shadows.crafting_table=Shadows:newShadow('crafting_table')
 
     self.colliderSizes={} --collider widths, heights, and corner sizes
     self.colliderSizes.furnace={w=25,h=8,c=3}
     self.colliderSizes.grill={w=19,h=8,c=3}
     self.colliderSizes.sawmill={w=23,h=4,c=1}
     self.colliderSizes.spinning_wheel={w=20,h=4,c=1}
+    self.colliderSizes.crafting_table={w=32,h=12,c=3}
 
     self.particleSprites={} --particle sprites
     self.particleSprites.furnace=love.graphics.newImage('assets/crafting_furnace_particle.png')
@@ -126,6 +130,8 @@ function CraftingNodes:load()
 end
 
 function CraftingNodes:spawnCraftingNode(_type,_x,_y)
+    if _type=='crafting_table' then self:spawnEnchantedCraftingTable(_x,_y) return end
+    
     local node={}
 
     function node:load()
@@ -234,6 +240,54 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
         if Player.inventory[self.reqItem]>0 then 
             self.state.craftProgress=self.state.craftProgress+dt
         end
+    end
+
+    node:load()
+end
+
+--seperate function for spawning the enchanted crafting table as its 
+--functionality is very different from the four basic crafting nodes.
+function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
+    local node={}
+
+    function node:load()
+        --sprite
+        self.sprite=CraftingNodes.sprites.crafting_table
+        self.xOffset=CraftingNodes.offsets.crafting_table.x 
+        self.yOffset=CraftingNodes.offsets.crafting_table.y 
+
+        --shadow
+        self.shadow=CraftingNodes.shadows.crafting_table 
+
+        --collider and vectors
+        self.collider=world:newBSGRectangleCollider(
+            _x,_y, --position
+            CraftingNodes.colliderSizes.crafting_table.w, --width
+            CraftingNodes.colliderSizes.crafting_table.h, --height            
+            CraftingNodes.colliderSizes.crafting_table.c  --corner size
+        )
+        self.collider:setType('static')
+        self.collider:setCollisionClass('craftingNode')
+        self.collider:setObject(node)
+        --position origin is center of collider
+        self.xPos,self.yPos=self.collider:getPosition() 
+
+        --inset into entitiesTable for dynamic draw and update order
+        table.insert(Entities.entitiesTable,node) 
+    end
+
+    function node:update()
+
+    end
+
+    function node:draw()
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow first
+        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,self.xOffset,self.yOffset)
+    end
+
+    function node:nodeInteract()
+        table.insert(gameStates,CraftingMenuState)
+        CraftingMenuState:setPosition(Player.xPos,Player.yPos)
     end
 
     node:load()

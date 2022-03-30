@@ -44,12 +44,6 @@ function PlayState:update()
 
     Hud:update() --update Heads Up Display
 
-    --For testing----------------------
-    if acceptInput then 
-        if releasedKey=='escape' then love.event.quit() end --easy close for devs.
-    end
-    --For testing----------------------
-
     return true --IMPORTANT! return true to remain on statestack
 end
 

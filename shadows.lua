@@ -23,6 +23,7 @@ function Shadows:load()
     self.grill=love.graphics.newImage('assets/shadow_grill.png') --17,8
     self.sawmill=love.graphics.newImage('assets/shadow_sawmill.png') --23,6
     self.spinning_wheel=love.graphics.newImage('assets/shadow_spinning_wheel.png') --20,6
+    self.crafting_table=love.graphics.newImage('assets/shadow_crafting_table.png') --placeholder
 
     self.arcane_bowstring=love.graphics.newImage('assets/shadow_tiny.png') --11,6
     self.arcane_orb=love.graphics.newImage('assets/shadow_vial.png') --10,6

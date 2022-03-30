@@ -22,10 +22,11 @@ function Dungeon:load()
 end
 
 function Dungeon:spawnCraftingNodes(_x,_y)
-    CraftingNodes:spawnCraftingNode('furnace',_x+130,_y+130)
-    CraftingNodes:spawnCraftingNode('grill',_x+230,_y+130)
-    CraftingNodes:spawnCraftingNode('sawmill',_x+130,_y+230)
-    CraftingNodes:spawnCraftingNode('spinning_wheel',_x+230,_y+230)
+    CraftingNodes:spawnCraftingNode('furnace',_x+68,_y+84)
+    CraftingNodes:spawnCraftingNode('grill',_x+294,_y+84)
+    CraftingNodes:spawnCraftingNode('sawmill',_x+68,_y+248)
+    CraftingNodes:spawnCraftingNode('spinning_wheel',_x+294,_y+248)
+    CraftingNodes:spawnCraftingNode('crafting_table',_x+181,_y+160)
 end
 
 function Dungeon:update()

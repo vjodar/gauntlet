@@ -57,8 +57,8 @@ function TimerState:tweenPos(_obj,_endPos,_time)
     table.insert(self.timers,{ 
         t=_time,
         obj=_obj,
-        velX=(_endPos.xPos-_obj.xPos)/_time,
-        velY=(_endPos.yPos-_obj.yPos)/_time,
+        velX=math.floor((_endPos.xPos-_obj.xPos)/_time),
+        velY=math.floor((_endPos.yPos-_obj.yPos)/_time),
         update=function(self)
             if self.t<=0 then return false end --timer is complete, remove this timer from timers
             --move object, decrement t

@@ -1,6 +1,7 @@
 require 'timerState'
 require 'playState'
 require 'camPanState'
+require 'craftingMenuState'
 require 'entities'
 require 'player'
 require 'dungeon'
@@ -38,8 +39,10 @@ function love.load()
     --Initial game state 
     table.insert(gameStates,PlayState)
 
-    --Initialize all states in gamestates
-    for i,state in pairs(gameStates) do state:load() end
+    --Initialize all states in gamestates that need loading
+    TimerState:load()
+    PlayState:load()
+    CraftingMenuState:load()
 end
 
 function love.update(_dt)
@@ -54,12 +57,18 @@ function love.update(_dt)
         --run each state in gameStates, remove any that return false
         if not state:update()==true then table.remove(gameStates,i) end 
     end
+
+    --For testing----------------------
+    if acceptInput then 
+        if releasedKey=='escape' then love.event.quit() end --easy close for devs.
+    end
+    --For testing----------------------
 end
 
 function love.draw()
     for i,state in pairs(gameStates) do state:draw() end 
     --Debug-----------------------------------------
-    --love.graphics.print(#gameStates,1000,0)
+    -- love.graphics.print(#gameStates,1000,0)
     --for i,timer in pairs(TimerState.timers) do
     --    love.graphics.print(timer.t,0,i*10)
     --end

@@ -13,7 +13,7 @@ function Player:load()
     self.moveSpeedDiag=self.moveSpeed*0.61
 
     --sprites and animations
-    self.spriteSheet=love.graphics.newImage('assets/armor_full_t3.png')
+    self.spriteSheet=love.graphics.newImage('assets/hero.png')
     self.grid=anim8.newGrid(16,22,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
     self.animations={} --anmations table
     self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
@@ -132,31 +132,33 @@ function Player:move()
 end
 
 --Query the world for any nearby resource nodes. If there is one nearby,
---begin harvesting it's resource by calling the node's harvestResource function
---also used for door buttons to open/reveal adjacent rooms.
+--set HUD combatInteract action button to show player that they can interact with it.
+--if player presses the action button, call node's nodeInteract() function to
+--harvest resources / craft items / open or reveal adjascent rooms
 function Player:query()
     local nodeColliders=world:queryRectangleArea(
-        self.xPos-9,self.yPos-6,18,12,{'resourceNode','doorButton','craftingNode'}
+        self.xPos-9,self.yPos-6,18,12, --where to query
+        {'resourceNode','doorButton','craftingNode'} --what to query for
     )
-        if #nodeColliders>0 then --found a resource node
-            --gets the resourceNode object attached to the collider
-            local nearbyNode=nodeColliders[1]:getObject()
+    if #nodeColliders>0 then --found a resource node
+        --gets the resourceNode object attached to the collider
+        local nearbyNode=nodeColliders[1]:getObject()
 
-            --set combatInteract button state to update sprite 
-            ActionButtons.combatInteract:setNodeNearPlayer(true)
+        --set combatInteract button state to update sprite 
+        ActionButtons.combatInteract:setNodeNearPlayer(true)
 
-            if love.keyboard.isDown('x') then 
-                --face player toward that node
-                if nearbyNode.xPos<self.xPos then self.state.facing='left' 
-                else self.state.facing='right' end
+        if love.keyboard.isDown('x') then 
+            --face player toward that node
+            if nearbyNode.xPos<self.xPos then self.state.facing='left' 
+            else self.state.facing='right' end
 
-                --interact with node by calling its 'nodeInteract' function
-                nearbyNode:nodeInteract()
-            end
-        else
-            --set combatInteract button state to update sprite 
-            ActionButtons.combatInteract:setNodeNearPlayer(false)
-        end 
+            --interact with node by calling its 'nodeInteract' function
+            nearbyNode:nodeInteract()
+        end
+    else
+        --set combatInteract button state to update sprite 
+        ActionButtons.combatInteract:setNodeNearPlayer(false)
+    end 
 end
 
 --Called by items when they collide with player
