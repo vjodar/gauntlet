@@ -55,8 +55,11 @@ function ActionButtons:addActionButtonWeapons()
     local button={}
 
     --sprites and animations
-    button.spriteSheet=love.graphics.newImage('assets/hud_action_weapons.png')
-    button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
+    button.spriteSheet={
+        bow=love.graphics.newImage('assets/hud_action_weapons_bow.png'),
+        staff=love.graphics.newImage('assets/hud_action_weapons_staff.png')
+    }
+    button.grid=anim8.newGrid(24,24,button.spriteSheet.bow:getWidth(),button.spriteSheet.bow:getHeight())
     button.animations={}
     button.animations.forward=anim8.newAnimation(
         button.grid('1-19',1), 0.015,
@@ -120,12 +123,27 @@ function ActionButtons:addActionButtonWeapons()
     end
 
     function button:draw()
-        button.currentAnim:draw(
-            button.spriteSheet,
+        if Player.weapons.bow=='bow_t0' then --reduce alpha when player has no bow
+            love.graphics.setColor(1,1,1,0.7)
+        end
+        button.currentAnim:draw( --draw bow half
+            button.spriteSheet.bow,
             love.graphics.getWidth()-60*WINDOWSCALE_X,
             love.graphics.getHeight()-70*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
+        love.graphics.setColor(1,1,1,1) --restore alpha
+
+        if Player.weapons.staff=='staff_t0' then --reduce alpha when player has no staff
+            love.graphics.setColor(1,1,1,0.7)
+        end
+        button.currentAnim:draw( --draw staff half
+            button.spriteSheet.staff,
+            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            love.graphics.getHeight()-70*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
+        )
+        love.graphics.setColor(1,1,1,1) --restore alpha
     end
 
     return button 
@@ -135,8 +153,11 @@ function ActionButtons:addActionButtonSupplies()
     local button={}
 
     --sprites and animations
-    button.spriteSheet=love.graphics.newImage('assets/hud_action_supplies.png')
-    button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
+    button.spriteSheet={
+        fish=love.graphics.newImage('assets/hud_action_supplies_fish.png'),
+        potion=love.graphics.newImage('assets/hud_action_supplies_potion.png')
+    }
+    button.grid=anim8.newGrid(24,24,button.spriteSheet.fish:getWidth(),button.spriteSheet.fish:getHeight())
     button.animations={}
     button.animations.forward=anim8.newAnimation(
         button.grid('1-19',1), 0.015,
@@ -200,12 +221,27 @@ function ActionButtons:addActionButtonSupplies()
     end
 
     function button:draw()
-        button.currentAnim:draw(
-            button.spriteSheet,
+        if Player.suppliesPouch.fish_cooked==0 then --reduce alpha when out of fish
+            love.graphics.setColor(1,1,1,0.7)
+        end
+        button.currentAnim:draw( --draw fish half
+            button.spriteSheet.fish,
             love.graphics.getWidth()-80*WINDOWSCALE_X,
             love.graphics.getHeight()-50*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
+        love.graphics.setColor(1,1,1,1) --restore alpha
+
+        if Player.suppliesPouch.potion==0 then --reduce alpha when out of potions
+            love.graphics.setColor(1,1,1,0.7)
+        end
+        button.currentAnim:draw( --draw potion half
+            button.spriteSheet.potion,
+            love.graphics.getWidth()-80*WINDOWSCALE_X,
+            love.graphics.getHeight()-50*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
+        )
+        love.graphics.setColor(1,1,1,1) --restore alpha
     end
 
     return button 
@@ -215,8 +251,11 @@ function ActionButtons:addActionButtonProtectionMagics()
     local button={}
 
     --sprites and animations
-    button.spriteSheet=love.graphics.newImage('assets/hud_action_protection_magics.png')
-    button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
+    button.spriteSheet={
+        physical=love.graphics.newImage('assets/hud_action_protection_physical.png'),
+        magical=love.graphics.newImage('assets/hud_action_protection_magical.png')
+    }
+    button.grid=anim8.newGrid(24,24,button.spriteSheet.physical:getWidth(),button.spriteSheet.physical:getHeight())
     button.animations={}
     button.animations.forward=anim8.newAnimation(
         button.grid('1-19',1), 0.015,
@@ -278,12 +317,23 @@ function ActionButtons:addActionButtonProtectionMagics()
     end
 
     function button:draw()
-        button.currentAnim:draw(
-            button.spriteSheet,
+        --TODO-------------------------------
+        --set reduced alpha when player is all out of mana
+        --love.graphics.setColor(1,1,1,0.7)
+        --TODO-------------------------------
+        button.currentAnim:draw( --draw physical half
+            button.spriteSheet.physical,
             love.graphics.getWidth()-40*WINDOWSCALE_X,
             love.graphics.getHeight()-50*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
+        button.currentAnim:draw( --draw magical half
+            button.spriteSheet.magical,
+            love.graphics.getWidth()-40*WINDOWSCALE_X,
+            love.graphics.getHeight()-50*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
+        )
+        love.graphics.setColor(1,1,1,1) --restore alpha
     end
 
     return button 

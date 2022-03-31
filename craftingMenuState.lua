@@ -16,7 +16,8 @@ function CraftingMenuState:update()
             Items:spawn_item(startX,startY,'armor_head_t1')
             Items:spawn_item(startX,startY,'armor_chest_t1')
             Items:spawn_item(startX,startY,'armor_legs_t1')
-            print("hello")
+            Items:spawn_item(startX,startY,'weapon_bow_t1')
+            Items:spawn_item(startX,startY,'weapon_staff_t1')
         end
 
         if releasedKey=='z' then return false end --exit crafting menu

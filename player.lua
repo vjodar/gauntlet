@@ -32,11 +32,7 @@ function Player:load()
         idle=anim8.newAnimation(self.grid('1-4',1), 0.1),
         moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
     }
-    self.currentAnim={
-        head=self.animations.idle,
-        chest=self.animations.idle,
-        legs=self.animations.idle
-    } 
+    self.currentAnim=self.animations.idle
     self.shadow=Shadows:newShadow('medium')  --shadow
 
     --'metatable' containing info of the player's current state
@@ -47,16 +43,17 @@ function Player:load()
     self.state.movingVertially=false 
     self.state.isNearNode=false 
 
-    self.armor={ --currently equipt armor
+    self.armor={ --currently equiped armor
         --strings in order to easily draw the correct tier armor in draw()
         head='head_t0',
         chest='chest_t0',
         legs='legs_t0'
     }
 
-    self.weapons={
-        bow_tier=0,
-        staff_tier=0
+    self.weapons={ --currently equipped weapons
+    --string in order to easily draw correct sprites in draw()
+        bow='bow_t0', --tier 0 is no weapons at all; throw rocks as deafult weapon
+        staff='staff_t0'
     }
     
     self.inventory={
@@ -100,9 +97,7 @@ function Player:update()
         self:query()
     end
 
-    --Because the all three armor pieces point to the same syncronized
-    --shared animation, updating any one of them is sufficient.
-    self.currentAnim.head:update(dt) --update animations for all 3 armor pieces
+    self.currentAnim:update(dt) --update animation 
 end
 
 function Player:draw()
@@ -124,9 +119,9 @@ function Player:draw()
     end
     
     --draw the appropriate current animation for each armor piece
-    self.currentAnim.head:draw(self.spriteSheets[self.armor.head],self.xPos,self.yPos,nil,scaleX,1,8,20)
-    self.currentAnim.chest:draw(self.spriteSheets[self.armor.chest],self.xPos,self.yPos,nil,scaleX,1,8,20)
-    self.currentAnim.legs:draw(self.spriteSheets[self.armor.legs],self.xPos,self.yPos,nil,scaleX,1,8,20)
+    self.currentAnim:draw(self.spriteSheets[self.armor.head],self.xPos,self.yPos,nil,scaleX,1,8,20)
+    self.currentAnim:draw(self.spriteSheets[self.armor.chest],self.xPos,self.yPos,nil,scaleX,1,8,20)
+    self.currentAnim:draw(self.spriteSheets[self.armor.legs],self.xPos,self.yPos,nil,scaleX,1,8,20)
 end
 
 function Player:move()
@@ -205,12 +200,33 @@ function Player:addToInventory(_item)
     if _item=='fish_cooked' or _item=='potion' then --add supplies to supply pouch
         self.suppliesPouch[_item]=self.suppliesPouch[_item]+1
 
-    elseif _item=='weapon_bow_t1' or _item=='weapon_bow_t2' or _item=='weapon_bow_t3' 
-    or _item=='weapon_staff_t1' or _item=='weapon_staff_t2' or _item=='weapon_staff_t3'
-    then --add weapons to player's current weapon
-        --TODO--------------------
-        -- maybe have a 'current weapon' for both bow and staff and update them here
-        --TODO--------------------
+    -- Bow weapon
+    elseif _item=='weapon_bow_t1' then 
+        if self.weapons.bow=='bow_t0' then 
+            self.weapons.bow='bow_t1'
+        else print('cannot equip that weapon') end
+    elseif _item=='weapon_bow_t2' then 
+        if self.weapons.bow=='bow_t1' then 
+            self.weapons.bow='bow_t2'
+        else print('cannot equip that weapon') end
+    elseif _item=='weapon_bow_t3' then 
+        if self.weapons.bow=='bow_t2' then 
+            self.weapons.bow='bow_t3'
+        else print('cannot equip that weapon') end
+
+    -- Staff weapon
+    elseif _item=='weapon_staff_t1' then 
+        if self.weapons.staff=='staff_t0' then 
+            self.weapons.staff='staff_t1'
+        else print('cannot equip that weapon') end
+    elseif _item=='weapon_staff_t2' then 
+        if self.weapons.staff=='staff_t1' then 
+            self.weapons.staff='staff_t2'
+        else print('cannot equip that weapon') end
+    elseif _item=='weapon_staff_t3' then 
+        if self.weapons.staff=='staff_t2' then 
+            self.weapons.staff='staff_t3'
+        else print('cannot equip that weapon') end
 
     -- Head armors
     elseif _item=='armor_head_t1' then 
