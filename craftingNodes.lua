@@ -210,8 +210,8 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
             --spawn appropriate item
             Items:spawn_item(startX,startY,self.item)
 
-            --decrease count of the required item from player and HUD
-            Player:removeFromInventory(self.reqItem)
+            --decrease count of the required item from player and HUD by 1
+            Player:removeFromInventory(self.reqItem,1)
 
             self.state.craftProgress=0 --reset craftProgress
         end
@@ -246,7 +246,7 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
 end
 
 --seperate function for spawning the enchanted crafting table as its 
---functionality is very different from the four basic crafting nodes.
+--functionality is different from the four basic crafting nodes.
 function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
     local node={}
 

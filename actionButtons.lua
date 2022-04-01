@@ -123,7 +123,7 @@ function ActionButtons:addActionButtonWeapons()
     end
 
     function button:draw()
-        if Player.weapons.bow=='bow_t0' then --reduce alpha when player has no bow
+        if Player.currentGear.weapons.bow=='bow_t0' then --reduce alpha when player has no bow
             love.graphics.setColor(1,1,1,0.7)
         end
         button.currentAnim:draw( --draw bow half
@@ -134,7 +134,7 @@ function ActionButtons:addActionButtonWeapons()
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
 
-        if Player.weapons.staff=='staff_t0' then --reduce alpha when player has no staff
+        if Player.currentGear.weapons.staff=='staff_t0' then --reduce alpha when player has no staff
             love.graphics.setColor(1,1,1,0.7)
         end
         button.currentAnim:draw( --draw staff half

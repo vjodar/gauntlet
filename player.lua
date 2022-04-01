@@ -25,7 +25,13 @@ function Player:load()
         legs_t0=love.graphics.newImage('assets/armor_legs_t0.png'),
         legs_t1=love.graphics.newImage('assets/armor_legs_t1.png'),
         legs_t2=love.graphics.newImage('assets/armor_legs_t2.png'),
-        legs_t3=love.graphics.newImage('assets/armor_legs_t3.png')
+        legs_t3=love.graphics.newImage('assets/armor_legs_t3.png'),
+        bow_t1=love.graphics.newImage('assets/weapon_bow_t1.png'),
+        bow_t2=love.graphics.newImage('assets/weapon_bow_t2.png'),
+        bow_t3=love.graphics.newImage('assets/weapon_bow_t3.png'),
+        staff_t1=love.graphics.newImage('assets/weapon_staff_t1.png'),
+        staff_t2=love.graphics.newImage('assets/weapon_staff_t2.png'),
+        staff_t3=love.graphics.newImage('assets/weapon_staff_t3.png')
     }
     self.grid=anim8.newGrid(16,22,self.spriteSheets.head_t0:getWidth(),self.spriteSheets.head_t0:getHeight())
     self.animations={ --animations for each armor piece and tier
@@ -42,22 +48,9 @@ function Player:load()
     self.state.movingHorizontally=false 
     self.state.movingVertially=false 
     self.state.isNearNode=false 
-
-    self.armor={ --currently equiped armor
-        --strings in order to easily draw the correct tier armor in draw()
-        head='head_t0',
-        chest='chest_t0',
-        legs='legs_t0'
-    }
-
-    self.weapons={ --currently equipped weapons
-    --string in order to easily draw correct sprites in draw()
-        bow='bow_t0', --tier 0 is no weapons at all; throw rocks as deafult weapon
-        staff='staff_t0'
-    }
     
     self.inventory={
-        arcane_shards=0,
+        arcane_shards=4000, --test amount
         vial=0,
         broken_bow=0,
         broken_staff=0,
@@ -71,11 +64,34 @@ function Player:load()
         rock_metal=0,
         tree_planks=0,
         vine_thread=0,
+
+        armor_head_t1=0,
+        armor_head_t2=0,
+        armor_head_t3=0,
+        armor_chest_t1=0,
+        armor_chest_t2=0,
+        armor_chest_t3=0,
+        armor_legs_t1=0,
+        armor_legs_t2=0,
+        armor_legs_t3=0,
+
+        weapon_bow_t1=0,
+        weapon_bow_t2=0,
+        weapon_bow_t3=0,
+        weapon_staff_t1=0,
+        weapon_staff_t2=0,
+        weapon_staff_t3=0
     }
 
     self.suppliesPouch={
         fish_cooked=0,
         potion=0
+    }
+
+    --currently equipped weapons and armor, used mainly for easy draw()
+    self.currentGear={ 
+        weapons={bow='bow_t0',staff='staff_t0'},
+        armor={head='head_t0',chest='chest_t0',legs='legs_t0'}
     }
 
     table.insert(Entities.entitiesTable,self)
@@ -109,19 +125,24 @@ function Player:draw()
 
     --update current animation based on self.state
     if self.state.moving==true then 
-        self.currentAnim.head=self.animations.moving 
-        self.currentAnim.chest=self.animations.moving 
-        self.currentAnim.legs=self.animations.moving 
+        self.currentAnim=self.animations.moving 
     else --defaults to idle animation
-        self.currentAnim.head=self.animations.idle 
-        self.currentAnim.chest=self.animations.idle 
-        self.currentAnim.legs=self.animations.idle 
+        self.currentAnim=self.animations.idle 
     end
     
     --draw the appropriate current animation for each armor piece
-    self.currentAnim:draw(self.spriteSheets[self.armor.head],self.xPos,self.yPos,nil,scaleX,1,8,20)
-    self.currentAnim:draw(self.spriteSheets[self.armor.chest],self.xPos,self.yPos,nil,scaleX,1,8,20)
-    self.currentAnim:draw(self.spriteSheets[self.armor.legs],self.xPos,self.yPos,nil,scaleX,1,8,20)
+    self.currentAnim:draw(
+        self.spriteSheets[self.currentGear.armor.head],
+        self.xPos,self.yPos,nil,scaleX,1,8,20
+    )
+    self.currentAnim:draw(
+        self.spriteSheets[self.currentGear.armor.chest],
+        self.xPos,self.yPos,nil,scaleX,1,8,20
+    )
+    self.currentAnim:draw(
+        self.spriteSheets[self.currentGear.armor.legs],
+        self.xPos,self.yPos,nil,scaleX,1,8,20
+    )
 end
 
 function Player:move()
@@ -200,75 +221,15 @@ function Player:addToInventory(_item)
     if _item=='fish_cooked' or _item=='potion' then --add supplies to supply pouch
         self.suppliesPouch[_item]=self.suppliesPouch[_item]+1
 
-    -- Bow weapon
-    elseif _item=='weapon_bow_t1' then 
-        if self.weapons.bow=='bow_t0' then 
-            self.weapons.bow='bow_t1'
-        else print('cannot equip that weapon') end
-    elseif _item=='weapon_bow_t2' then 
-        if self.weapons.bow=='bow_t1' then 
-            self.weapons.bow='bow_t2'
-        else print('cannot equip that weapon') end
-    elseif _item=='weapon_bow_t3' then 
-        if self.weapons.bow=='bow_t2' then 
-            self.weapons.bow='bow_t3'
-        else print('cannot equip that weapon') end
-
-    -- Staff weapon
-    elseif _item=='weapon_staff_t1' then 
-        if self.weapons.staff=='staff_t0' then 
-            self.weapons.staff='staff_t1'
-        else print('cannot equip that weapon') end
-    elseif _item=='weapon_staff_t2' then 
-        if self.weapons.staff=='staff_t1' then 
-            self.weapons.staff='staff_t2'
-        else print('cannot equip that weapon') end
-    elseif _item=='weapon_staff_t3' then 
-        if self.weapons.staff=='staff_t2' then 
-            self.weapons.staff='staff_t3'
-        else print('cannot equip that weapon') end
-
-    -- Head armors
-    elseif _item=='armor_head_t1' then 
-        if self.armor.head=='head_t0' then 
-            self.armor.head='head_t1'
-        else print("you already have a better head armor!") end 
-    elseif _item=='armor_head_t2' then 
-        if self.armor.head=='head_t1' then 
-            self.armor.head='head_t2'
-        else print("you already have a better head armor!") end 
-    elseif _item=='armor_head_t3' then 
-        if self.armor.head=='head_t2' then 
-            self.armor.head='head_t3'
-        else print("you already have a better head armor!") end 
-        
-    -- Chest armors
-    elseif _item=='armor_chest_t1' then 
-        if self.armor.chest=='chest_t0' then 
-            self.armor.chest='chest_t1'
-        else print("you already have a better chest armor!") end 
-    elseif _item=='armor_chest_t2' then 
-        if self.armor.chest=='chest_t1' then 
-            self.armor.chest='chest_t2'
-        else print("you already have a better chest armor!") end 
-    elseif _item=='armor_chest_t3' then 
-        if self.armor.chest=='chest_t2' then 
-            self.armor.chest='chest_t3'
-        else print("you already have a better chest armor!") end 
-       
-    -- Leg armors
-    elseif _item=='armor_legs_t1' then 
-        if self.armor.legs=='legs_t0' then 
-            self.armor.legs='legs_t1'
-        else print("you already have a better leg armor!") end 
-    elseif _item=='armor_legs_t2' then 
-        if self.armor.legs=='legs_t1' then 
-            self.armor.legs='legs_t2'
-        else print("you already have a better leg armor!") end 
-    elseif _item=='armor_legs_t3' then 
-        if self.armor.legs=='legs_t2' then 
-            self.armor.legs='legs_t3'
-        else print("you already have a better leg armor!") end 
+    --add armor
+    elseif _item=='armor_head_t1' or _item=='armor_head_t2' or _item=='armor_head_t3'
+        or _item=='armor_chest_t1' or _item=='armor_chest_t2' or _item=='armor_chest_t3'
+        or _item=='armor_legs_t1' or _item=='armor_legs_t2' or _item=='armor_legs_t3'
+        or _item=='weapon_bow_t1' or _item=='weapon_bow_t2' or _item=='weapon_bow_t3'
+        or _item=='weapon_staff_t1' or _item=='weapon_staff_t2' or _item=='weapon_staff_t3'
+    then 
+        self.inventory[_item]=self.inventory[_item]+1
+        self:updateCurrentGear() --update current gear to reflect newly obtained gear
 
     else --all other items get added to inventory and HUD        
         self.inventory[_item]=self.inventory[_item]+1
@@ -276,9 +237,57 @@ function Player:addToInventory(_item)
     end
 end
 
---Called by crafting nodes when they take an item to give its processed version.
---decreases the amount of an item in player's inventory and the HUD
-function Player:removeFromInventory(_item)
-    self.inventory[_item]=self.inventory[_item]-1
-    Inventory:removeItem(_item)
+--decreasee the amount of an item in player's inventory and the HUD by an amount
+function Player:removeFromInventory(_item,_amount)
+    self.inventory[_item]=self.inventory[_item]-_amount
+    
+    --if _item is a weapon or armor, update the current gear to reflect the removal
+    if _item=='armor_head_t1' or _item=='armor_head_t2' or _item=='armor_head_t3'
+    or _item=='armor_chest_t1' or _item=='armor_chest_t2' or _item=='armor_chest_t3'
+    or _item=='armor_legs_t1' or _item=='armor_legs_t2' or _item=='armor_legs_t3'
+    or _item=='weapon_bow_t1' or _item=='weapon_bow_t2' or _item=='weapon_bow_t3'
+    or _item=='weapon_staff_t1' or _item=='weapon_staff_t2' or _item=='weapon_staff_t3'
+    then 
+        self:updateCurrentGear()
+    else --otherwise, update the HUD
+        Inventory:removeItem(_item,_amount) --remove an item count from the HUD inventory
+    end
+end
+
+--update currently equipped weapons and armor to be the highest tier gear the player owns
+function Player:updateCurrentGear()
+    --update head armor
+    if self.inventory['armor_head_t3']>0 then self.currentGear.armor.head='head_t3'
+    elseif self.inventory['armor_head_t2']>0 then self.currentGear.armor.head='head_t2'
+    elseif self.inventory['armor_head_t1']>0 then self.currentGear.armor.head='head_t1'
+    else self.currentGear.armor.head='head_t0'
+    end
+
+    --update chest armor
+    if self.inventory['armor_chest_t3']>0 then self.currentGear.armor.chest='chest_t3'
+    elseif self.inventory['armor_chest_t2']>0 then self.currentGear.armor.chest='chest_t2'
+    elseif self.inventory['armor_chest_t1']>0 then self.currentGear.armor.chest='chest_t1'
+    else self.currentGear.armor.chest='chest_t0'
+    end
+
+    --update legs armor
+    if self.inventory['armor_legs_t3']>0 then self.currentGear.armor.legs='legs_t3'
+    elseif self.inventory['armor_legs_t2']>0 then self.currentGear.armor.legs='legs_t2'
+    elseif self.inventory['armor_legs_t1']>0 then self.currentGear.armor.legs='legs_t1'
+    else self.currentGear.armor.legs='legs_t0' 
+    end
+
+    --update bow weapon
+    if self.inventory['weapon_bow_t3']>0 then self.currentGear.weapons.bow='bow_t3'
+    elseif self.inventory['weapon_bow_t2']>0 then self.currentGear.weapons.bow='bow_t2'
+    elseif self.inventory['weapon_bow_t1']>0 then self.currentGear.weapons.bow='bow_t1'
+    else self.currentGear.weapons.bow='bow_t0'
+    end
+
+    --update staff weapon
+    if self.inventory['weapon_staff_t3']>0 then self.currentGear.weapons.staff='staff_t3'
+    elseif self.inventory['weapon_staff_t2']>0 then self.currentGear.weapons.staff='staff_t2'
+    elseif self.inventory['weapon_staff_t1']>0 then self.currentGear.weapons.staff='staff_t1'
+    else self.currentGear.weapons.staff='staff_t0'
+    end
 end
