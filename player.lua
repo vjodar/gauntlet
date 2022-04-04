@@ -51,7 +51,6 @@ function Player:load()
     
     self.inventory={
         arcane_shards=4000, --test amount
-        vial=0,
         broken_bow=0,
         broken_staff=0,
         arcane_orb=0,

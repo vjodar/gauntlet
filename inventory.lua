@@ -17,12 +17,12 @@ function Inventory:load()
 
     self.inventorySegments.endRight={} --right endpiece segment
     self.inventorySegments.endRight.sprite=love.graphics.newImage('assets/hud_inv_endright.png')
-    self.inventorySegments.endRight.xPos_open=292*WINDOWSCALE_X
+    self.inventorySegments.endRight.xPos_open=274*WINDOWSCALE_X
     self.inventorySegments.endRight.xPos_current=26*WINDOWSCALE_X
     self.inventorySegments.endRight.xPos_closed=26*WINDOWSCALE_X
     self.inventorySegments.endRight.yPos=self.inv_yPos-WINDOWSCALE_X
 
-    for i=0,14 do --add 15 inventory middle segments
+    for i=0,13 do --add 14 inventory middle segments
         local middleSegment={}
         middleSegment.sprite=self.inv_middle 
         middleSegment.xPos_open=(7+19*i)*WINDOWSCALE_X 
@@ -46,81 +46,75 @@ function Inventory:load()
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
-        name="vial",
-        sprite=love.graphics.newImage('assets/hud_inv_vial.png'),
-        xPos_open=45*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
-        xPos_current=self.defaultClosed, count=0
-    })
-    table.insert(self.inventoryItems, 1, {
         name="broken_bow",
         sprite=love.graphics.newImage('assets/hud_inv_broken_bow.png'),
-        xPos_open=64*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=45*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="broken_staff",
         sprite=love.graphics.newImage('assets/hud_inv_broken_staff.png'),
-        xPos_open=83*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=64*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="arcane_orb",
         sprite=love.graphics.newImage('assets/hud_inv_arcane_orb.png'),
-        xPos_open=102*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=83*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="arcane_bowstring",
         sprite=love.graphics.newImage('assets/hud_inv_arcane_bowstring.png'),
-        xPos_open=121*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=102*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="tree_wood",
         sprite=love.graphics.newImage('assets/hud_inv_wood.png'),
-        xPos_open=140*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=121*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="rock_ore",
         sprite=love.graphics.newImage('assets/hud_inv_ore.png'),
-        xPos_open=159*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=140*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="vine_fiber",
         sprite=love.graphics.newImage('assets/hud_inv_fiber.png'),
-        xPos_open=178*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=159*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="fungi_mushroom",
         sprite=love.graphics.newImage('assets/hud_inv_mushroom.png'),
-        xPos_open=197*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=178*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="fish_raw",
         sprite=love.graphics.newImage('assets/hud_inv_fish_raw.png'),
-        xPos_open=216*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=197*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="rock_metal",
         sprite=love.graphics.newImage('assets/hud_inv_metal.png'),
-        xPos_open=235*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=216*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="tree_planks",
         sprite=love.graphics.newImage('assets/hud_inv_planks.png'),
-        xPos_open=254*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=235*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="vine_thread",
         sprite=love.graphics.newImage('assets/hud_inv_thread.png'),
-        xPos_open=273*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
+        xPos_open=254*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
 
@@ -131,7 +125,7 @@ function Inventory:load()
     self.state.transitioning=false --transitioning between open and closed states
     
     self.xVel=12*WINDOWSCALE_X --speed of inventory segments and icons
-    self.MAXNUM=29 --maximum number of open or closed segments and icons
+    self.MAXNUM=27 --maximum number of open or closed segments and icons
     self.numClosed=self.MAXNUM --number of inventory segments and icons are in their closed position
     self.numOpen=0 --number of inventory segments and icons are in their open position
 end
@@ -229,6 +223,12 @@ function Inventory:move()
             self.state.transitioning=false 
         end
     end
+end
+
+--opens the inventory only when already closed. 
+--Used by craftingMenuState to open players inventory when they are crafting.
+function Inventory:open()
+    if self.state.closed==true then self.state.transitioning=true end 
 end
 
 --increase the count of a given item in inventoryItems table

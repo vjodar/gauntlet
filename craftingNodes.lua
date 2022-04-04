@@ -287,7 +287,7 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
 
     function node:nodeInteract()
         table.insert(gameStates,CraftingMenuState)
-        CraftingMenuState:setPosition(Player.xPos,Player.yPos)
+        CraftingMenuState:openCraftingMenu(Player.xPos,Player.yPos)
     end
 
     node:load()

@@ -57,10 +57,17 @@ function TimerState:tweenPos(_obj,_endPos,_time)
     table.insert(self.timers,{ 
         t=_time,
         obj=_obj,
+        endX=_endPos.xPos,
+        endY=_endPos.yPos,
         velX=math.floor((_endPos.xPos-_obj.xPos)/_time),
         velY=math.floor((_endPos.yPos-_obj.yPos)/_time),
         update=function(self)
-            if self.t<=0 then return false end --timer is complete, remove this timer from timers
+            if self.t<=0 then --timer is complete
+                --snap to exact end position
+                self.obj.xPos=self.endX
+                self.obj.yPos=self.endY
+                return false --return false to remove this timer
+            end 
             --move object, decrement t
             self.obj.xPos=self.obj.xPos+self.velX*dt
             self.obj.yPos=self.obj.yPos+self.velY*dt
@@ -76,13 +83,17 @@ function TimerState:tweenVal(_obj,_property,_endVal,_time)
         t=_time,
         obj=_obj,
         prop=_property,
+        endVal=_endVal,
         delta=(_endVal-_obj[_property])/_time,
         update=function(self)
-            if self.t<=0 then return false end --timer complete, remove from state
+            if self.t<=0 then --timer is complete                
+                self.obj[self.prop]=self.endVal --snap to exact end value
+                return false --return false to remove this timer
+            end 
             --increment object's property by delta
-            self.obj[self.prop]=self.obj[self.prop]+self.delta
+            self.obj[self.prop]=self.obj[self.prop]+self.delta*dt
             self.t=self.t-dt 
-            return true --remain on state
+            return true
         end
     })
 end

@@ -26,12 +26,11 @@ function Shadows:load()
     self.crafting_table=love.graphics.newImage('assets/shadow_crafting_table.png') --placeholder
 
     self.arcane_bowstring=love.graphics.newImage('assets/shadow_tiny.png') --11,6
-    self.arcane_orb=love.graphics.newImage('assets/shadow_vial.png') --10,6
+    self.arcane_orb=love.graphics.newImage('assets/shadow_potion.png') --10,6
     self.arcane_shards=love.graphics.newImage('assets/shadow_tiny.png') --12,6
     self.broken_bow=love.graphics.newImage('assets/shadow_small.png') --12,6
     self.broken_staff=love.graphics.newImage('assets/shadow_broken_staff.png') --not elipse 
-    self.vial=love.graphics.newImage('assets/shadow_vial.png') --10,6
-    self.potion=love.graphics.newImage('assets/shadow_vial.png') --10,6
+    self.potion=love.graphics.newImage('assets/shadow_potion.png') --10,6
 
     self.weapon_bow_t1=love.graphics.newImage('assets/shadow_weapon.png') --8,5
     self.weapon_bow_t2=love.graphics.newImage('assets/shadow_weapon.png') --8,5

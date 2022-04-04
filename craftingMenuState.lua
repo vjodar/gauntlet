@@ -3,6 +3,7 @@ CraftingMenuState={}
 function CraftingMenuState:load()
     self.craftingMenuSprite=love.graphics.newImage('assets/crafting_menu_ui.png')
     self.xPos,self.yPos=0,0
+    self.alpha=0
 
     --items and their quantities required to craft each item
     self.reqs={
@@ -90,23 +91,24 @@ function CraftingMenuState:load()
             {name='weapon_staff_t2',quantity=1},
             {name='arcane_orb',quantity=1},
         },
-        vial={
-            {name='arcane_shards',quantity=10},
-        },
         potion={
-            {name='arcane_shards',quantity=1},
-            {name='vial',quantity=1},
+            {name='arcane_shards',quantity=10},
+            {name='fungi_mushroom',quantity=1},
         }
     }
 end
 
 function CraftingMenuState:update()
+    Inventory:open() --open HUD inventory to show players their items.
+
     if acceptInput then 
         if releasedKey=='x' then 
             self:craft('potion') --testing
         end
 
-        if releasedKey=='z' then return false end --exit crafting menu
+        if releasedKey=='z' then --exit crafting menu
+            return false 
+        end 
     end
 
     return true --return true to remain on gamestate stack
@@ -116,26 +118,32 @@ function CraftingMenuState:draw()
     cam:attach()
 
     --fade out playstate
-    love.graphics.setColor(0,0,0,0.7)
+    love.graphics.setColor(0,0,0,self.alpha)
     love.graphics.rectangle('fill',self.xPos-200,self.yPos-150,400,300)
-    love.graphics.setColor(1,1,1,1)
+    love.graphics.setColor(1,1,1,self.alpha+0.5)
 
     --draw crafting menu
     love.graphics.draw(self.craftingMenuSprite,self.xPos-200,self.yPos-150,nil,1,1)
 
-    --draw crafting menu HUD
+    cam:detach()
+
+    --draw HUD again to keep it on top of menu
+    Hud:draw()
+end
+
+--opens the crafting menu. Called by the enchanted crafting table craftingNode
+function CraftingMenuState:openCraftingMenu(_x,_y)
+    self.xPos=_x
+    self.yPos=_y
+
+    self.alpha=0
+
+    TimerState:tweenVal(self,'alpha',0.7,0.2)
+    
     --TODO------------------------
     -- combatInteract button should be accept/craft item
     -- supplies button should be return to game
     --TODO------------------------
-
-    cam:detach()
-end
-
---sets the position of the menu when the player interacts with crafting table
-function CraftingMenuState:setPosition(_x,_y)
-    self.xPos=_x
-    self.yPos=_y
 end
 
 --Craft the item as long as player has all the necessary components
