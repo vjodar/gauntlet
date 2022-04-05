@@ -18,6 +18,7 @@ function PlayState:load()
     world:addCollisionClass('doorButtonActivated')
     world:addCollisionClass('item', {ignores={'player'}})
     world:addCollisionClass('doorBarrier')
+    world:addCollisionClass('ladder')
 
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
@@ -76,19 +77,18 @@ function PlayState:start()
 
     --testing------------------------------------
     print('adding crafting resources')
-    for i=1,10 do 
-        Player:addToInventory('tree_planks')
-        Player:addToInventory('rock_metal')
-        Player:addToInventory('vine_thread')
-        Player:addToInventory('fish_raw')
-    end
-    Player:addToInventory('broken_bow')
-    Player:addToInventory('broken_staff')
-    Player:addToInventory('arcane_orb')
-    Player:addToInventory('arcane_bowstring')
-    print('adding arcane_shards')
-    for i=1,1000 do 
-        Player:addToInventory('arcane_shards')
-    end
+    Player:addToInventory('tree_planks',10)
+    Player:addToInventory('rock_metal',10)
+    Player:addToInventory('vine_thread',10)
+    Player:addToInventory('fish_raw',10)
+    Player:addToInventory('broken_bow',1)
+    Player:addToInventory('broken_staff',1)
+    Player:addToInventory('arcane_orb',1)
+    Player:addToInventory('arcane_bowstring',1)
+    Player:addToInventory('arcane_shards',1000)
+    -- for i=1,10 do 
+    --     Items:spawn_item(playerStartX,playerStartY,'arcane_shards')
+    --     Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')
+    -- end
     --testing------------------------------------
 end

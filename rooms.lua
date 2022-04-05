@@ -40,6 +40,9 @@ function Rooms:load()
     self.lightSprites.top=love.graphics.newImage('assets/maps/room_light_top.png')
     self.lightSprites.bottom=love.graphics.newImage('assets/maps/room_light_bottom.png')
     self.lightSprites.side=love.graphics.newImage('assets/maps/room_light_side.png')
+
+    --ladder sprite
+    self.ladderSprite=love.graphics.newImage('assets/ladder.png')
     
     DoorButton:load() --initialize DoorButton class
     Walls:load() --initialize Walls class
@@ -147,8 +150,8 @@ function Rooms:newRoom(_coordinates)
     self:manageAdjacentBarriers(room)
 
     if room.coordinates[1]==4 and room.coordinates[2]==4 then
-        --boss room, spawn only the boss
-        self:spawnEnemies(room) 
+        --center room, spawn the ladder that leads to the boss room
+        self:spawnLadder(room) 
     elseif room.coordinates[1]==Dungeon.startRoom[1] 
         and room.coordinates[2]==Dungeon.startRoom[2] then 
         --base/starting room, spawn only crafting nodes
@@ -848,15 +851,10 @@ function Rooms:spawnEnemies(_room)
     spawnZoneT3.x1=room.xPos+96
     spawnZoneT3.x2=spawnZoneT3.x1+192
     spawnZoneT3.y1=room.yPos+96
-    spawnZoneT3.y2=spawnZoneT3.y1+128
-
-    --choose the tier of enemies to spawn based on the room coordinates
-    if room.coordinates[1]==4 and room.coordinates[2]==4 then --boss room
-        Enemies:fillRoomT3(spawnZone)
-        Enemies:fillRoomT3(spawnZone)
+    spawnZoneT3.y2=spawnZoneT3.y1+128  
 
     --inner ring, only spawn T1 enemies
-    elseif (room.coordinates[1]==3 or room.coordinates[1]==4 or room.coordinates[1]==5) 
+    if (room.coordinates[1]==3 or room.coordinates[1]==4 or room.coordinates[1]==5) 
         and (room.coordinates[2]==3 or room.coordinates[2]==4 or room.coordinates[2]==5) then
         Enemies:fillRoomT1(spawnZone)
 
@@ -883,4 +881,36 @@ function Rooms:spawnEnemies(_room)
             Enemies:fillRoomT2(spawnZone)
         end
     end
+end
+
+function Rooms:spawnLadder(_room)
+    local ladder={}
+
+    function ladder:load()
+        self.sprite=Rooms.ladderSprite
+        self.collider=world:newBSGRectangleCollider( --place in center of room
+            _room.xPos+Rooms.ROOMWIDTH*0.5-8,
+            _room.yPos+Rooms.ROOMHEIGHT*0.5-4,
+            16,8,2
+        )
+        self.xPos, self.yPos = self.collider:getPosition()
+        self.collider:setType('static')
+        self.collider:setFixedRotation(true)
+        self.collider:setCollisionClass('ladder')
+        self.collider:setObject(self) --attach collider to this object
+
+        table.insert(Entities.entitiesTable,self)
+    end
+
+    function ladder:update() end
+
+    function ladder:draw()
+        love.graphics.draw(self.sprite,self.xPos-8,self.yPos-8)
+    end
+
+    function ladder:nodeInteract()
+        print('descending into the boss chamber')
+    end
+
+    ladder:load()
 end

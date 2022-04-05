@@ -190,7 +190,7 @@ end
 function Player:query()
     local nodeColliders=world:queryRectangleArea(
         self.xPos-9,self.yPos-6,18,12, --where to query
-        {'resourceNode','doorButton','craftingNode'} --what to query for
+        {'resourceNode','doorButton','craftingNode','ladder'} --what to query for
     )
     if #nodeColliders>0 then --found a resource node
         --gets the resourceNode object attached to the collider
@@ -215,10 +215,10 @@ end
 
 --Called by items when they collide with player
 --increments the amount of an item in the player's inventory as well as in the HUD
-function Player:addToInventory(_item)
+function Player:addToInventory(_item,_amount)
     
     if _item=='fish_cooked' or _item=='potion' then --add supplies to supply pouch
-        self.suppliesPouch[_item]=self.suppliesPouch[_item]+1
+        self.suppliesPouch[_item]=self.suppliesPouch[_item]+_amount
 
     --add armor
     elseif _item=='armor_head_t1' or _item=='armor_head_t2' or _item=='armor_head_t3'
@@ -227,12 +227,12 @@ function Player:addToInventory(_item)
         or _item=='weapon_bow_t1' or _item=='weapon_bow_t2' or _item=='weapon_bow_t3'
         or _item=='weapon_staff_t1' or _item=='weapon_staff_t2' or _item=='weapon_staff_t3'
     then 
-        self.inventory[_item]=self.inventory[_item]+1
+        self.inventory[_item]=self.inventory[_item]+_amount
         self:updateCurrentGear() --update current gear to reflect newly obtained gear
 
     else --all other items get added to inventory and HUD        
-        self.inventory[_item]=self.inventory[_item]+1
-        Inventory:addItem(_item)
+        self.inventory[_item]=self.inventory[_item]+_amount
+        Inventory:addItem(_item,_amount)
     end
 end
 

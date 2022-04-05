@@ -232,9 +232,9 @@ function Inventory:open()
 end
 
 --increments the count of a given item in inventoryItems table
-function Inventory:addItem(_item)
+function Inventory:addItem(_item,_amount)
     for i,item in pairs(self.inventoryItems) do 
-        if item.name==_item then item.count=item.count+1 end 
+        if item.name==_item then item.count=item.count+_amount end 
     end
 end
 

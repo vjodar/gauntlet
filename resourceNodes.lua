@@ -95,6 +95,9 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
 
             --spawn appropriate item, restart harvest progress
             Items:spawn_item(startX,startY,'tree_wood')
+            if love.math.random(6)==1 then --1/6 chance to spawn some arcane shards
+                Items:spawn_item(startX,startY,'arcane_shards') 
+            end 
             self.state.harvestProgress=0
 
             --after spawning item, reduce available resources by 1
@@ -231,6 +234,9 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
 
             --spawn appropriate item, restart harvest progress
             Items:spawn_item(startX,startY,'rock_ore')
+            if love.math.random(6)==1 then --1/6 chance to spawn some arcane shards
+                Items:spawn_item(startX,startY,'arcane_shards') 
+            end 
             self.state.harvestProgress=0 --reset harvestProgress
 
             --after spawning item, reduce available resources by 1
@@ -359,6 +365,9 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
 
             --spawn appropriate item, restart harvest progress
             Items:spawn_item(self.xPos,self.yPos+16,'vine_fiber')
+            if love.math.random(6)==1 then --1/6 chance to spawn some arcane shards
+                Items:spawn_item(startX,startY,'arcane_shards') 
+            end 
             self.state.harvestProgress=0
             self.particles:emit(10) --emit particles
 
@@ -469,6 +478,9 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
 
             --spawn appropriate item, restart harvest progress
             Items:spawn_item(startX,startY,'fungi_mushroom')
+            if love.math.random(6)==1 then --1/6 chance to spawn some arcane shards
+                Items:spawn_item(startX,startY,'arcane_shards') 
+            end 
             self.state.harvestProgress=0
             self.particles:emit(20) --emit particles
 
@@ -594,6 +606,9 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
 
             --spawn appropriate item, restart harvest progress
             Items:spawn_item(startX,startY,'fish_raw')
+            if love.math.random(6)==1 then --1/6 chance to spawn some arcane shards
+                Items:spawn_item(startX,startY,'arcane_shards') 
+            end 
             self.state.harvestProgress=0
 
             --after spawning item, reduce available resources by 1
