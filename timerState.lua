@@ -62,7 +62,7 @@ function TimerState:tweenPos(_obj,_endPos,_time)
         velX=math.floor((_endPos.xPos-_obj.xPos)/_time),
         velY=math.floor((_endPos.yPos-_obj.yPos)/_time),
         update=function(self)
-            if self.t<=0 then --timer is complete
+            if self.t<=0.017 then --timer is complete
                 --snap to exact end position
                 self.obj.xPos=self.endX
                 self.obj.yPos=self.endY
@@ -86,7 +86,7 @@ function TimerState:tweenVal(_obj,_property,_endVal,_time)
         endVal=_endVal,
         delta=(_endVal-_obj[_property])/_time,
         update=function(self)
-            if self.t<=0 then --timer is complete                
+            if self.t<=0.017 then --timer is complete                
                 self.obj[self.prop]=self.endVal --snap to exact end value
                 return false --return false to remove this timer
             end 

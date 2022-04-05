@@ -50,7 +50,7 @@ function Player:load()
     self.state.isNearNode=false 
     
     self.inventory={
-        arcane_shards=4000, --test amount
+        arcane_shards=0, 
         broken_bow=0,
         broken_staff=0,
         arcane_orb=0,
@@ -108,7 +108,7 @@ function Player:update()
     
     --Only accept inputs when currently on top of state stack
     if acceptInput then 
-        self:move() --movement
+        self:move()
         self:query()
     end
 
@@ -214,7 +214,7 @@ function Player:query()
 end
 
 --Called by items when they collide with player
---increases the amount of an item in the player's inventory as well as in the HUD
+--increments the amount of an item in the player's inventory as well as in the HUD
 function Player:addToInventory(_item)
     
     if _item=='fish_cooked' or _item=='potion' then --add supplies to supply pouch

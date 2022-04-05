@@ -26,7 +26,7 @@ function Dungeon:spawnCraftingNodes(_x,_y)
     CraftingNodes:spawnCraftingNode('grill',_x+294,_y+84)
     CraftingNodes:spawnCraftingNode('sawmill',_x+68,_y+248)
     CraftingNodes:spawnCraftingNode('spinning_wheel',_x+294,_y+248)
-    CraftingNodes:spawnCraftingNode('crafting_table',_x+181,_y+160)
+    CraftingNodes:spawnCraftingNode('crafting_table',_x+176,_y+160)
 end
 
 function Dungeon:update()

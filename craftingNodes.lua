@@ -270,10 +270,10 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
         self.collider:setCollisionClass('craftingNode')
         self.collider:setObject(node)
         --position origin is center of collider
-        self.xPos,self.yPos=self.collider:getPosition() 
+        self.xPos,self.yPos=self.collider:getPosition()
 
         --inset into entitiesTable for dynamic draw and update order
-        table.insert(Entities.entitiesTable,node) 
+        table.insert(Entities.entitiesTable,node)
     end
 
     function node:update()

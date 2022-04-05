@@ -226,12 +226,12 @@ function Inventory:move()
 end
 
 --opens the inventory only when already closed. 
---Used by craftingMenuState to open players inventory when they are crafting.
+--Used by craftingMenuState to open inventory when they are crafting.
 function Inventory:open()
     if self.state.closed==true then self.state.transitioning=true end 
 end
 
---increase the count of a given item in inventoryItems table
+--increments the count of a given item in inventoryItems table
 function Inventory:addItem(_item)
     for i,item in pairs(self.inventoryItems) do 
         if item.name==_item then item.count=item.count+1 end 

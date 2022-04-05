@@ -75,11 +75,20 @@ function PlayState:start()
     camTarget=Player
 
     --testing------------------------------------
+    print('adding crafting resources')
     for i=1,10 do 
-        Player:addToInventory('tree_wood')
-        Player:addToInventory('rock_ore')
-        Player:addToInventory('vine_fiber')
+        Player:addToInventory('tree_planks')
+        Player:addToInventory('rock_metal')
+        Player:addToInventory('vine_thread')
         Player:addToInventory('fish_raw')
+    end
+    Player:addToInventory('broken_bow')
+    Player:addToInventory('broken_staff')
+    Player:addToInventory('arcane_orb')
+    Player:addToInventory('arcane_bowstring')
+    print('adding arcane_shards')
+    for i=1,1000 do 
+        Player:addToInventory('arcane_shards')
     end
     --testing------------------------------------
 end

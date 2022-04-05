@@ -19,8 +19,8 @@ function Entities:update()
     table.sort(self.entitiesTable, self.sort)
 
     for i,entity in pairs(self.entitiesTable) do 
-        if math.abs(Player.xPos-entity.xPos)<500 and 
-        math.abs(Player.yPos-entity.yPos)<400 then
+        if math.abs(camTarget.xPos-entity.xPos)<400 and 
+        math.abs(camTarget.yPos-entity.yPos)<300 then
             --update entity, if it returns false, remove it from game
             if entity:update()==false then table.remove(self.entitiesTable,i) end 
         end
@@ -29,8 +29,8 @@ end
 
 function Entities:draw() 
     for i,entity in pairs(self.entitiesTable) do 
-        if math.abs(Player.xPos-entity.xPos)<500 and 
-        math.abs(Player.yPos-entity.yPos)<400 then
+        if math.abs(camTarget.xPos-entity.xPos)<400 and 
+        math.abs(camTarget.yPos-entity.yPos)<300 then
             entity:draw() 
         end
     end
