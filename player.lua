@@ -93,6 +93,8 @@ function Player:load()
         armor={head='head_t0',chest='chest_t0',legs='legs_t0'}
     }
 
+    self.dialog=Dialog:newDialogSystem() --dialog system
+
     table.insert(Entities.entitiesTable,self)
 end
 
@@ -113,6 +115,7 @@ function Player:update()
     end
 
     self.currentAnim:update(dt) --update animation 
+    self.dialog:update() --update dialog system
 end
 
 function Player:draw()

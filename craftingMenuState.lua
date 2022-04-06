@@ -142,6 +142,35 @@ function CraftingMenuState:load()
         }
     }
 
+    --dialogs the player will say upon failing to craft an item due to insufficient requirements
+    self.failedCraftDialog={
+        arcane_shards='Arcane Shards',
+        tree_planks='Wood Planks',
+        rock_metal='Metal Bars',
+        vine_thread='Thread',
+        fungi_mushroom='a Magical Mushroom',
+
+        armor_head_t1='a Bronze Helmet',
+        armor_chest_t1='a Bronze Platebody',
+        armor_legs_t1='a Bronze Boots',
+
+        armor_head_t2='a Steel Helmet',
+        armor_chest_t2='a Steel Platebody',
+        armor_legs_t2='a Steel Boots',
+        
+        broken_bow='a Broken Bow',
+        broken_staff='a Broken Staff',
+
+        weapon_bow_t1='a Basic Bow',
+        weapon_bow_t2='an Upgraded Bow',
+
+        weapon_staff_t1='a Basic Staff',
+        weapon_staff_t2='an Upgraded Staff',
+
+        arcane_orb='an Arcane Orb',
+        arcane_bowstring='an Arcane Bowstring'
+    }
+
     self.state={} --metatable
     self.state.keyIsReleased=false --checks if the player released the 'open menu' button 
 end
@@ -186,9 +215,7 @@ function CraftingMenuState:update()
             end
         end
 
-        if releasedKey=='z' then --exit crafting menu
-            return false 
-        end 
+        if releasedKey=='z' then return false end --exit crafting menu
     end
 
     --just to ensure the player releases the 'open crafting menu' button before proceeding
@@ -206,6 +233,8 @@ function CraftingMenuState:draw()
     love.graphics.setColor(0,0,0,self.alpha)
     love.graphics.rectangle('fill',self.xPos-200,self.yPos-150,400,300)
     love.graphics.setColor(1,1,1,self.alpha+0.5)
+
+    Player.dialog:draw(Player.xPos,Player.yPos) --redraw player dialog so it isn't faded
 
     --draw crafting menu
     love.graphics.draw(self.menu.sprite,self.menu.xPos,self.menu.yPos)
@@ -260,17 +289,27 @@ end
 
 --Craft the item as long as player has all the necessary components
 function CraftingMenuState:craft(_item)
+    local failureDialog='I need' --will build to let the player know what they don't have enough of.
+
     --check if player has full quantities of all required items
     for i,requiredItem in pairs(self.reqs[_item]) do 
-        --if player doesn't have enough of any required item, just return
+        --if player doesn't have enough of any required item, 
+        --add the item to the failure dialog.
         if Player.inventory[requiredItem.name] < requiredItem.quantity then 
-            print("don't have enough "..requiredItem.name) 
-            --TODO------------------------------
-            --notify player that they don't have enough of the required item
-            --TODO------------------------------
-            return 
+            if #failureDialog==6 then 
+                --add the word 'more' where appropriate
+                if requiredItem.name=='arcane_shards'
+                or requiredItem.name=='wood_planks'
+                or requiredItem.name=='rock_metal'
+                or requiredItem.name=='vine_thread'
+                then failureDialog=failureDialog..' more' end 
+            end
+            failureDialog=failureDialog.." "..self.failedCraftDialog[requiredItem.name]..','
         end
     end
+    failureDialog=string.sub(failureDialog,1,#failureDialog-1) --remove the last comma
+
+    if #failureDialog>6 then Player.dialog:say(failureDialog) return end 
 
     --at this point, they player has full quantities of all required items,
     --remove them from player's inventory

@@ -127,6 +127,13 @@ function CraftingNodes:load()
     --currently no particle system for spinning wheel, so immediately stop
     self.particleSystems.spinning_wheel=love.graphics.newParticleSystem(self.particleSprites.spinning_wheel,50)
     self.particleSystems.spinning_wheel:stop()
+
+    self.dialogs={ --dialogs the player will say upon trying to craft without required item
+        furnace='I need some ore to smelt.',
+        grill='I need some raw fish to grill.',
+        sawmill='I need some wood to saw.',
+        spinning_wheel='I need some plant fiber to spin.'
+    }
 end
 
 function CraftingNodes:spawnCraftingNode(_type,_x,_y)
@@ -162,6 +169,10 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
 
         --shadow
         self.shadow=CraftingNodes.shadows[_type]
+
+        --dialog for when the player lack required item when trying to craft
+        self.failedCraftDialog=CraftingNodes.dialogs[_type]
+        self.dialogBoolean=true --just to prevent a new dialog each frame
 
         --particles
         self.particles=CraftingNodes.particleSystems[_type]
@@ -213,6 +224,13 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
             --decrease count of the required item from player and HUD by 1
             Player:removeFromInventory(self.reqItem,1)
 
+            --This is so a failure dialog doesn't popup on the
+            --same frame they use their last required item.
+            if Player.inventory[self.reqItem]==0 then 
+                self.dialogBoolean=false --wait 0.5s before any more failure dialogs
+                TimerState:after(0.5,function() self.dialogBoolean=true end)
+            end
+
             self.state.craftProgress=0 --reset craftProgress
         end
 
@@ -238,7 +256,15 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
     --player can only craft items that the player possesses.
     function node:nodeInteract()
         if Player.inventory[self.reqItem]>0 then 
-            self.state.craftProgress=self.state.craftProgress+dt
+            self.state.craftProgress=self.state.craftProgress+dt            
+        else
+            --player lacks the required item to craft, make player character say it
+            if self.dialogBoolean then 
+                self.dialogBoolean=false --stops new dialogs each frame
+                Player.dialog:say(self.failedCraftDialog)
+                --after 1s, can add more dialogs
+                TimerState:after(1,function() self.dialogBoolean=true end)
+            end
         end
     end
 
@@ -277,7 +303,9 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
     end
 
     function node:update()
-
+        --TODO--------
+        --update animations and particles
+        --TODO--------
     end
 
     function node:draw()

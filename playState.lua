@@ -6,7 +6,8 @@ function PlayState:load()
         love.graphics.newImageFont(
             "assets/font/myFont.png",
             " abcdefghijklmnopqrstuvwxyz" ..
-            "1234567890.+"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ..
+            "1234567890.,+"
         )
     )
 
@@ -63,14 +64,10 @@ function PlayState:draw()
         -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
+        Player.dialog:draw(Player.xPos,Player.yPos)
     cam:detach()
     
     Hud:draw() --draw hud 
-
-    --testing-----------------------------------
-    love.graphics.print(love.timer.getFPS(),0,0,nil,2)
-    love.graphics.print(#Entities.entitiesTable,0,20,nil,2)
-    --testing-----------------------------------
 end
 
 --start the playstate
@@ -85,18 +82,15 @@ function PlayState:start()
 
     --testing------------------------------------
     print('adding crafting resources')
-    Player:addToInventory('tree_planks',10)
-    Player:addToInventory('rock_metal',10)
-    Player:addToInventory('vine_thread',10)
+    -- Player:addToInventory('tree_planks',10)
+    -- Player:addToInventory('rock_metal',10)
+    -- Player:addToInventory('vine_thread',10)
     Player:addToInventory('fish_raw',10)
     Player:addToInventory('broken_bow',1)
     Player:addToInventory('broken_staff',1)
     Player:addToInventory('arcane_orb',1)
     Player:addToInventory('arcane_bowstring',1)
     Player:addToInventory('arcane_shards',20)
-    -- for i=1,10 do 
-    --     Items:spawn_item(playerStartX,playerStartY,'arcane_shards')
-    --     Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')
-    -- end
+    
     --testing------------------------------------
 end

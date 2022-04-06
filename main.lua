@@ -11,6 +11,7 @@ require 'craftingNodes'
 require 'items'
 require 'shadows'
 require 'hud'
+require 'dialog'
 
 function love.load()
     --set pixelated look

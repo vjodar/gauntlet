@@ -366,7 +366,7 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
             --spawn appropriate item, restart harvest progress
             Items:spawn_item(self.xPos,self.yPos+16,'vine_fiber')
             if love.math.random(6)==1 then --1/6 chance to spawn some arcane shards
-                Items:spawn_item(startX,startY,'arcane_shards') 
+                Items:spawn_item(self.xPos,self.yPos+16,'arcane_shards') 
             end 
             self.state.harvestProgress=0
             self.particles:emit(10) --emit particles
