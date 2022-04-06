@@ -128,12 +128,7 @@ function Items:spawn_item(_x,_y,_name)
             --remove item from entities table
             self.removeEntity=true
             --add item to player's inventory
-            if self.name=='arcane_shards' then 
-                --arcane shards spawn in groups of 10 per item
-                Player:addToInventory(self.name,10)
-            else 
-                Player:addToInventory(self.name,1)
-            end
+            Player:addToInventory(self.name,1)
         end
     end
 

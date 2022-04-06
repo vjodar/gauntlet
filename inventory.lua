@@ -157,6 +157,23 @@ function Inventory:draw()
             nil,WINDOWSCALE_X,WINDOWSCALE_Y
         )
         love.graphics.setColor(1,1,1,1)
+        if icon.count  then --draw item counts
+            if icon.count>0 then --don't show counts of 0
+                if icon.count>99 then 
+                    love.graphics.printf(
+                        '99+',
+                        icon.xPos_current,self.inv_yPos+48,
+                        18,'right',nil,WINDOWSCALE_X,WINDOWSCALE_Y
+                    ) 
+                else
+                    love.graphics.printf(
+                        icon.count,
+                        icon.xPos_current,self.inv_yPos+48,
+                        18,'right',nil,WINDOWSCALE_X,WINDOWSCALE_Y
+                    ) 
+                end
+            end
+        end
     end
 end
 

@@ -1,7 +1,15 @@
 PlayState={}
 
 function PlayState:load()
-    love.graphics.setBackgroundColor(2/15,2/15,2/15)
+    love.graphics.setBackgroundColor(2/15,2/15,2/15)    
+    love.graphics.setFont( --set the font
+        love.graphics.newImageFont(
+            "assets/font/myFont.png",
+            " abcdefghijklmnopqrstuvwxyz" ..
+            "1234567890.+"
+        )
+    )
+
     cam=camera()
     camTarget={} --camera will look at this object's position
     --1x zoom for every 400px width and 300px height
@@ -56,12 +64,12 @@ function PlayState:draw()
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
     cam:detach()
-
-    Hud:draw() --draw hud outside of camera
+    
+    Hud:draw() --draw hud 
 
     --testing-----------------------------------
-    love.graphics.print(love.timer.getFPS(),0,0)
-    love.graphics.print(#Entities.entitiesTable,0,20)
+    love.graphics.print(love.timer.getFPS(),0,0,nil,2)
+    love.graphics.print(#Entities.entitiesTable,0,20,nil,2)
     --testing-----------------------------------
 end
 
@@ -85,7 +93,7 @@ function PlayState:start()
     Player:addToInventory('broken_staff',1)
     Player:addToInventory('arcane_orb',1)
     Player:addToInventory('arcane_bowstring',1)
-    Player:addToInventory('arcane_shards',1000)
+    Player:addToInventory('arcane_shards',20)
     -- for i=1,10 do 
     --     Items:spawn_item(playerStartX,playerStartY,'arcane_shards')
     --     Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')

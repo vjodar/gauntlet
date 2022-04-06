@@ -53,71 +53,71 @@ function CraftingMenuState:load()
     --items and their quantities required to craft each item
     self.reqs={
         armor_head_t1={
-            {name='arcane_shards',quantity=40},
+            {name='arcane_shards',quantity=4},
             {name='rock_metal',quantity=1},
             {name='tree_planks',quantity=1},
             {name='vine_thread',quantity=1},
         },
         armor_chest_t1={
-            {name='arcane_shards',quantity=40},
+            {name='arcane_shards',quantity=4},
             {name='rock_metal',quantity=1},
             {name='tree_planks',quantity=1},
             {name='vine_thread',quantity=1},
         },
         armor_legs_t1={
-            {name='arcane_shards',quantity=40},
+            {name='arcane_shards',quantity=4},
             {name='rock_metal',quantity=1},
             {name='tree_planks',quantity=1},
             {name='vine_thread',quantity=1},
         },
         armor_head_t2={
-            {name='arcane_shards',quantity=60},
+            {name='arcane_shards',quantity=6},
             {name='rock_metal',quantity=1},
             {name='tree_planks',quantity=1},
             {name='vine_thread',quantity=1},
             {name='armor_head_t1',quantity=1},
         },
         armor_chest_t2={
-            {name='arcane_shards',quantity=60},
+            {name='arcane_shards',quantity=6},
             {name='rock_metal',quantity=2},
             {name='tree_planks',quantity=2},
             {name='vine_thread',quantity=2},
             {name='armor_chest_t1',quantity=1},
         },
         armor_legs_t2={
-            {name='arcane_shards',quantity=60},
+            {name='arcane_shards',quantity=6},
             {name='rock_metal',quantity=1},
             {name='tree_planks',quantity=1},
             {name='vine_thread',quantity=1},
             {name='armor_legs_t1',quantity=1},
         },
         armor_head_t3={
-            {name='arcane_shards',quantity=80},
+            {name='arcane_shards',quantity=8},
             {name='rock_metal',quantity=2},
             {name='tree_planks',quantity=2},
             {name='vine_thread',quantity=2},
             {name='armor_head_t2',quantity=1},
         },
         armor_chest_t3={
-            {name='arcane_shards',quantity=80},
+            {name='arcane_shards',quantity=8},
             {name='rock_metal',quantity=2},
             {name='tree_planks',quantity=2},
             {name='vine_thread',quantity=2},
             {name='armor_chest_t2',quantity=1},
         },
         armor_legs_t3={
-            {name='arcane_shards',quantity=80},
+            {name='arcane_shards',quantity=8},
             {name='rock_metal',quantity=2},
             {name='tree_planks',quantity=2},
             {name='vine_thread',quantity=2},
             {name='armor_legs_t2',quantity=1},
         },
         weapon_bow_t1={
-            {name='arcane_shards',quantity=20},
+            {name='arcane_shards',quantity=2},
             {name='broken_bow',quantity=1},
         },
         weapon_bow_t2={
-            {name='arcane_shards',quantity=60},
+            {name='arcane_shards',quantity=6},
             {name='weapon_bow_t1',quantity=1},
         },
         weapon_bow_t3={            
@@ -125,11 +125,11 @@ function CraftingMenuState:load()
             {name='arcane_bowstring',quantity=1},
         },
         weapon_staff_t1={
-            {name='arcane_shards',quantity=20},
+            {name='arcane_shards',quantity=2},
             {name='broken_staff',quantity=1},
         },
         weapon_staff_t2={
-            {name='arcane_shards',quantity=60},
+            {name='arcane_shards',quantity=6},
             {name='weapon_staff_t1',quantity=1},
         },
         weapon_staff_t3={
@@ -137,7 +137,7 @@ function CraftingMenuState:load()
             {name='arcane_orb',quantity=1},
         },
         potion={
-            {name='arcane_shards',quantity=20},
+            {name='arcane_shards',quantity=2},
             {name='fungi_mushroom',quantity=1},
         }
     }
