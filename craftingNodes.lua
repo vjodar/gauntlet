@@ -45,7 +45,7 @@ function CraftingNodes:load()
     self.offsets.grill={x=9.5,y=14.5}
     self.offsets.sawmill={x=11.5,y=13}
     self.offsets.spinning_wheel={x=10,y=15}
-    self.offsets.crafting_table={x=16,y=12}
+    self.offsets.crafting_table={x=16,y=15}
     
     self.items={} --items the crafting node will spawn
     self.items.furnace='rock_metal'
@@ -129,10 +129,10 @@ function CraftingNodes:load()
     self.particleSystems.spinning_wheel:stop()
 
     self.dialogs={ --dialogs the player will say upon trying to craft without required item
-        furnace='I need some ore to smelt.',
-        grill='I need some raw fish to grill.',
-        sawmill='I need some wood to saw.',
-        spinning_wheel='I need some plant fiber to spin.'
+        furnace='I need some Ore to smelt.',
+        grill='I need some raw Fish to grill.',
+        sawmill='I need some Wood to saw.',
+        spinning_wheel='I need some plant Fiber to spin.'
     }
 end
 

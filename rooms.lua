@@ -899,6 +899,11 @@ function Rooms:spawnLadder(_room)
         self.collider:setCollisionClass('ladder')
         self.collider:setObject(self) --attach collider to this object
 
+        --testing--------------------
+        print("adding ladder testing features")
+        self.dialogBoolean=true 
+        --testing--------------------
+
         table.insert(Entities.entitiesTable,self)
     end
 
@@ -909,7 +914,33 @@ function Rooms:spawnLadder(_room)
     end
 
     function ladder:nodeInteract()
-        print('descending into the boss chamber')
+        --testing----------------------
+        if self.dialogBoolean==true then     
+            self.dialogBoolean=false
+            Player.dialog:say("I wonder what's down there...")
+            TimerState:after(2.1,function()
+                Items:spawn_item(
+                    love.math.random(self.xPos-7,self.xPos+7),
+                    love.math.random(self.yPos-5,self.yPos+5),
+                    'broken_staff'
+                )
+                Items:spawn_item(
+                    love.math.random(self.xPos-7,self.xPos+7),
+                    love.math.random(self.yPos-5,self.yPos+5),
+                    'broken_bow'
+                )
+            end)
+            for i=1,20 do 
+                TimerState:after(i*0.1,function()
+                    Items:spawn_item(
+                        love.math.random(self.xPos-7,self.xPos+7),
+                        love.math.random(self.yPos-5,self.yPos+5),
+                        'arcane_shards'
+                    )
+                end)                 
+            end
+        end
+        --testing----------------------
     end
 
     ladder:load()

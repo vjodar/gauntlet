@@ -7,7 +7,7 @@ function PlayState:load()
             "assets/font/myFont.png",
             " abcdefghijklmnopqrstuvwxyz" ..
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ..
-            "1234567890.,+"
+            "1234567890.,'+"
         )
     )
 
@@ -64,7 +64,8 @@ function PlayState:draw()
         -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
-        Player.dialog:draw(Player.xPos,Player.yPos)
+
+        Player.dialog:draw(Player.xPos,Player.yPos) --will probably move this later
     cam:detach()
     
     Hud:draw() --draw hud 
@@ -79,18 +80,4 @@ function PlayState:start()
 
     --set camera target to be the player's position
     camTarget=Player
-
-    --testing------------------------------------
-    print('adding crafting resources')
-    -- Player:addToInventory('tree_planks',10)
-    -- Player:addToInventory('rock_metal',10)
-    -- Player:addToInventory('vine_thread',10)
-    Player:addToInventory('fish_raw',10)
-    Player:addToInventory('broken_bow',1)
-    Player:addToInventory('broken_staff',1)
-    Player:addToInventory('arcane_orb',1)
-    Player:addToInventory('arcane_bowstring',1)
-    Player:addToInventory('arcane_shards',20)
-    
-    --testing------------------------------------
 end

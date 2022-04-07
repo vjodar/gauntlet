@@ -152,11 +152,11 @@ function CraftingMenuState:load()
 
         armor_head_t1='a Bronze Helmet',
         armor_chest_t1='a Bronze Platebody',
-        armor_legs_t1='a Bronze Boots',
+        armor_legs_t1='Bronze Boots',
 
         armor_head_t2='a Steel Helmet',
         armor_chest_t2='a Steel Platebody',
-        armor_legs_t2='a Steel Boots',
+        armor_legs_t2='Steel Boots',
         
         broken_bow='a Broken Bow',
         broken_staff='a Broken Staff',
