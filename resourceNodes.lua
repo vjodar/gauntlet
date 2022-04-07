@@ -176,8 +176,15 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
     local node={}
 
     function node:load() 
+        --first, check if the spawn coordinates within 16px above an innerWall.
+        --if so, shift the spawn coordinates up by 20px.
+        local tempX,tempY=_x,_y
+        if #world:queryRectangleArea(tempX-7,tempY,14,16,{'innerWall'})>0 then 
+            tempY=tempY-20
+        end
+
         --setup collider and position vectors
-        self.collider=world:newBSGRectangleCollider(_x,_y,16,8,2)
+        self.collider=world:newBSGRectangleCollider(tempX,tempY,16,8,2)
         self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setFixedRotation(true)
         self.collider:setCollisionClass('resourceNode')
@@ -420,8 +427,15 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
     local node={}
 
     function node:load() 
+        --first, check if the spawn coordinates within 16px above an innerWall.
+        --if so, shift the spawn coordinates up by 20px.
+        local tempX,tempY=_x,_y
+        if #world:queryRectangleArea(tempX-7,tempY,14,24,{'innerWall'})>0 then 
+            tempY=tempY-20
+        end
+
         --setup collider and position vectors
-        self.collider=world:newBSGRectangleCollider(_x,_y,14,8,3)
+        self.collider=world:newBSGRectangleCollider(tempX,tempY,14,8,3)
         self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setFixedRotation(true)
         self.collider:setCollisionClass('resourceNode')
@@ -535,8 +549,15 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
     local node={}
 
     function node:load() 
+        --first, check if the spawn coordinates within 16px above an innerWall.
+        --if so, shift the spawn coordinates up by 20px.
+        local tempX,tempY=_x,_y
+        if #world:queryRectangleArea(tempX-3,tempY,6,28,{'innerWall'})>0 then 
+            tempY=tempY-28
+        end
+
         --setup collider and position vectors
-        self.collider=world:newBSGRectangleCollider(_x,_y,16,8,2)
+        self.collider=world:newBSGRectangleCollider(tempX,tempY,16,8,2)
         self.xPos, self.yPos = self.collider:getPosition()
         self.collider:setFixedRotation(true)
         self.collider:setCollisionClass('resourceNode')

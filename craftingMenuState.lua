@@ -181,13 +181,13 @@ function CraftingMenuState:update()
     --gameState must be accepting input and the player must have released the
     --'open crafting menu' button before inputs regarding crafting will be taken
     if acceptInput and self.state.keyIsReleased and not self.state.waitingForCursor then
-        if releasedKey=='x' then 
+        if releasedKey==controls.btnDown then 
             --craft the current selected item
             self:craft(self.currentCraftOptions[self.cursor.selection])
         end
 
         --move cursor
-        if releasedKey=='right' then
+        if releasedKey==controls.dirRight then
             if self.cursor.selection=='staff' then --wrap around to potion
                 self.cursor.selection='potion'
                 self.cursor.xPos=self.menu.xPos+4
@@ -200,7 +200,7 @@ function CraftingMenuState:update()
                 end
                 self.cursor.xPos=self.cursor.xPos+19
             end
-        elseif releasedKey=='left' then 
+        elseif releasedKey==controls.dirLeft then 
             if self.cursor.selection=='potion' then --wrap around to staff
                 self.cursor.selection='staff'
                 self.cursor.xPos=self.menu.xPos+99
@@ -215,12 +215,12 @@ function CraftingMenuState:update()
             end
         end
 
-        if releasedKey=='z' then return false end --exit crafting menu
+        if releasedKey==controls.btnLeft then return false end --exit crafting menu
     end
 
     --just to ensure the player releases the 'open crafting menu' button before proceeding
     if self.state.keyIsReleased==false then 
-        if acceptInput and releasedKey=='x' then self.state.keyIsReleased=true end
+        if acceptInput and releasedKey==controls.btnDown then self.state.keyIsReleased=true end
     end
 
     return true --return true to remain on gamestate stack

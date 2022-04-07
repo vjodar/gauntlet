@@ -28,6 +28,7 @@ function PlayState:load()
     world:addCollisionClass('item', {ignores={'player'}})
     world:addCollisionClass('doorBarrier')
     world:addCollisionClass('ladder')
+    world:addCollisionClass('innerWall')
 
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities

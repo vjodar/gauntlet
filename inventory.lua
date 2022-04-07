@@ -35,7 +35,10 @@ function Inventory:load()
     --inventory items/icons
     table.insert(self.inventoryItems, 1, {
         name="chest",
-        sprite=love.graphics.newImage('assets/hud_inv_chest.png'),
+        spriteOpen=love.graphics.newImage('assets/hud_inv_chest_open.png'), --open sprite
+        spriteClosed=love.graphics.newImage('assets/hud_inv_chest_closed.png'), --closed sprite
+        spriteHalf=love.graphics.newImage('assets/hud_inv_chest_half.png'), --halfway sprite
+        sprite=love.graphics.newImage('assets/hud_inv_chest_closed.png'),
         xPos_open=7*WINDOWSCALE_X, xPos_current=7*WINDOWSCALE_X, 
         xPos_closed=self.defaultClosed
     })
@@ -133,7 +136,7 @@ end
 function Inventory:update()
     if self.state.transitioning then 
         self:move()
-    elseif acceptInput and releasedKey=='space' then 
+    elseif acceptInput and releasedKey==controls.btnStart then 
         self.state.transitioning=true 
     end
 end
@@ -201,12 +204,16 @@ function Inventory:move()
                     self.numOpen=self.numOpen-1
                 end
             end
+            if icon.name=='chest' then icon.sprite=icon.spriteHalf end --chest is halfway open
         end
         
         if self.numClosed==self.MAXNUM then --all segments are in their closed position
             self.state.open=false 
             self.state.closed=true
             self.state.transitioning=false 
+            for i,icon in pairs(self.inventoryItems) do --close the chest
+                if icon.name=='chest' then icon.sprite=icon.spriteClosed return end 
+            end
         end
 
     elseif self.state.closed then --inventory will open
@@ -232,12 +239,16 @@ function Inventory:move()
                     self.numClosed=self.numClosed-1
                 end
             end
+            if icon.name=='chest' then icon.sprite=icon.spriteHalf end --chest is halfway open
         end
 
         if self.numOpen==self.MAXNUM then --all segments are in their open position
             self.state.closed=false 
             self.state.open=true 
-            self.state.transitioning=false 
+            self.state.transitioning=false
+            for i,icon in pairs(self.inventoryItems) do --open the chest
+                if icon.name=='chest' then icon.sprite=icon.spriteOpen return end 
+            end
         end
     end
 end

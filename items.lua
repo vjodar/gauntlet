@@ -69,8 +69,8 @@ function Items:spawn_item(_x,_y,_name)
         self.removeEntity=false --should item be removed from entities table
 
         --choose a random x,y velocity to shoot out of node
-        self.xVel=(8-love.math.random()*16)*framerate
-        self.yVel=(7-love.math.random()*14)*framerate
+        self.xVel=(8-love.math.random()*16)*love.timer.getFPS()
+        self.yVel=(7-love.math.random()*14)*love.timer.getFPS()
 
         self.collider:setLinearVelocity(self.xVel,self.yVel) --launch item from node
         --after 1s from spawning, item becomes collectable

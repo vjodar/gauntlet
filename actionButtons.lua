@@ -92,11 +92,11 @@ function ActionButtons:addActionButtonWeapons()
         button.currentAnim:update(dt)
 
         if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
-            if love.keyboard.isDown('a') then 
+            if love.keyboard.isDown(controls.btnUp) then 
                 button.buttonDuration=button.buttonDuration+dt 
             end 
 
-            if releasedKey=='a' then 
+            if releasedKey==controls.btnUp then 
                 if button.buttonDuration<0.2 then --button tap
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.acceptInput=false --won't accept input until animation is done
@@ -190,11 +190,11 @@ function ActionButtons:addActionButtonSupplies()
         button.currentAnim:update(dt)
 
         if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
-            if love.keyboard.isDown('z') then 
+            if love.keyboard.isDown(controls.btnLeft) then 
                 button.buttonDuration=button.buttonDuration+dt 
             end 
 
-            if releasedKey=='z' then 
+            if releasedKey==controls.btnLeft then 
                 if button.buttonDuration<0.2 then --button tap
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.acceptInput=false --won't accept input until animation is done
@@ -286,11 +286,11 @@ function ActionButtons:addActionButtonProtectionMagics()
         button.currentAnim:update(dt)
 
         if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
-            if love.keyboard.isDown('s') then 
+            if love.keyboard.isDown(controls.btnRight) then 
                 button.buttonDuration=button.buttonDuration+dt 
             end 
 
-            if releasedKey=='s' then 
+            if releasedKey==controls.btnRight then 
                 if button.buttonDuration<0.2 then --button tap
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.acceptInput=false --won't accept input until animation is done
@@ -377,11 +377,11 @@ function ActionButtons:addActionButtonCombatInteract()
         button.currentAnim:update(dt)
 
         -- if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
-        --     if love.keyboard.isDown('x') then 
+        --     if love.keyboard.isDown(contros.btnDown) then 
         --         button.buttonDuration=button.buttonDuration+dt 
         --     end 
 
-        --     if releasedKey=='x' then 
+        --     if releasedKey==controls.btnDown then 
         --         if button.buttonDuration<0.2 then --button tap
         --             button.currentAnim:resume() --resume animation to go to next icon
         --             button.acceptInput=false --won't accept input until animation is done

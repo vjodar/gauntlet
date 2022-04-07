@@ -797,7 +797,7 @@ function Rooms:spawnResourceNodes(_room)
     local spawnZoneVineC={} --for top corners and side rooms
     spawnZoneVineC.x1=room.xPos+36
     spawnZoneVineC.x2=room.xPos+332
-
+    
     for i=1,numNodes do 
         local selectedFunction=love.math.random(5) --select a random spawn function
 
@@ -918,7 +918,7 @@ function Rooms:spawnLadder(_room)
         if self.dialogBoolean==true then     
             self.dialogBoolean=false
             Player.dialog:say("I wonder what's down there...")
-            TimerState:after(2.1,function()
+            TimerState:after(2.6,function()
                 Items:spawn_item(
                     love.math.random(self.xPos-7,self.xPos+7),
                     love.math.random(self.yPos-5,self.yPos+5),
@@ -930,7 +930,7 @@ function Rooms:spawnLadder(_room)
                     'broken_bow'
                 )
             end)
-            for i=1,20 do 
+            for i=1,24 do 
                 TimerState:after(i*0.1,function()
                     Items:spawn_item(
                         love.math.random(self.xPos-7,self.xPos+7),

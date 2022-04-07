@@ -392,7 +392,9 @@ function Walls:newWall(_xPos,_yPos,_type,_length)
     end
 
     --create physical collider
-    world:newRectangleCollider(wall.xPos,wall.yPos,wall.w,wall.h-16):setType('static')
+    wall.collider=world:newRectangleCollider(wall.xPos,wall.yPos,wall.w,wall.h-16)
+    wall.collider:setType('static')
+    wall.collider:setCollisionClass('innerWall')
 
     function wall:update() end
 

@@ -23,7 +23,6 @@ function love.load()
     camera=require 'libraries/camera'
 
     dt=0 --delta time global
-    framerate=60 --60fps global var
     WINDOWSCALE_X=love.graphics.getWidth()/400 --1x scale per 400px width
     WINDOWSCALE_Y=love.graphics.getHeight()/300 --1x scale per 300px width
     gameStates={} --state stack
@@ -34,6 +33,21 @@ function love.load()
     --these are used to enable button pressing and holding functionality
     --while defining behavior in appropriate class/object instead of in callback
     releasedKey,releasedKeyPrev="",""
+
+    --global table of controls. Defaults to keyboard control values
+    controls={ 
+        --directions
+        dirUp='w',
+        dirDown='s',
+        dirLeft='a',
+        dirRight='d',
+        --buttons
+        btnUp='kp8',
+        btnDown='kp5',
+        btnLeft='kp4',
+        btnRight='kp6',
+        btnStart='space'
+    }
 
     table.insert(gameStates,TimerState) --timer state is always first on gamestates stack
 
@@ -68,12 +82,6 @@ end
 
 function love.draw()
     for i,state in pairs(gameStates) do state:draw() end 
-    --Debug-----------------------------------------
-    -- love.graphics.print(#gameStates,1000,0)
-    --for i,timer in pairs(TimerState.timers) do
-    --    love.graphics.print(timer.t,0,i*10)
-    --end
-    --Debug-----------------------------------------
 end
 
 function love.keyreleased(_key) releasedKey=_key end 

@@ -149,19 +149,19 @@ end
 
 function Player:move()
 
-    if love.keyboard.isDown('left') then 
+    if love.keyboard.isDown(controls.dirLeft) then 
         self.xVel=self.xVel-self.moveSpeed
         self.state.facing='left'
         self.state.moving=true
         self.state.movingHorizontally=true
     end
-    if love.keyboard.isDown('right') then 
+    if love.keyboard.isDown(controls.dirRight) then 
         self.xVel=self.xVel+self.moveSpeed 
         self.state.facing='right'
         self.state.moving=true
         self.state.movingHorizontally=true
     end
-    if love.keyboard.isDown('up') then 
+    if love.keyboard.isDown(controls.dirUp) then 
         --accomodate for diagonal speed
         if self.state.movingHorizontally then 
             self.yVel=self.yVel-self.moveSpeedDiag
@@ -171,7 +171,7 @@ function Player:move()
         self.state.moving=true
         self.state.movingVertially=true
     end
-    if love.keyboard.isDown('down') then 
+    if love.keyboard.isDown(controls.dirDown) then 
         --accomodate for diagonal speed
         if self.state.movingHorizontally then 
             self.yVel=self.yVel+self.moveSpeedDiag
@@ -202,7 +202,7 @@ function Player:query()
         --set combatInteract button state to update sprite 
         ActionButtons.combatInteract:setNodeNearPlayer(true)
 
-        if love.keyboard.isDown('x') then 
+        if love.keyboard.isDown(controls.btnDown) then 
             --face player toward that node
             if nearbyNode.xPos<self.xPos then self.state.facing='left' 
             else self.state.facing='right' end
