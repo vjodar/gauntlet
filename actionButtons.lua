@@ -9,6 +9,8 @@ function ActionButtons:load()
     self.supplies=self:addActionButtonSupplies()
     self.protectionMagics=self:addActionButtonProtectionMagics()
     self.combatInteract=self:addActionButtonCombatInteract()
+
+    self.hideActionButtons=false --used to not draw the action buttons
 end
 
 function ActionButtons:update()
@@ -19,10 +21,12 @@ function ActionButtons:update()
 end
 
 function ActionButtons:draw()
-    self.weapons:draw()
-    self.supplies:draw()
-    self.protectionMagics:draw()
-    self.combatInteract:draw()
+    if self.hideActionButtons==false then 
+        self.weapons:draw()
+        self.supplies:draw()
+        self.protectionMagics:draw()
+        self.combatInteract:draw()
+    end
 end
 
 function ActionButtons:addActionButtonWeapons()
