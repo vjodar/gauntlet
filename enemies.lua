@@ -34,6 +34,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('tiny') --shadow
 
         --enemy's current state metatable
@@ -93,6 +94,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('tiny') --shadow
 
         --enemy's current state metatable
@@ -152,6 +154,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('small') --shadow
 
         --enemy's current state metatable
@@ -211,6 +214,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('small') --shadow
 
         --enemy's current state metatable
@@ -270,6 +274,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('small') --shadow
 
         --enemy's current state metatable
@@ -329,6 +334,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('medium') --shadow
 
         --enemy's current state metatable
@@ -381,6 +387,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('large') --shadow
 
         --enemy's current state metatable
@@ -440,6 +447,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
         self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('large') --shadow
 
         --enemy's current state metatable

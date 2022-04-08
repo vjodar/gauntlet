@@ -1,7 +1,10 @@
 ActionButtons={} --action button cluster on HUD
 
 function ActionButtons:load()
-    self.blank=love.graphics.newImage('assets/hud_action_blank.png') --blank button
+    --pressed and unpressed blank buttons
+    self.blankUp=love.graphics.newImage('assets/hud_action_blank_up.png')
+    self.blankDown=love.graphics.newImage('assets/hud_action_blank_down.png')
+    --create and store action buttons
     self.weapons=self:addActionButtonWeapons()
     self.supplies=self:addActionButtonSupplies()
     self.protectionMagics=self:addActionButtonProtectionMagics()
@@ -16,45 +19,17 @@ function ActionButtons:update()
 end
 
 function ActionButtons:draw()
-    self:drawBlankButtons()
     self.weapons:draw()
     self.supplies:draw()
     self.protectionMagics:draw()
     self.combatInteract:draw()
 end
 
---draw blank buttons beneath real buttons to have transparent icons functionality
-function ActionButtons:drawBlankButtons()
-    love.graphics.draw( --top button
-        self.blank,
-        love.graphics.getWidth()-60*WINDOWSCALE_X,
-        love.graphics.getHeight()-70*WINDOWSCALE_Y,
-        nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
-    )
-    love.graphics.draw( --bottom button
-        self.blank,
-        love.graphics.getWidth()-60*WINDOWSCALE_X,
-        love.graphics.getHeight()-30*WINDOWSCALE_Y,
-        nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
-    )
-    love.graphics.draw( --left button
-        self.blank,
-        love.graphics.getWidth()-80*WINDOWSCALE_X,
-        love.graphics.getHeight()-50*WINDOWSCALE_Y,
-        nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
-    )
-    love.graphics.draw( --right button
-        self.blank,
-        love.graphics.getWidth()-40*WINDOWSCALE_X,
-        love.graphics.getHeight()-50*WINDOWSCALE_Y,
-        nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
-    )
-end
-
 function ActionButtons:addActionButtonWeapons()
     local button={}
 
     --sprites and animations
+    button.blankSprite={self.blankUp,self.blankDown} --[1]=up sprite,[2]=down sprite
     button.spriteSheet={
         bow=love.graphics.newImage('assets/hud_action_weapons_bow.png'),
         staff=love.graphics.newImage('assets/hud_action_weapons_staff.png')
@@ -86,50 +61,65 @@ function ActionButtons:addActionButtonWeapons()
     button.state.hasBow=true --player has a bow
     button.state.hasStaff=true --player has a staff
     button.state.currentWeapon='bow' --either 'bow' or 'staff'
+    button.state.pressedFlag=0 --1/0 boolean, not true false.
     
 
     function button:update()
         button.currentAnim:update(dt)
 
-        if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
+        button.state.pressedFlag=0 --default to not being pressed
+        if acceptInput then
             if love.keyboard.isDown(controls.btnUp) then 
-                button.buttonDuration=button.buttonDuration+dt 
+                button.state.pressedFlag=1
+                if button.acceptInput then --only increace duration when it is accepting input
+                    button.buttonDuration=button.buttonDuration+dt 
+                end
             end 
 
-            if releasedKey==controls.btnUp then 
-                if button.buttonDuration<0.2 then --button tap
-                    button.currentAnim:resume() --resume animation to go to next icon
-                    button.acceptInput=false --won't accept input until animation is done
-                    --TODO
-                    --set current weapon to be opposite the one currently chosen
-                    --TODO
+            if button.acceptInput then --only change items when button is accepting input
+                if releasedKey==controls.btnUp then 
+                    if button.buttonDuration<0.3 then --button tap
+                        button.currentAnim:resume() --resume animation to go to next icon
+                        button.acceptInput=false --won't accept input until animation is done
 
-                    --set timer to restore input accepting
-                    TimerState:after(button.animationTime, function()
-                        button.acceptInput=true 
-                        --swap current weapons
-                        if button.state.currentWeapon=='bow' then 
-                            button.state.currentWeapon='staff'
-                        else button.state.currentWeapon='bow' end 
-                    end)
-                    button.buttonDuration=0 --reset buttonDuration
+                        --set timer to restore input accepting
+                        TimerState:after(button.animationTime, function()
+                            button.acceptInput=true 
+                            --swap current weapons
+                            if button.state.currentWeapon=='bow' then 
+                                button.state.currentWeapon='staff'
+                            else button.state.currentWeapon='bow' end 
+                        end)
+                        button.buttonDuration=0 --reset buttonDuration
 
-                elseif button.buttonDuration>=0.2 then --button hold
-                    --CURRENTLY NO BUTTON HOLD ACTIONS SET FOR THIS BUTTON
-                    button.buttonDuration=0 --reset buttonDuration
+                    elseif button.buttonDuration>=0.3 then --button hold
+                        --CURRENTLY NO BUTTON HOLD ACTIONS SET FOR THIS BUTTON
+                        button.buttonDuration=0 --reset buttonDuration
+                    end
                 end
             end
         end
     end
 
     function button:draw()
+        --draw blank button        
+        love.graphics.draw(
+            self.blankSprite[1+button.state.pressedFlag], --draw blankSprite[2] when pressed
+            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+
+        --draw icons
         if Player.currentGear.weapons.bow=='bow_t0' then --reduce alpha when player has no bow
             love.graphics.setColor(1,1,1,0.7)
         end
         button.currentAnim:draw( --draw bow half
             button.spriteSheet.bow,
             love.graphics.getWidth()-60*WINDOWSCALE_X,
-            love.graphics.getHeight()-70*WINDOWSCALE_Y,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -140,7 +130,8 @@ function ActionButtons:addActionButtonWeapons()
         button.currentAnim:draw( --draw staff half
             button.spriteSheet.staff,
             love.graphics.getWidth()-60*WINDOWSCALE_X,
-            love.graphics.getHeight()-70*WINDOWSCALE_Y,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -153,6 +144,7 @@ function ActionButtons:addActionButtonSupplies()
     local button={}
 
     --sprites and animations
+    button.blankSprite={self.blankUp,self.blankDown} --[1]=up sprite,[2]=down sprite
     button.spriteSheet={
         fish=love.graphics.newImage('assets/hud_action_supplies_fish.png'),
         potion=love.graphics.newImage('assets/hud_action_supplies_potion.png')
@@ -184,50 +176,67 @@ function ActionButtons:addActionButtonSupplies()
     button.state.hasFish=true --player has a bow
     button.state.hasPotion=true --player has a staff
     button.state.currentSupply='fish' --either 'fish' or 'potion'
+    button.state.pressedFlag=0 --1/0 boolean
     
 
     function button:update()
         button.currentAnim:update(dt)
 
-        if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
+        button.state.pressedFlag=0 --deafult to not pressed
+        if acceptInput then --if gamestate and button are accepting input 
             if love.keyboard.isDown(controls.btnLeft) then 
-                button.buttonDuration=button.buttonDuration+dt 
+                button.state.pressedFlag=1
+                if button.acceptInput then --only increase duration when button is accepting input
+                    button.buttonDuration=button.buttonDuration+dt 
+                end
             end 
 
-            if releasedKey==controls.btnLeft then 
-                if button.buttonDuration<0.2 then --button tap
-                    button.currentAnim:resume() --resume animation to go to next icon
-                    button.acceptInput=false --won't accept input until animation is done
-                    --TODO
-                    --set current supply to be opposite the one currently chosen
-                    --TODO
+            if button.acceptInput then 
+                if releasedKey==controls.btnLeft then 
+                    if button.buttonDuration<0.3 then --button tap
+                        button.currentAnim:resume() --resume animation to go to next icon
+                        button.acceptInput=false --won't accept input until animation is done
+                        --TODO
+                        --set current supply to be opposite the one currently chosen
+                        --TODO
 
-                    --set timer to restore input accepting
-                    TimerState:after(button.animationTime, function() 
-                        button.acceptInput=true 
-                        --swap current supply
-                        if button.state.currentSupply=='fish' then 
-                            button.state.currentSupply='potion'
-                        else button.state.currentSupply='fish' end 
-                    end)
-                    button.buttonDuration=0 --reset buttonDuration
+                        --set timer to restore input accepting
+                        TimerState:after(button.animationTime, function() 
+                            button.acceptInput=true 
+                            --swap current supply
+                            if button.state.currentSupply=='fish' then 
+                                button.state.currentSupply='potion'
+                            else button.state.currentSupply='fish' end 
+                        end)
+                        button.buttonDuration=0 --reset buttonDuration
 
-                elseif button.buttonDuration>=0.2 then --button hold
-                    --TODO eat the fish/drink the potion
-                    button.buttonDuration=0 --reset buttonDuration
+                    elseif button.buttonDuration>=0.3 then --button hold
+                        --TODO eat the fish/drink the potion
+                        button.buttonDuration=0 --reset buttonDuration
+                    end
                 end
             end
         end
     end
 
     function button:draw()
+        --draw blank button
+        
+        love.graphics.draw( --left button
+            self.blankSprite[1+button.state.pressedFlag], --draw blankSprite[2] when pressed
+            love.graphics.getWidth()-80*WINDOWSCALE_X,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
+        )
         if Player.suppliesPouch.fish_cooked==0 then --reduce alpha when out of fish
             love.graphics.setColor(1,1,1,0.7)
         end
         button.currentAnim:draw( --draw fish half
             button.spriteSheet.fish,
             love.graphics.getWidth()-80*WINDOWSCALE_X,
-            love.graphics.getHeight()-50*WINDOWSCALE_Y,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -238,7 +247,8 @@ function ActionButtons:addActionButtonSupplies()
         button.currentAnim:draw( --draw potion half
             button.spriteSheet.potion,
             love.graphics.getWidth()-80*WINDOWSCALE_X,
-            love.graphics.getHeight()-50*WINDOWSCALE_Y,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -251,6 +261,7 @@ function ActionButtons:addActionButtonProtectionMagics()
     local button={}
 
     --sprites and animations
+    button.blankSprite={self.blankUp,self.blankDown} --[1]=up sprite,[2]=down sprite
     button.spriteSheet={
         physical=love.graphics.newImage('assets/hud_action_protection_physical.png'),
         magical=love.graphics.newImage('assets/hud_action_protection_magical.png')
@@ -280,43 +291,57 @@ function ActionButtons:addActionButtonProtectionMagics()
     button.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state={} --state metatable
     button.state.currentSpell='protect physical' --either 'physical' or 'magical'
+    button.state.pressedFlag=0 --1/0 boolean, not true false.
     
 
     function button:update()
         button.currentAnim:update(dt)
 
-        if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
+        button.state.pressedFlag=0 --default to not pressed
+        if acceptInput then 
             if love.keyboard.isDown(controls.btnRight) then 
-                button.buttonDuration=button.buttonDuration+dt 
+                button.state.pressedFlag=1
+                if button.acceptInput then --only increase duration when button is pressed
+                    button.buttonDuration=button.buttonDuration+dt 
+                end
             end 
 
-            if releasedKey==controls.btnRight then 
-                if button.buttonDuration<0.2 then --button tap
-                    button.currentAnim:resume() --resume animation to go to next icon
-                    button.acceptInput=false --won't accept input until animation is done
-                    --TODO
-                    --set current spell to be opposite the one currently chosen
-                    --TODO
+            if button.acceptInput then --only change items when button accepts input
+                if releasedKey==controls.btnRight then 
+                    if button.buttonDuration<0.2 then --button tap
+                        button.currentAnim:resume() --resume animation to go to next icon
+                        button.acceptInput=false --won't accept input until animation is done
+                        --TODO
+                        --set current spell to be opposite the one currently chosen
+                        --TODO
 
-                    --set timer to restore input accepting
-                    TimerState:after(button.animationTime, function() 
-                        button.acceptInput=true 
-                        --swap current protection spell
-                        if button.state.currentSpell=='protect physical' then 
-                            button.state.currentSpell='protect magical'
-                        else button.state.currentSpell='protect physical' end 
-                    end)
-                    button.buttonDuration=0 --reset buttonDuration
+                        --set timer to restore input accepting
+                        TimerState:after(button.animationTime, function() 
+                            button.acceptInput=true 
+                            --swap current protection spell
+                            if button.state.currentSpell=='protect physical' then 
+                                button.state.currentSpell='protect magical'
+                            else button.state.currentSpell='protect physical' end 
+                        end)
+                        button.buttonDuration=0 --reset buttonDuration
 
-                elseif button.buttonDuration>=0.2 then --button hold
-                    --TODO start/stop casting protection spell
-                    button.buttonDuration=0 --reset buttonDuration
+                    elseif button.buttonDuration>=0.2 then --button hold
+                        --TODO start/stop casting protection spell
+                        button.buttonDuration=0 --reset buttonDuration
+                    end
                 end
             end
         end
     end
 
     function button:draw()
+        love.graphics.draw( --draw blank button
+            self.blankSprite[1+button.state.pressedFlag], --draw blankSprite[2] when pressed
+            love.graphics.getWidth()-40*WINDOWSCALE_X,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
+        )
         --TODO-------------------------------
         --set reduced alpha when player is all out of mana
         --love.graphics.setColor(1,1,1,0.7)
@@ -324,13 +349,15 @@ function ActionButtons:addActionButtonProtectionMagics()
         button.currentAnim:draw( --draw physical half
             button.spriteSheet.physical,
             love.graphics.getWidth()-40*WINDOWSCALE_X,
-            love.graphics.getHeight()-50*WINDOWSCALE_Y,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         button.currentAnim:draw( --draw magical half
             button.spriteSheet.magical,
             love.graphics.getWidth()-40*WINDOWSCALE_X,
-            love.graphics.getHeight()-50*WINDOWSCALE_Y,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -343,6 +370,7 @@ function ActionButtons:addActionButtonCombatInteract()
     local button={}
 
     --sprites and animations
+    button.blankSprite={self.blankUp,self.blankDown} --[1]=up sprite,[2]=down sprite
     button.spriteSheet=love.graphics.newImage('assets/hud_action_combat_interact.png')
     button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
     button.animations={}
@@ -371,31 +399,41 @@ function ActionButtons:addActionButtonCombatInteract()
     button.state.isAnimating=false --used to prevent button from switching until animation ends
     button.state.nodeNearPlayer=false --is the player near a resource/crafting node
     button.state.currentAction='combat' --either 'combat' or 'interact'
+    button.state.pressedFlag=0 --1/0 boolean
     
 
     function button:update()
         button.currentAnim:update(dt)
 
-        -- if acceptInput and button.acceptInput then --if gamestate and button are accepting input 
-        --     if love.keyboard.isDown(contros.btnDown) then 
-        --         button.buttonDuration=button.buttonDuration+dt 
-        --     end 
+        button.state.pressedFlag=0 --default to not pressed
+        if acceptInput and love.keyboard.isDown(controls.btnDown) then 
+            button.state.pressedFlag=1
+            if button.acceptInput then --only increase duration when button accepts input
+                button.buttonDuration=button.buttonDuration+dt 
+            end
 
-        --     if releasedKey==controls.btnDown then 
-        --         if button.buttonDuration<0.2 then --button tap
-        --             button.currentAnim:resume() --resume animation to go to next icon
-        --             button.acceptInput=false --won't accept input until animation is done
+            if button.acceptInput then 
+                if releasedKey==controls.btnDown then 
+                    if button.buttonDuration<0.3 then --button tap
+                        --TODO------------------------------------------------------
+                            --combatInteract button doesn't yet have an animation
+                            --icon gets changed whenever player is near an interactable node.
 
-        --             --set timer to restore input accepting
-        --             TimerState:after(button.animationTime, function() button.acceptInput=true end)
-        --             button.buttonDuration=0 --reset buttonDuration
-
-        --         elseif button.buttonDuration>=0.2 then --button hold
-        --             --TODO engage/disengae combat or interact with resource/crafting nodes
-        --             button.buttonDuration=0 --reset buttonDuration
-        --         end
-        --     end
-        -- end
+                        -- button.currentAnim:resume() --resume animation to go to next icon
+                        -- button.acceptInput=false --won't accept input until animation is done
+    
+                        -- --set timer to restore input accepting
+                        -- TimerState:after(button.animationTime, function() button.acceptInput=true end)
+                        --TODO--------------------------------------------------------
+                        button.buttonDuration=0 --reset buttonDuration
+    
+                    elseif button.buttonDuration>=0.3 then --button hold
+                        --TODO engage/disengae combat or interact with resource/crafting nodes
+                        button.buttonDuration=0 --reset buttonDuration
+                    end
+                end
+            end
+        end
 
         --if the player is near a resource/crafting node, switch to 'interact' but only if button
         --is currently in 'combat' state and button is not currently animating.
@@ -423,10 +461,18 @@ function ActionButtons:addActionButtonCombatInteract()
     end
 
     function button:draw()
+        love.graphics.draw( --draw blank button
+            self.blankSprite[1+button.state.pressedFlag], --draw blankSprite[2] when pressed
+            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-30*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
+        )
         button.currentAnim:draw(
             button.spriteSheet,
             love.graphics.getWidth()-60*WINDOWSCALE_X,
-            love.graphics.getHeight()-30*WINDOWSCALE_Y,
+            --draw 1px (scaled) lower when button is currently pressed
+            love.graphics.getHeight()-30*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
     end
