@@ -70,6 +70,7 @@ function PlayState:draw()
     cam:detach()
     
     Hud:draw() --draw hud 
+    love.graphics.print(love.timer.getFPS(),0,20,nil,2,2)
 end
 
 --start the playstate

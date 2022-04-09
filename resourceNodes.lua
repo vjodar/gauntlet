@@ -69,6 +69,7 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
         self.state.harvestProgress=0 
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
+        self.state.particleWait=false --used to wait some time between particle emissions
 
         --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
@@ -113,13 +114,19 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
         --use sine wave funtion to syncronize shaking and particle emission
         --with hatchet hit
         --only shake and emit particles if node is actively being harvested
-        if (math.cos(self.state.harvestProgress*14)>0.9) and self.state.beingHarvested then 
+        if (math.cos(self.state.harvestProgress*14)>(1-6*dt)) 
+            and self.state.beingHarvested 
+            and self.state.particleWait==false 
+        then 
             if Player.state.facing=='right' then
                  self.spriteShake=1
             else --player is facing left
                 self.spriteShake=-1
             end
-            self.particles:emit(1) --shoot out particles
+            self.particles:emit(5) --shoot out particles
+            --wait 0.4s before emitting more particles
+            self.state.particleWait=true
+            TimerState:after(0.4,function() self.state.particleWait=false end)
         end
 
         --once depleted, change collision class to prevent further harvesting
@@ -215,6 +222,7 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         self.state.harvestProgress=0
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
+        self.state.particleWait=false --used to wait some time between particle emissions
 
         --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
@@ -259,13 +267,19 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         --uses sine wave function to syncronize shaking and particle emission
         --with pickaxe swings
         --only shake and emit particles if node is actively being harvested
-        if (math.cos(self.state.harvestProgress*14)>0.9) and self.state.beingHarvested then 
+        if (math.cos(self.state.harvestProgress*14)>(1-6*dt)) 
+            and self.state.beingHarvested 
+            and self.state.particleWait==false
+        then 
             if Player.state.facing=='right' then
                  self.spriteShake=1
             else --player is facing left
                 self.spriteShake=-1
             end
-            self.particles:emit(1) --emit particles
+            self.particles:emit(5) --emit particles
+            --wait 0.4s before emitting more particles
+            self.state.particleWait=true
+            TimerState:after(0.4,function() self.state.particleWait=false end)
         end
 
         --once depleted, change collision class to prevent further harvesting
@@ -595,6 +609,7 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         self.state.harvestProgress=0
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
+        self.state.particleWait=false --used to wait some interval of time between particle emissions
 
         --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
@@ -639,8 +654,14 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         end
 
         --emit constant pulse of particles when node is being harvested
-        if self.state.beingHarvested and math.sin(self.state.harvestProgress*14)>0.9 then 
-            self.particles:emit(1) 
+        if self.state.beingHarvested 
+            and math.sin(self.state.harvestProgress*14)>0.9
+            and self.state.particleWait==false 
+        then 
+            self.particles:emit(5)
+            --wait 0.4s before emitting more particles
+            self.state.particleWait=true
+            TimerState:after(0.4,function() self.state.particleWait=false end)
         end 
 
         self.particles:update(dt) --update particles

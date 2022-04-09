@@ -9,7 +9,7 @@ function Player:load()
     self.collider:setFixedRotation(true) --collider won't spin/rotate
     self.collider:setCollisionClass('player')
     self.collider:setObject(self) --attach collider to this object
-    self.moveSpeed=40
+    self.moveSpeed=2400 --40 at 60fps
     self.moveSpeedDiag=self.moveSpeed*0.61
 
     --sprites and animations
@@ -150,13 +150,13 @@ end
 function Player:move()
 
     if love.keyboard.isDown(controls.dirLeft) then 
-        self.xVel=self.xVel-self.moveSpeed
+        self.xVel=self.xVel-self.moveSpeed*dt
         self.state.facing='left'
         self.state.moving=true
         self.state.movingHorizontally=true
     end
     if love.keyboard.isDown(controls.dirRight) then 
-        self.xVel=self.xVel+self.moveSpeed 
+        self.xVel=self.xVel+self.moveSpeed*dt 
         self.state.facing='right'
         self.state.moving=true
         self.state.movingHorizontally=true
@@ -164,9 +164,9 @@ function Player:move()
     if love.keyboard.isDown(controls.dirUp) then 
         --accomodate for diagonal speed
         if self.state.movingHorizontally then 
-            self.yVel=self.yVel-self.moveSpeedDiag
+            self.yVel=self.yVel-self.moveSpeedDiag*dt
         else            
-            self.yVel=self.yVel-self.moveSpeed
+            self.yVel=self.yVel-self.moveSpeed*dt
         end 
         self.state.moving=true
         self.state.movingVertially=true
@@ -174,9 +174,9 @@ function Player:move()
     if love.keyboard.isDown(controls.dirDown) then 
         --accomodate for diagonal speed
         if self.state.movingHorizontally then 
-            self.yVel=self.yVel+self.moveSpeedDiag
+            self.yVel=self.yVel+self.moveSpeedDiag*dt
         else            
-            self.yVel=self.yVel+self.moveSpeed
+            self.yVel=self.yVel+self.moveSpeed*dt
         end 
         self.state.moving=true
         self.state.movingVertially=true 

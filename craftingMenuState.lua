@@ -239,7 +239,9 @@ function CraftingMenuState:update()
 
     --just to ensure the player releases the 'open crafting menu' button before proceeding
     if self.state.keyIsReleased==false then 
-        if acceptInput and releasedKey==controls.btnDown then self.state.keyIsReleased=true end
+        if acceptInput and not love.keyboard.isDown(controls.btnDown) then 
+            self.state.keyIsReleased=true 
+        end
     end
 
     return true --return true to remain on gamestate stack

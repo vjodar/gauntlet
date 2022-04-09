@@ -62,15 +62,16 @@ function Items:spawn_item(_x,_y,_name)
 
         --Offset sprite's origin to its center
         self.xOffset=self.sprite:getWidth()*0.5
-        self.yOffset=self.sprite:getHeight()-2
+        self.yOffset=0
+        self.height=self.sprite:getHeight()+2
         self.oscillation=0
 
         self.isCollectable=false --boolean determines when the item can be collected
         self.removeEntity=false --should item be removed from entities table
 
         --choose a random x,y velocity to shoot out of node
-        self.xVel=(8-love.math.random()*16)*love.timer.getFPS()
-        self.yVel=(7-love.math.random()*14)*love.timer.getFPS()
+        self.xVel=(8-love.math.random()*16)*60
+        self.yVel=(7-love.math.random()*14)*60
 
         self.collider:setLinearVelocity(self.xVel,self.yVel) --launch item from node
         --after 1s from spawning, item becomes collectable
@@ -81,7 +82,6 @@ function Items:spawn_item(_x,_y,_name)
 
     function item:update()
         self.xPos,self.yPos=self.collider:getPosition() --update position
-        self.xVel,self.yVel=self.collider:getLinearVelocity() --update velocity
 
         if self.isCollectable then 
             self:gravitateToPlayer()
@@ -89,8 +89,8 @@ function Items:spawn_item(_x,_y,_name)
         end
 
         --make the item look like it's bobbing/floating up and down
-        self.oscillation=self.oscillation+0.07
-        self.yOffset=self.yOffset+0.25*math.sin(self.oscillation)
+        self.oscillation=(self.oscillation+dt*4)
+        self.yOffset=4*math.sin(self.oscillation)+self.height
 
         --return false when item should be removed from entitiesTable
         --destroy item's collider
@@ -102,7 +102,9 @@ function Items:spawn_item(_x,_y,_name)
 
     function item:draw() 
         self.shadow:draw(self.xPos,self.yPos) --draw shadow
-        love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,self.xOffset,self.yOffset)
+        love.graphics.draw(
+            self.sprite,self.xPos,self.yPos,nil,1,1,self.xOffset,self.yOffset
+        )
     end 
 
     --move item toward the player when they are in range
@@ -110,14 +112,14 @@ function Items:spawn_item(_x,_y,_name)
 
         if math.abs(self.xPos-Player.xPos)<40 and math.abs(self.yPos-Player.yPos)<30 then
             if self.xPos<Player.xPos then --item is left of player
-                self.collider:applyLinearImpulse(0.75,0)
+                self.collider:applyLinearImpulse(45*dt,0)
             else --item is right of player
-                self.collider:applyLinearImpulse(-0.75,0)
+                self.collider:applyLinearImpulse(-45*dt,0)
             end
             if self.yPos<Player.yPos then --item is above player
-                self.collider:applyLinearImpulse(0,0.75)
+                self.collider:applyLinearImpulse(0,45*dt)
             else --item is below player
-                self.collider:applyLinearImpulse(0,-0.75)
+                self.collider:applyLinearImpulse(0,-45*dt)
             end
         end
     end
