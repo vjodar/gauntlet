@@ -127,7 +127,7 @@ function Inventory:load()
     self.state.closed=true --start out closed
     self.state.transitioning=false --transitioning between open and closed states
     
-    self.xVel=12*WINDOWSCALE_X --speed of inventory segments and icons
+    self.xVel=1440*WINDOWSCALE_X --speed of inventory segments and icons
     self.MAXNUM=27 --maximum number of open or closed segments and icons
     self.numClosed=self.MAXNUM --number of inventory segments and icons are in their closed position
     self.numOpen=0 --number of inventory segments and icons are in their open position
@@ -185,7 +185,7 @@ function Inventory:move()
         for i,segment in pairs(self.inventorySegments) do 
             --only iterate over segments which still need to move
             if segment.xPos_current~=segment.xPos_closed then 
-                segment.xPos_current=segment.xPos_current-self.xVel --move segment
+                segment.xPos_current=segment.xPos_current-self.xVel*dt --move segment
                 if segment.xPos_current<=segment.xPos_closed then 
                     segment.xPos_current=segment.xPos_closed 
                     self.numClosed=self.numClosed+1
@@ -197,7 +197,7 @@ function Inventory:move()
         for i,icon in pairs(self.inventoryItems) do 
             --only iterate over icons which still need to move
             if icon.xPos_current~=icon.xPos_closed then 
-                icon.xPos_current=icon.xPos_current-self.xVel --move icon
+                icon.xPos_current=icon.xPos_current-self.xVel*dt --move icon
                 if icon.xPos_current<=icon.xPos_closed then 
                     icon.xPos_current=icon.xPos_closed 
                     self.numClosed=self.numClosed+1
@@ -220,7 +220,7 @@ function Inventory:move()
         for i,segment in pairs(self.inventorySegments) do 
             --only iterate over segments that still need to move
             if segment.xPos_current~=segment.xPos_open then 
-                segment.xPos_current=segment.xPos_current+self.xVel --move segment
+                segment.xPos_current=segment.xPos_current+self.xVel*dt --move segment
                 if segment.xPos_current>=segment.xPos_open then 
                     segment.xPos_current=segment.xPos_open 
                     self.numOpen=self.numOpen+1
@@ -232,7 +232,7 @@ function Inventory:move()
         for i,icon in pairs(self.inventoryItems) do 
             --only iterate over segments that still need to move
             if icon.xPos_current~=icon.xPos_open then 
-                icon.xPos_current=icon.xPos_current+self.xVel --move icon
+                icon.xPos_current=icon.xPos_current+self.xVel*dt --move icon
                 if icon.xPos_current>=icon.xPos_open then 
                     icon.xPos_current=icon.xPos_open 
                     self.numOpen=self.numOpen+1

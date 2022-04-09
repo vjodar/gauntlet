@@ -109,19 +109,19 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
 
         self.particles:update(dt) --update particle system
 
-        self.spriteShake=0 --spriteShake defaults to 0
-
         --use sine wave funtion to syncronize shaking and particle emission
         --with hatchet hit
         --only shake and emit particles if node is actively being harvested
         if (math.cos(self.state.harvestProgress*14)>(1-6*dt)) 
             and self.state.beingHarvested 
             and self.state.particleWait==false 
-        then 
+        then --update spriteShake, after 0.17s, spriteShake will revert
             if Player.state.facing=='right' then
                  self.spriteShake=1
+                 TimerState:after(0.17,function() self.spriteShake=0 end)
             else --player is facing left
                 self.spriteShake=-1
+                TimerState:after(0.17,function() self.spriteShake=0 end)
             end
             self.particles:emit(5) --shoot out particles
             --wait 0.4s before emitting more particles
@@ -262,21 +262,21 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
 
         self.particles:update(dt) --update particle systems
 
-        self.spriteShake=0 --spriteShake defaults to 0
-
         --uses sine wave function to syncronize shaking and particle emission
         --with pickaxe swings
         --only shake and emit particles if node is actively being harvested
         if (math.cos(self.state.harvestProgress*14)>(1-6*dt)) 
             and self.state.beingHarvested 
             and self.state.particleWait==false
-        then 
+        then --update spriteShake, after 0.17s, spriteShake will revert
             if Player.state.facing=='right' then
                  self.spriteShake=1
+                 TimerState:after(0.17,function() self.spriteShake=0 end)
             else --player is facing left
                 self.spriteShake=-1
+                TimerState:after(0.17,function() self.spriteShake=0 end)
             end
-            self.particles:emit(5) --emit particles
+            self.particles:emit(4) --emit particles
             --wait 0.4s before emitting more particles
             self.state.particleWait=true
             TimerState:after(0.4,function() self.state.particleWait=false end)
