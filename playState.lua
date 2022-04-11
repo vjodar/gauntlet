@@ -12,6 +12,7 @@ function PlayState:load()
     )
 
     cam=camera()
+    camSmoother=cam.smooth.damped(10)
     camTarget={} --camera will look at this object's position
     --1x zoom for every 400px width and 300px height
     cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5))
@@ -51,7 +52,7 @@ function PlayState:update()
 
     Entities:update() --update all entities
 
-    cam:lookAt(camTarget.xPos,camTarget.yPos) --update camera
+    cam:lockPosition(camTarget.xPos,camTarget.yPos,camSmoother) --update camera
 
     Hud:update() --update Heads Up Display
 
@@ -81,5 +82,6 @@ function PlayState:start()
     Player.collider:setPosition(playerStartX,playerStartY)
 
     --set camera target to be the player's position
+    cam:lookAt(playerStartX,playerStartY)
     camTarget=Player
 end

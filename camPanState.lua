@@ -7,7 +7,7 @@ function CamPanState:update()
         self.alpha=self.alpha-0.05
     end
 
-    if self.panToPlayerDone then
+    if self.panToPlayer then
         camTarget=Player --return camTarget to be the Player
         return false --remove CamPanState from gameStates
     end
@@ -31,7 +31,7 @@ end
 --uses timerState tween to pan camera from the current position to (_xPos,_yPos)
 function CamPanState:pan(_xPos,_yPos)
     self.panToRoomDone=false --panned to the room
-    self.panToPlayerDone=false --panned back to player
+    self.panToPlayer=false --pan back to player, exit CamPanState
     
     --for the rectangle fade out (to reveal the room gradually)
     self.rectangleX=_xPos-Rooms.ROOMWIDTH/2
@@ -47,12 +47,11 @@ function CamPanState:pan(_xPos,_yPos)
     self.target.yPos=camTarget.yPos
     camTarget=self.target 
     
-    TimerState:tweenPos(self.target,{xPos=_xPos,yPos=_yPos},0.2) --pan to (_xPos,_yPos)
-    TimerState:after(0.2,function() CamPanState.panToRoomDone=true end)
-    TimerState:after(0.8,CamPanState.panBackToPlayer) --after 1sec, pan back to player
-end
+    --target the _xPos and _yPos, camera smoother takes care of the pan
+    self.target.xPos=_xPos
+    self.target.yPos=_yPos
 
-function CamPanState:panBackToPlayer()
-    TimerState:tweenPos(CamPanState.target,Player,0.2) --pan back to Player
-    TimerState:after(0.2,function() CamPanState.panToPlayerDone=true end)
+    --After 0.8s, pan back to player
+    TimerState:after(0.1,function() CamPanState.panToRoomDone=true end)
+    TimerState:after(0.8,function() CamPanState.panToPlayer=true end)
 end

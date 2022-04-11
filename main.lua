@@ -74,9 +74,10 @@ function love.update(_dt)
     end
 
     --For testing----------------------
-    if acceptInput then 
-        if releasedKey=='escape' then love.event.quit() end --easy close for devs.
-    end
+    
+    if releasedKey=='escape' then love.event.quit() end --easy close for devs.
+    if releasedKey=='backspace' then love.load() end --easy restart for devs.
+    
     --For testing----------------------
 end
 
