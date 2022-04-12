@@ -59,9 +59,8 @@ function ActionButtons:addActionButtonWeapons()
     button.animationTime=0.285 --time it takes for animation to finish (19*0.025s)
 
     --button data
-    button.buttonDuration=0 --used to differentiate between button taps and holds
-    button.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state={} --state metatable
+    button.state.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state.hasBow=true --player has a bow
     button.state.hasStaff=true --player has a staff
     button.state.currentWeapon='bow' --either 'bow' or 'staff'
@@ -75,32 +74,20 @@ function ActionButtons:addActionButtonWeapons()
         if acceptInput then
             if love.keyboard.isDown(controls.btnUp) then 
                 button.state.pressedFlag=1
-                if button.acceptInput then --only increace duration when it is accepting input
-                    button.buttonDuration=button.buttonDuration+dt 
-                end
             end 
 
-            if button.acceptInput then --only change items when button is accepting input
-                if releasedKey==controls.btnUp then 
-                    if button.buttonDuration<0.3 then --button tap
-                        button.currentAnim:resume() --resume animation to go to next icon
-                        button.acceptInput=false --won't accept input until animation is done
+            if button.state.acceptInput and releasedKey==controls.btnUp then
+                button.currentAnim:resume() --resume animation to go to next icon
+                button.state.acceptInput=false --won't accept input until animation is done
 
-                        --set timer to restore input accepting
-                        TimerState:after(button.animationTime, function()
-                            button.acceptInput=true 
-                            --swap current weapons
-                            if button.state.currentWeapon=='bow' then 
-                                button.state.currentWeapon='staff'
-                            else button.state.currentWeapon='bow' end 
-                        end)
-                        button.buttonDuration=0 --reset buttonDuration
-
-                    elseif button.buttonDuration>=0.3 then --button hold
-                        --CURRENTLY NO BUTTON HOLD ACTIONS SET FOR THIS BUTTON
-                        button.buttonDuration=0 --reset buttonDuration
-                    end
-                end
+                --set timer to restore input accepting
+                TimerState:after(button.animationTime, function()
+                    button.state.acceptInput=true 
+                    --swap current weapons
+                    if button.state.currentWeapon=='bow' then 
+                        button.state.currentWeapon='staff'
+                    else button.state.currentWeapon='bow' end 
+                end)
             end
         end
     end
@@ -174,9 +161,9 @@ function ActionButtons:addActionButtonSupplies()
     button.animationTime=0.285 --time it takes for animation to finish (19*0.025s)
 
     --button data
-    button.buttonDuration=0 --used to differentiate between button taps and holds
-    button.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state={} --state metatable
+    button.state.buttonDuration=0 --used to differentiate between button taps and holds
+    button.state.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state.hasFish=true --player has a bow
     button.state.hasPotion=true --player has a staff
     button.state.currentSupply='fish' --either 'fish' or 'potion'
@@ -190,36 +177,46 @@ function ActionButtons:addActionButtonSupplies()
         if acceptInput then --if gamestate and button are accepting input 
             if love.keyboard.isDown(controls.btnLeft) then 
                 button.state.pressedFlag=1
-                if button.acceptInput then --only increase duration when button is accepting input
-                    button.buttonDuration=button.buttonDuration+dt 
+                if button.state.acceptInput then --only increase duration when button is accepting input
+                    button.state.buttonDuration=button.state.buttonDuration+dt 
                 end
             end 
 
-            if button.acceptInput then 
-                if releasedKey==controls.btnLeft then 
-                    if button.buttonDuration<0.3 then --button tap
-                        button.currentAnim:resume() --resume animation to go to next icon
-                        button.acceptInput=false --won't accept input until animation is done
-                        --TODO
-                        --set current supply to be opposite the one currently chosen
-                        --TODO
+            if button.state.acceptInput and button.state.buttonDuration>=0.3 then --button hold
+                --TODO----------------------------------------------
+                --consume fish or potion                
+                --TODO----------------------------------------------
 
-                        --set timer to restore input accepting
-                        TimerState:after(button.animationTime, function() 
-                            button.acceptInput=true 
-                            --swap current supply
-                            if button.state.currentSupply=='fish' then 
-                                button.state.currentSupply='potion'
-                            else button.state.currentSupply='fish' end 
-                        end)
-                        button.buttonDuration=0 --reset buttonDuration
+                --after button hold, don't listen for any more holds until after 0.3s                
+                button.state.acceptInput=false
+                TimerState:after(0.3,function() button.state.acceptInput=true end)
+            end
 
-                    elseif button.buttonDuration>=0.3 then --button hold
-                        --TODO eat the fish/drink the potion
-                        button.buttonDuration=0 --reset buttonDuration
-                    end
+            if releasedKey==controls.btnLeft then
+                if button.state.acceptInput and button.state.buttonDuration<0.3 then --button tap
+                    button.currentAnim:resume() --resume animation to go to next icon
+                    button.state.acceptInput=false --won't accept input until animation is done
+                    
+                    --set timer to restore input accepting
+                    TimerState:after(button.animationTime, function() 
+                        button.state.acceptInput=true 
+                        --swap current supply
+                        if button.state.currentSupply=='fish' then 
+                            button.state.currentSupply='potion'
+                        else button.state.currentSupply='fish' end 
+                        --TODO
+                        --set player's current supply to be opposite the one currently chosen
+                        --TODO
+                    end)
+                    button.state.buttonDuration=0 --reset buttonDuration
+                else 
+                    --buttonDuration<0.3 but button is not accepting input;
+                    --this was the release after a button hold, not a button tap.
+                    button.state.buttonDuration=0
                 end
             end
+        else --playState no longer accepts input; reset buttonDuration to prevent bugs
+            button.state.buttonDuration=0 
         end
     end
 
@@ -291,9 +288,9 @@ function ActionButtons:addActionButtonProtectionMagics()
     button.animationTime=0.285 --time it takes for animation to finish (19*0.025s)
 
     --button data
-    button.buttonDuration=0 --used to differentiate between button taps and holds
-    button.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state={} --state metatable
+    button.state.buttonDuration=0 --used to differentiate between button taps and holds
+    button.state.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state.currentSpell='protect physical' --either 'physical' or 'magical'
     button.state.pressedFlag=0 --1/0 boolean, not true false.
     
@@ -305,36 +302,45 @@ function ActionButtons:addActionButtonProtectionMagics()
         if acceptInput then 
             if love.keyboard.isDown(controls.btnRight) then 
                 button.state.pressedFlag=1
-                if button.acceptInput then --only increase duration when button is pressed
-                    button.buttonDuration=button.buttonDuration+dt 
+                if button.state.acceptInput then --only increase duration when button is pressed
+                    button.state.buttonDuration=button.state.buttonDuration+dt 
                 end
             end 
 
-            if button.acceptInput then --only change items when button accepts input
-                if releasedKey==controls.btnRight then 
-                    if button.buttonDuration<0.2 then --button tap
-                        button.currentAnim:resume() --resume animation to go to next icon
-                        button.acceptInput=false --won't accept input until animation is done
-                        --TODO
-                        --set current spell to be opposite the one currently chosen
-                        --TODO
+            if button.state.acceptInput and button.state.buttonDuration>=0.3 then --button HOLD
+                --TODO-----------------------
+                --Start/Stop casting protection spell
+                --TODO-----------------------
+                
+                --after button hold, don't listen for any more holds until 0.3s
+                button.state.acceptInput=false 
+                TimerState:after(0.3,function() button.state.acceptInput=true end)
+            end
 
-                        --set timer to restore input accepting
-                        TimerState:after(button.animationTime, function() 
-                            button.acceptInput=true 
-                            --swap current protection spell
-                            if button.state.currentSpell=='protect physical' then 
-                                button.state.currentSpell='protect magical'
-                            else button.state.currentSpell='protect physical' end 
-                        end)
-                        button.buttonDuration=0 --reset buttonDuration
-
-                    elseif button.buttonDuration>=0.2 then --button hold
-                        --TODO start/stop casting protection spell
-                        button.buttonDuration=0 --reset buttonDuration
-                    end
+            if releasedKey==controls.btnRight  then --only change items when button accepts input
+                if button.state.acceptInput and button.state.buttonDuration<0.3 then 
+                    button.currentAnim:resume() --resume animation to go to next icon
+                    button.state.acceptInput=false --won't accept input until animation is done
+                    --TODO
+                    --set current spell to be opposite the one currently chosen
+                    --TODO
+                    
+                    --set timer to restore input accepting
+                    TimerState:after(button.animationTime, function() 
+                        button.state.acceptInput=true 
+                        --swap current protection spell
+                        if button.state.currentSpell=='protect physical' then 
+                            button.state.currentSpell='protect magical'
+                        else button.state.currentSpell='protect physical' end 
+                    end)
+                    button.state.buttonDuration=0 --reset buttonDuration
+                else 
+                    --This is a release after a button HOLD, not a button TAP
+                    button.state.buttonDuration=0
                 end
             end
+        else --playState no longer accepts input; reset buttonDuration to prevent bugs
+            button.state.buttonDuration=0 
         end
     end
 
@@ -397,9 +403,9 @@ function ActionButtons:addActionButtonCombatInteract()
     button.animationTime=0.285 --time it takes for animation to finish (19*0.025s)
 
     --button data
-    button.buttonDuration=0 --used to differentiate between button taps and holds
-    button.acceptInput=true --used to prevent player from pressing before animation ends.
-    button.state={} --state metatable
+    button.state={}
+    button.state.buttonDuration=0 --used to differentiate between button taps and holds
+    button.state.acceptInput=true --used to suspend input for this button
     button.state.isAnimating=false --used to prevent button from switching until animation ends
     button.state.nodeNearPlayer=false --is the player near a resource/crafting node
     button.state.currentAction='combat' --either 'combat' or 'interact'
@@ -410,33 +416,33 @@ function ActionButtons:addActionButtonCombatInteract()
         button.currentAnim:update(dt)
 
         button.state.pressedFlag=0 --default to not pressed
-        if acceptInput and love.keyboard.isDown(controls.btnDown) then 
-            button.state.pressedFlag=1
-            if button.acceptInput then --only increase duration when button accepts input
-                button.buttonDuration=button.buttonDuration+dt 
-            end
+        if acceptInput then 
+            if love.keyboard.isDown(controls.btnDown) then 
+                button.state.pressedFlag=1            
+                button.state.buttonDuration=button.state.buttonDuration+dt
 
-            if button.acceptInput then 
-                if releasedKey==controls.btnDown then 
-                    if button.buttonDuration<0.3 then --button tap
-                        --TODO------------------------------------------------------
-                            --combatInteract button doesn't yet have an animation
-                            --icon gets changed whenever player is near an interactable node.
+                if button.state.buttonDuration>=0.3 and button.state.acceptInput then --button HOLD
+                    --after a HOLD, don't listen for any more HOLDs until after 0.3s
+                    button.state.acceptInput=false
+                    TimerState:after(0.3,function() button.state.acceptInput=true end)
+                    --TODO engage/disengage combat or interact with resource/crafting nodes
+                end
+            end 
 
-                        -- button.currentAnim:resume() --resume animation to go to next icon
-                        -- button.acceptInput=false --won't accept input until animation is done
-    
-                        -- --set timer to restore input accepting
-                        -- TimerState:after(button.animationTime, function() button.acceptInput=true end)
-                        --TODO--------------------------------------------------------
-                        button.buttonDuration=0 --reset buttonDuration
-    
-                    elseif button.buttonDuration>=0.3 then --button hold
-                        --TODO engage/disengae combat or interact with resource/crafting nodes
-                        button.buttonDuration=0 --reset buttonDuration
-                    end
+            if releasedKey==controls.btnDown then 
+                if button.state.buttonDuration<0.3 then --button TAP
+                    --TODO------------------------------
+                    -- button tap functionality goes here 
+                    --TODO------------------------------               
+                    button.state.buttonDuration=0 --reset buttonDuration
+                else
+                    --button was released with duration>=0.3 which means it was released
+                    --after a HOLD; don't count at TAP
+                    button.state.buttonDuration=0 
                 end
             end
+        else --playState no longer accepts input; reset buttonDuration to prevent bugs
+            button.state.buttonDuration=0 
         end
 
         --if the player is near a resource/crafting node, switch to 'interact' but only if button

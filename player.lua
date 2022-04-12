@@ -111,7 +111,7 @@ function Player:update()
     --Only accept inputs when currently on top of state stack
     if acceptInput then 
         self:move()
-        self:query()
+        self:queryInteractables()
     end
 
     self.currentAnim:update(dt) --update animation 
@@ -190,7 +190,7 @@ end
 --set HUD combatInteract action button to show player that they can interact with it.
 --if player presses the action button, call node's nodeInteract() function to
 --harvest resources / craft items / open or reveal adjascent rooms
-function Player:query()
+function Player:queryInteractables()
     local nodeColliders=world:queryRectangleArea(
         self.xPos-9,self.yPos-6,18,12, --where to query
         {'resourceNode','doorButton','craftingNode','ladder'} --what to query for
