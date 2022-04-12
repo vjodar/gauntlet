@@ -418,7 +418,7 @@ function ActionButtons:addActionButtonCombatInteract()
             (math.abs(Player.xPos-e1x)+math.abs(Player.yPos-e1y)) 
             < (math.abs(Player.xPos-e2x)+math.abs(Player.yPos-e2y))
         )
-    end    
+    end
 
     function button:update()
         button.currentAnim:update(dt)
@@ -433,7 +433,8 @@ function ActionButtons:addActionButtonCombatInteract()
                     --if player is in combat; disengage
                     if Player.combatData.inCombat then 
                         Player.combatData.inCombat=false
-                        Player.combatData.currentEnemy=nil 
+                        Player.combatData.prevEnemies={} --clear prevEnemies table
+                        Player.combatData.currentEnemy=nil --remove currentEnemy from player data
                         camTarget=Player --restore camera to following player
                     end
 
@@ -445,7 +446,8 @@ function ActionButtons:addActionButtonCombatInteract()
 
             if releasedKey==controls.btnDown then 
                 if button.state.buttonDuration<0.3 then --button TAP
-                    self:findCombatTarget()
+                    --find a combat target for the player, is possible
+                    Player.combatData.currentEnemy=self:getCombatTarget()
                                 
                     button.state.buttonDuration=0 --reset buttonDuration
                 else
@@ -506,7 +508,7 @@ function ActionButtons:addActionButtonCombatInteract()
     --queries around the player for any enemies. If player isn't yet in combat,
     --sets the player's current target to be the closest enemy. If player is 
     --already in combat, switch to another enemy.
-    function button:findCombatTarget()
+    function button:getCombatTarget()
         if self.state.currentAction=='combat' then
             local nearbyColliders=world:queryRectangleArea( --query for enemies
                 Player.xPos-200,Player.yPos-150,400,300,{'enemy'}
@@ -516,22 +518,46 @@ function ActionButtons:addActionButtonCombatInteract()
                 table.sort(nearbyColliders,self.sortFn)
             else 
                 Player.dialog:say('No enemies nearby')
-                return
+                return nil 
             end
 
-            if not Player.combatData.inCombat then                      
+            if not Player.combatData.inCombat then
                 --pass nearest enemy to the Player
-                Player.combatData.currentEnemy=nearbyColliders[1]:getObject()
                 Player.combatData.inCombat=true
+                return nearbyColliders[1]:getObject()
+            end 
 
-            else --player is already in combat, switch targets
-                if #nearbyColliders>1
-                    and Player.combatData.currentEnemy.collider==nearbyColliders[1]
-                then --already targeting closest enemy, switch to the next
-                    Player.combatData.currentEnemy=nearbyColliders[2]:getObject()
-                else --not already targeting closest enemy, target it
-                    Player.combatData.currentEnemy=nearbyColliders[1]:getObject()
+            --player is already in combat, switch to next target, if availble
+            if Player.combatData.inCombat and #nearbyColliders>1 then 
+                local switch=nil --stores the enemy to switch to
+
+                --Using the prevEnemies table, we can construct a 'history' of targeted
+                --and when they were targeted in relation to each other by comparing 
+                --their elements and positions to those of our queried nearbyColliders.
+
+                --First we update the prevEnemies table, being sure to limit its size
+                table.insert(
+                    Player.combatData.prevEnemies,
+                    Player.combatData.currentEnemy.collider --be sure to store collider
+                )
+                if #Player.combatData.prevEnemies>Player.combatData.prevEnemiesLimit then
+                    table.remove(Player.combatData.prevEnemies,1) --remove oldest first
                 end
+
+                --Basically checks if an enemy was previously targeted and switches to next closest.
+                --If that other one was targeted before the last, switch to yet another, and so on.
+                --When the prevEnemies table fully matches the nearbyColliders in both element and
+                --position, clear the prevEnemies table and rollback over to target the nearest.
+                for i,e in pairs(nearbyColliders) do
+                    if #Player.combatData.prevEnemies<i then switch=e break end 
+                    if not e==Player.combatData.prevEnemies[i] then switch=e else print('next') end 
+                end
+                if switch==nil then
+                    Player.combatData.prevEnemies={} --clear prevEnemies table
+                    switch=nearbyColliders[1] --'rollback' and target the closest enemy
+                end 
+
+                return switch:getObject() --return the enemy object (not collider)
             end
         end
     end

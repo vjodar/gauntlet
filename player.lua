@@ -52,6 +52,8 @@ function Player:load()
     self.combatData={} --combat related data
     self.combatData.inCombat=false 
     self.combatData.currentEnemy=nil --current combat target
+    self.combatData.prevEnemies={} --holds previously targeted enemies
+    self.combatData.prevEnemiesLimit=6 --how many prevEnemies will be stored
     
     self.inventory={
         arcane_shards=0, 
@@ -316,7 +318,8 @@ function Player:fightEnemy()
         or math.abs(self.yPos-self.combatData.currentEnemy.yPos)>200
     then 
         self.combatData.inCombat=false 
-        self.combatData.currentEnemy=nil
-        camTarget=Player
+        Player.combatData.prevEnemies={} --clear prevEnemies table
+        self.combatData.currentEnemy=nil --remove currentEnemy from player data
+        camTarget=self
     end
 end
