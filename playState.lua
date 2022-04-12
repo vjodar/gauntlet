@@ -71,6 +71,11 @@ function PlayState:draw()
     cam:detach()
     
     Hud:draw() --draw hud 
+    --testing---------------------------------
+    for i,e in pairs(Player.combatData.prevEnemies) do 
+        love.graphics.print(e:getX(),0,20*i,nil,2,2)
+    end
+    --testing---------------------------------
 end
 
 --start the playstate

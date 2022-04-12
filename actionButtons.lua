@@ -516,6 +516,10 @@ function ActionButtons:addActionButtonCombatInteract()
             if #nearbyColliders>0 then 
                 --sort by distance to player
                 table.sort(nearbyColliders,self.sortFn)
+                --testing----------------------------------------
+                print('----------------------------------------')
+                for i,e in pairs(nearbyColliders) do print(e:getX()) end
+                --testing----------------------------------------
             else 
                 Player.dialog:say('No enemies nearby')
                 return nil 
@@ -549,8 +553,12 @@ function ActionButtons:addActionButtonCombatInteract()
                 --When the prevEnemies table fully matches the nearbyColliders in both element and
                 --position, clear the prevEnemies table and rollback over to target the nearest.
                 for i,e in pairs(nearbyColliders) do
-                    if #Player.combatData.prevEnemies<i then switch=e break end 
-                    if not e==Player.combatData.prevEnemies[i] then switch=e else print('next') end 
+                    if #Player.combatData.prevEnemies<i then switch=e break end
+                    if e~=Player.combatData.prevEnemies[i] then 
+                        if e==Player.combatData.currentEnemy.collider then --prevent duplicates
+                            switch=nearbyColliders[i+1] break 
+                        else switch=e break end 
+                    end
                 end
                 if switch==nil then
                     Player.combatData.prevEnemies={} --clear prevEnemies table
