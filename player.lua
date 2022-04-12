@@ -48,6 +48,10 @@ function Player:load()
     self.state.movingHorizontally=false 
     self.state.movingVertially=false 
     self.state.isNearNode=false 
+
+    self.combatData={} --combat related data
+    self.combatData.inCombat=false 
+    self.combatData.currentEnemy=nil --current combat target
     
     self.inventory={
         arcane_shards=0, 
@@ -111,7 +115,12 @@ function Player:update()
     --Only accept inputs when currently on top of state stack
     if acceptInput then 
         self:move()
-        self:queryInteractables()
+        if self.combatData.inCombat then
+            self:fightEnemy()
+        else 
+            --query for interactables with not in combat
+            self:queryInteractables() 
+        end
     end
 
     self.currentAnim:update(dt) --update animation 
@@ -291,5 +300,23 @@ function Player:updateCurrentGear()
     elseif self.inventory['weapon_staff_t2']>0 then self.currentGear.weapons.staff='staff_t2'
     elseif self.inventory['weapon_staff_t1']>0 then self.currentGear.weapons.staff='staff_t1'
     else self.currentGear.weapons.staff='staff_t0'
+    end
+end
+
+--fight the currently targeted enemy
+function Player:fightEnemy()
+    --update camTarget to be the midpoint between player and enemy
+    camTarget={
+        xPos=((self.xPos+self.combatData.currentEnemy.xPos)*0.5),
+        yPos=((self.yPos+self.combatData.currentEnemy.yPos)*0.5)
+    }
+
+    --if enemy is too far from player, disengage combat
+    if math.abs(self.xPos-self.combatData.currentEnemy.xPos)>300
+        or math.abs(self.yPos-self.combatData.currentEnemy.yPos)>200
+    then 
+        self.combatData.inCombat=false 
+        self.combatData.currentEnemy=nil
+        camTarget=Player
     end
 end

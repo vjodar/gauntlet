@@ -410,7 +410,15 @@ function ActionButtons:addActionButtonCombatInteract()
     button.state.nodeNearPlayer=false --is the player near a resource/crafting node
     button.state.currentAction='combat' --either 'combat' or 'interact'
     button.state.pressedFlag=0 --1/0 boolean
-    
+
+    button.sortFn=function(e1,e2) --sorts enemies by distance to player in increasing order
+        local e1x,e1y=e1:getPosition()
+        local e2x,e2y=e2:getPosition()
+        return ( --simple approximation of the pythagorean theorem
+            (math.abs(Player.xPos-e1x)+math.abs(Player.yPos-e1y)) 
+            < (math.abs(Player.xPos-e2x)+math.abs(Player.yPos-e2y))
+        )
+    end    
 
     function button:update()
         button.currentAnim:update(dt)
@@ -422,18 +430,23 @@ function ActionButtons:addActionButtonCombatInteract()
                 button.state.buttonDuration=button.state.buttonDuration+dt
 
                 if button.state.buttonDuration>=0.3 and button.state.acceptInput then --button HOLD
+                    --if player is in combat; disengage
+                    if Player.combatData.inCombat then 
+                        Player.combatData.inCombat=false
+                        Player.combatData.currentEnemy=nil 
+                        camTarget=Player --restore camera to following player
+                    end
+
                     --after a HOLD, don't listen for any more HOLDs until after 0.3s
                     button.state.acceptInput=false
                     TimerState:after(0.3,function() button.state.acceptInput=true end)
-                    --TODO engage/disengage combat or interact with resource/crafting nodes
                 end
             end 
 
             if releasedKey==controls.btnDown then 
                 if button.state.buttonDuration<0.3 then --button TAP
-                    --TODO------------------------------
-                    -- button tap functionality goes here 
-                    --TODO------------------------------               
+                    self:findCombatTarget()
+                                
                     button.state.buttonDuration=0 --reset buttonDuration
                 else
                     --button was released with duration>=0.3 which means it was released
@@ -489,6 +502,39 @@ function ActionButtons:addActionButtonCombatInteract()
 
     --sets nodeNearPlayer state to _bool. Called be Player
     function button:setNodeNearPlayer(_bool) button.state.nodeNearPlayer=_bool end
+
+    --queries around the player for any enemies. If player isn't yet in combat,
+    --sets the player's current target to be the closest enemy. If player is 
+    --already in combat, switch to another enemy.
+    function button:findCombatTarget()
+        if self.state.currentAction=='combat' then
+            local nearbyColliders=world:queryRectangleArea( --query for enemies
+                Player.xPos-200,Player.yPos-150,400,300,{'enemy'}
+            )
+            if #nearbyColliders>0 then 
+                --sort by distance to player
+                table.sort(nearbyColliders,self.sortFn)
+            else 
+                Player.dialog:say('No enemies nearby')
+                return
+            end
+
+            if not Player.combatData.inCombat then                      
+                --pass nearest enemy to the Player
+                Player.combatData.currentEnemy=nearbyColliders[1]:getObject()
+                Player.combatData.inCombat=true
+
+            else --player is already in combat, switch targets
+                if #nearbyColliders>1
+                    and Player.combatData.currentEnemy.collider==nearbyColliders[1]
+                then --already targeting closest enemy, switch to the next
+                    Player.combatData.currentEnemy=nearbyColliders[2]:getObject()
+                else --not already targeting closest enemy, target it
+                    Player.combatData.currentEnemy=nearbyColliders[1]:getObject()
+                end
+            end
+        end
+    end
 
     return button 
 end
