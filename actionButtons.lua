@@ -516,13 +516,12 @@ function ActionButtons:addActionButtonCombatInteract()
             if #nearbyColliders>0 then 
                 --sort by distance to player
                 table.sort(nearbyColliders,self.sortFn)
-                --testing----------------------------------------
-                print('----------------------------------------')
-                for i,e in pairs(nearbyColliders) do print(e:getX()) end
-                --testing----------------------------------------
             else 
-                Player.dialog:say('No enemies nearby')
-                return nil 
+                if not Player.combatData.inCombat then
+                    --not in combat and no enemies nearby, return nil
+                    Player.dialog:say('No enemies nearby')
+                    return nil 
+                end
             end
 
             if not Player.combatData.inCombat then
@@ -566,6 +565,12 @@ function ActionButtons:addActionButtonCombatInteract()
                 end 
 
                 return switch:getObject() --return the enemy object (not collider)
+            
+            elseif #nearbyColliders<=1 then 
+                --either the player is already targeting the only nearby enemy
+                --or there is no nearby enemy but player is already in combat (which
+                --can happen due to query area being smaller than disengage distance)
+                return Player.combatData.currentEnemy --remain fighting the same enemy
             end
         end
     end

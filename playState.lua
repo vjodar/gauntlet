@@ -63,7 +63,7 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        world:draw() --draws all physics colliders
+        -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
 
@@ -71,11 +71,6 @@ function PlayState:draw()
     cam:detach()
     
     Hud:draw() --draw hud 
-    --testing---------------------------------
-    for i,e in pairs(Player.combatData.prevEnemies) do 
-        love.graphics.print(e:getX(),0,20*i,nil,2,2)
-    end
-    --testing---------------------------------
 end
 
 --start the playstate
