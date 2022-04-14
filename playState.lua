@@ -65,7 +65,7 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        world:draw() --draws all physics colliders
+        -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
 
@@ -89,5 +89,11 @@ function PlayState:start()
     --testing----------------------------------
     print('spawning enemy')
     Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
+
+    Items:spawn_item(playerStartX,playerStartY,'broken_staff')
+    Items:spawn_item(playerStartX,playerStartY,'broken_bow')
+    Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
+    Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
+    for i=1,24 do Items:spawn_item(playerStartX,playerStartY,'arcane_shards') end
     --testing----------------------------------
 end

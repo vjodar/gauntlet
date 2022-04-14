@@ -34,12 +34,28 @@ function Player:load()
         staff_t2=love.graphics.newImage('assets/weapon_staff_t2.png'),
         staff_t3=love.graphics.newImage('assets/weapon_staff_t3.png')
     }
-    self.grid=anim8.newGrid(16,22,self.spriteSheets.head_t0:getWidth(),self.spriteSheets.head_t0:getHeight())
+    self.grids={} --holds animation grids
+    self.grids.armor=anim8.newGrid(
+        16,22,self.spriteSheets.head_t0:getWidth(),
+        self.spriteSheets.head_t0:getHeight()
+    )
+    self.grids.bow=anim8.newGrid(
+        32,32,self.spriteSheets.bow_t1:getWidth(),
+        self.spriteSheets.bow_t1:getHeight()
+    )
+    self.grids.staff=anim8.newGrid(
+        16,48,self.spriteSheets.staff_t1:getWidth(),
+        self.spriteSheets.staff_t1:getHeight()
+    )
     self.animations={ --animations for each armor piece and tier
-        idle=anim8.newAnimation(self.grid('1-4',1), 0.1),
-        moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
+        idle=anim8.newAnimation(self.grids.armor('1-4',1), 0.1),
+        moving=anim8.newAnimation(self.grids.armor('5-8',1), 0.1),
+        bow=anim8.newAnimation(self.grids.bow('1-9',1),0.15),
+        staff=anim8.newAnimation(self.grids.staff('1-18',1),0.075)
     }
+    --used to swap between character moving and idle animations
     self.currentAnim=self.animations.idle
+
     self.shadow=Shadows:newShadow('medium')  --shadow
 
     --'metatable' containing info of the player's current state
@@ -56,7 +72,7 @@ function Player:load()
     self.combatData.prevEnemies={} --holds previously targeted enemies
     self.combatData.prevEnemiesLimit=6 
     self.combatData.attackOnCooldown=false --true when awaiting for cooldown between attacks
-    self.combatData.attackCooldownTime=1 --time in sec between attacks
+    self.combatData.attackCooldownTime=1.35 --time in sec between attacks
     
     self.inventory={
         arcane_shards=0, 
@@ -102,7 +118,8 @@ function Player:load()
         armor={head='head_t0',chest='chest_t0',legs='legs_t0'}
     }
 
-    --what weapon the player will attack with when entering combat (updated by weapon actionButton)
+    --what weapon the player will attack with when entering combat
+    --updated by weapons actionButton and updateCurrentGear()
     self.equippedWeapon='bow_t0'
 
     self.dialog=Dialog:newDialogSystem() --dialog system
@@ -118,7 +135,7 @@ function Player:update()
     --default movement states to idle
     self.state.moving=false 
     self.state.movingHorizontally=false 
-    self.state.movingVertically=false 
+    self.state.movingVertically=false     
     
     --Only accept inputs when currently on top of state stack
     if acceptInput then 
@@ -131,7 +148,16 @@ function Player:update()
         end
     end
 
+    --set current animation based on self.state
+    if self.state.moving==true then 
+        self.currentAnim=self.animations.moving 
+    else --defaults to idle animation
+        self.currentAnim=self.animations.idle 
+    end
+
     self.currentAnim:update(dt) --update animation 
+    self.animations.bow:update(dt)
+    self.animations.staff:update(dt)
     self.dialog:update() --update dialog system
 end
 
@@ -141,13 +167,6 @@ function Player:draw()
 
     local scaleX=1 --used to flip sprite when facing left
     if self.state.facing=='left' then scaleX=-1 end
-
-    --update current animation based on self.state
-    if self.state.moving==true then 
-        self.currentAnim=self.animations.moving 
-    else --defaults to idle animation
-        self.currentAnim=self.animations.idle 
-    end
     
     --draw the appropriate current animation for each armor piece
     self.currentAnim:draw(
@@ -162,10 +181,29 @@ function Player:draw()
         self.spriteSheets[self.currentGear.armor.legs],
         self.xPos,self.yPos,nil,scaleX,1,8,20
     )
+
+    --draw weapon, if applicable
+    if self.equippedWeapon=='bow_t1' 
+        or self.equippedWeapon=='bow_t2' 
+        or self.equippedWeapon=='bow_t3'
+    then 
+        self.animations.bow:draw(
+            self.spriteSheets[self.currentGear.weapons.bow],
+            self.xPos,self.yPos,nil,scaleX,1,0,24
+        )
+    end
+    if self.equippedWeapon=='staff_t1' 
+        or self.equippedWeapon=='staff_t2' 
+        or self.equippedWeapon=='staff_t3'
+    then 
+        self.animations.staff:draw(
+            self.spriteSheets[self.currentGear.weapons.staff],
+            self.xPos,self.yPos,nil,scaleX,1,0,44
+        )
+    end
 end
 
 function Player:move()
-
     if love.keyboard.isDown(controls.dirLeft) then 
         self.xVel=self.xVel-self.moveSpeed*dt
         self.state.facing='left'
@@ -309,6 +347,9 @@ function Player:updateCurrentGear()
     elseif self.inventory['weapon_staff_t1']>0 then self.currentGear.weapons.staff='staff_t1'
     else self.currentGear.weapons.staff='staff_t0'
     end
+
+    --update equipped weapon
+    self.equippedWeapon=self.currentGear.weapons[ActionButtons.weapons.state.currentWeapon]
 end
 
 --fight the currently targeted enemy
@@ -318,6 +359,11 @@ function Player:fightEnemy()
         xPos=((self.xPos+self.combatData.currentEnemy.xPos)*0.5),
         yPos=((self.yPos+self.combatData.currentEnemy.yPos)*0.5)
     }
+
+    --face toward the enemy
+    if self.combatData.currentEnemy.xPos>self.xPos then 
+        self.state.facing='right' else self.state.facing='left'
+    end
 
     --if enemy is too far from player, disengage combat
     if math.abs(self.xPos-self.combatData.currentEnemy.xPos)>300
@@ -344,10 +390,10 @@ function Player:fightEnemy()
             self.combatData.attackOnCooldown=false
         end)
 
-        --TODO---------------------------------------
         --launch the projectile of the equippedWeapon toward the currentEnemy
-        Projectiles:launch(self.xPos,self.yPos,self.equippedWeapon,self.combatData.currentEnemy)
-        -- print('attacking '..self.combatData.currentEnemy.xPos..' with '..self.equippedWeapon)
-        --TODO---------------------------------------
+        Projectiles:launch(
+            self.xPos,self.yPos,
+            self.equippedWeapon,self.combatData.currentEnemy
+        )
     end
 end

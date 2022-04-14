@@ -478,6 +478,13 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
             self.state.moving=true 
         end
 
+        --testing---------------------------------
+        if love.keyboard.isDown('left') then self.collider:applyForce(-9600*dt,0) end 
+        if love.keyboard.isDown('right') then self.collider:applyForce(9600*dt,0) end 
+        if love.keyboard.isDown('up') then self.collider:applyForce(0,-9600*dt) end 
+        if love.keyboard.isDown('down') then self.collider:applyForce(0,9600*dt) end 
+        --testing---------------------------------
+
         --update animation
         self.currentAnim:update(dt)
     end
