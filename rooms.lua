@@ -314,105 +314,113 @@ function Rooms:generateWalls(_room)
     local _type=_room.type
     if _type=='middle' then 
         --top left walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos,_yPos,37,144,3)
+        self:addWallCollider(_xPos+37,_yPos,128,48,3)
         --bottom left walls
-        world:newBSGRectangleCollider(_xPos,_yPos+203,37,117,3):setType('static')        
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos,_yPos+203,37,117,3)        
+        self:addWallCollider(_xPos+37,_yPos+298,128,22,3)
         --top right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+219,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos+347,_yPos,37,144,3)
+        self:addWallCollider(_xPos+219,_yPos,128,48,3) 
         --bottom right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos+203,37,117,3):setType('static')     
-        world:newBSGRectangleCollider(_xPos+219,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos+347,_yPos+203,37,117,3)   
+        self:addWallCollider(_xPos+219,_yPos+298,128,22,3)
     elseif _type=='sideLeft' then  
         --left walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,320,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos,128,48,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos,_yPos,37,320,3)
+        self:addWallCollider(_xPos+37,_yPos,128,48,3)
+        self:addWallCollider(_xPos+37,_yPos+298,128,22,3)
         --top right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+219,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos+347,_yPos,37,144,3)
+        self:addWallCollider(_xPos+219,_yPos,128,48,3)
         --bottom right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos+203,37,117,3):setType('static')     
-        world:newBSGRectangleCollider(_xPos+219,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos+347,_yPos+203,37,117,3)    
+        self:addWallCollider(_xPos+219,_yPos+298,128,22,3)
     elseif _type=='sideRight' then 
         --top left walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos,_yPos,37,144,3) 
+        self:addWallCollider(_xPos+37,_yPos,128,48,3)
         --bottom left walls
-        world:newBSGRectangleCollider(_xPos,_yPos+203,37,117,3):setType('static')        
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos,_yPos+203,37,117,3)        
+        self:addWallCollider(_xPos+37,_yPos+298,128,22,3)
         --right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,320,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+219,_yPos,128,48,3):setType('static')    
-        world:newBSGRectangleCollider(_xPos+219,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos+347,_yPos,37,320,3)
+        self:addWallCollider(_xPos+219,_yPos,128,48,3)    
+        self:addWallCollider(_xPos+219,_yPos+298,128,22,3)
     elseif _type=='sideTop' then 
         --top walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos,310,48,3):setType('static')
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,144,3):setType('static') 
+        self:addWallCollider(_xPos,_yPos,37,144,3)
+        self:addWallCollider(_xPos+37,_yPos,310,48,3)
+        self:addWallCollider(_xPos+347,_yPos,37,144,3)
         --bottom left walls
-        world:newBSGRectangleCollider(_xPos,_yPos+203,37,117,3):setType('static')        
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos,_yPos+203,37,117,3)        
+        self:addWallCollider(_xPos+37,_yPos+298,128,22,3)
         --bottom right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos+203,37,117,3):setType('static')     
-        world:newBSGRectangleCollider(_xPos+219,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos+347,_yPos+203,37,117,3)    
+        self:addWallCollider(_xPos+219,_yPos+298,128,22,3)
     elseif _type=='sideBottom' then 
         --top left walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos,_yPos,37,144,3)
+        self:addWallCollider(_xPos+37,_yPos,128,48,3)
         --top right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+219,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos+347,_yPos,37,144,3) 
+        self:addWallCollider(_xPos+219,_yPos,128,48,3) 
         --bottom walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos+203,37,117,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos,_yPos+203,37,117,3):setType('static')        
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,310,22,3):setType('static')
+        self:addWallCollider(_xPos+347,_yPos+203,37,117,3) 
+        self:addWallCollider(_xPos,_yPos+203,37,117,3)        
+        self:addWallCollider(_xPos+37,_yPos+298,310,22,3)
     elseif _type=='cornerTopLeft' then 
         --top left walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,320,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos,310,48,3):setType('static') 
+        self:addWallCollider(_xPos,_yPos,37,320,3)  
+        self:addWallCollider(_xPos+37,_yPos,310,48,3)  
         --bottom left wall      
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos+37,_yPos+298,128,22,3) 
         --top right wall
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,144,3):setType('static') 
+        self:addWallCollider(_xPos+347,_yPos,37,144,3)  
         --bottom right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos+203,37,117,3):setType('static')     
-        world:newBSGRectangleCollider(_xPos+219,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos+347,_yPos+203,37,117,3)      
+        self:addWallCollider(_xPos+219,_yPos+298,128,22,3) 
     elseif _type=='cornerBottomLeft' then 
         --top left walls
-        world:newBSGRectangleCollider(_xPos+37,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos+37,_yPos,128,48,3)  
         --bottom left walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,320,3):setType('static')        
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,310,22,3):setType('static')
+        self:addWallCollider(_xPos,_yPos,37,320,3)         
+        self:addWallCollider(_xPos+37,_yPos+298,310,22,3) 
         --top right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+219,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos+347,_yPos,37,144,3)  
+        self:addWallCollider(_xPos+219,_yPos,128,48,3)  
         --bottom right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos+203,37,117,3):setType('static')
+        self:addWallCollider(_xPos+347,_yPos+203,37,117,3) 
     elseif _type=='cornerTopRight' then 
         --top left walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,144,3):setType('static') 
+        self:addWallCollider(_xPos,_yPos,37,144,3)  
         --bottom left walls
-        world:newBSGRectangleCollider(_xPos,_yPos+203,37,117,3):setType('static')        
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos,_yPos+203,37,117,3)         
+        self:addWallCollider(_xPos+37,_yPos+298,128,22,3) 
         --top right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,320,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos,310,48,3):setType('static') 
+        self:addWallCollider(_xPos+347,_yPos,37,320,3)  
+        self:addWallCollider(_xPos+37,_yPos,310,48,3)  
         --bottom right walls    
-        world:newBSGRectangleCollider(_xPos+219,_yPos+298,128,22,3):setType('static')
+        self:addWallCollider(_xPos+219,_yPos+298,128,22,3) 
     elseif _type=='cornerBottomRight' then 
         --top left walls
-        world:newBSGRectangleCollider(_xPos,_yPos,37,144,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+37,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos,_yPos,37,144,3)  
+        self:addWallCollider(_xPos+37,_yPos,128,48,3)  
         --bottom walls
-        world:newBSGRectangleCollider(_xPos,_yPos+203,37,117,3):setType('static')        
-        world:newBSGRectangleCollider(_xPos+37,_yPos+298,310,22,3):setType('static')
+        self:addWallCollider(_xPos,_yPos+203,37,117,3)         
+        self:addWallCollider(_xPos+37,_yPos+298,310,22,3) 
         --right walls
-        world:newBSGRectangleCollider(_xPos+347,_yPos,37,320,3):setType('static') 
-        world:newBSGRectangleCollider(_xPos+219,_yPos,128,48,3):setType('static') 
+        self:addWallCollider(_xPos+347,_yPos,37,320,3)  
+        self:addWallCollider(_xPos+219,_yPos,128,48,3)  
     end
+end
+
+--helper function for generateWalls(). Creates collider, sets it to static,
+--adds it to 'outerWall' collision class
+function Rooms:addWallCollider(_x,_y,_w,_h) 
+    local w=world:newBSGRectangleCollider(_x,_y,_w,_h,3)
+    w:setType('static')
+    w:setCollisionClass('outerWall')
 end
 
 --takes a room's doorButtons table, its position, and its type/layout, 

@@ -29,7 +29,8 @@ function PlayState:load()
     world:addCollisionClass('item', {ignores={'player'}})
     world:addCollisionClass('doorBarrier')
     world:addCollisionClass('ladder')
-    world:addCollisionClass('innerWall')
+    world:addCollisionClass('innerWall') --small walls within rooms
+    world:addCollisionClass('outerWall') --big walls that create the rooms
 
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
@@ -39,6 +40,7 @@ function PlayState:load()
     CraftingNodes:load()
     Dungeon:load() --initialize dungeon
     Items:load() --initialize items
+    Projectiles:load() --initialize projectiles
     Hud:load() --initialize Heads Up Display
 
     self:start()
@@ -63,7 +65,7 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        -- world:draw() --draws all physics colliders
+        world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
 
@@ -83,4 +85,9 @@ function PlayState:start()
     --set camera target to be the player's position
     cam:lookAt(playerStartX,playerStartY)
     camTarget=Player
+
+    --testing----------------------------------
+    print('spawning enemy')
+    Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
+    --testing----------------------------------
 end

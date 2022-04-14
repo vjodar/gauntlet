@@ -22,6 +22,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.collider=world:newRectangleCollider(_x,_y,9,5)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
+        self.name='orc_t1'
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
@@ -82,6 +83,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.collider=world:newRectangleCollider(_x,_y,9,5)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
+        self.name='demon_t1'
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
@@ -142,6 +144,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.collider=world:newRectangleCollider(_x,_y,9,5)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
+        self.name='skeleton_t1'
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
@@ -202,6 +205,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         self.collider=world:newRectangleCollider(_x,_y,10,6)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
+        self.name='orc_t2'
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
@@ -262,6 +266,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.collider=world:newRectangleCollider(_x,_y,11,6)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
+        self.name='demon_t2'
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
@@ -322,6 +327,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         self.collider=world:newRectangleCollider(_x,_y,12,6)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
+        self.name='mage_t2'
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
@@ -375,6 +381,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.collider=world:newRectangleCollider(_x,_y,19,8)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
+        self.name='orc_t3'
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
@@ -435,6 +442,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.collider=world:newRectangleCollider(_x,_y,19,8)
         self.xPos, self.yPos = _x, _y
         self.xVel, self.yVel = 0,0
+        self.name='demon_t3'
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')

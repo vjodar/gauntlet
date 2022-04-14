@@ -83,10 +83,7 @@ function Items:spawn_item(_x,_y,_name)
     function item:update()
         self.xPos,self.yPos=self.collider:getPosition() --update position
 
-        if self.isCollectable then 
-            self:gravitateToPlayer()
-            self:addToPlayer()
-        end
+        if self.isCollectable then self:gravitateToPlayer()  end
 
         --make the item look like it's bobbing/floating up and down
         self.oscillation=(self.oscillation+dt*4)
@@ -94,10 +91,7 @@ function Items:spawn_item(_x,_y,_name)
 
         --return false when item should be removed from entitiesTable
         --destroy item's collider
-        if self.removeEntity==true then 
-            self.collider:destroy()
-            return false 
-        end 
+        if self.removeEntity then self.collider:destroy() return false end 
     end 
 
     function item:draw() 
@@ -108,8 +102,8 @@ function Items:spawn_item(_x,_y,_name)
     end 
 
     --move item toward the player when they are in range
+    --when item and player collide, "remove" and add item to player inventory
     function item:gravitateToPlayer()
-
         if math.abs(self.xPos-Player.xPos)<40 and math.abs(self.yPos-Player.yPos)<30 then
             if self.xPos<Player.xPos then --item is left of player
                 self.collider:applyLinearImpulse(45*dt,0)
@@ -122,10 +116,7 @@ function Items:spawn_item(_x,_y,_name)
                 self.collider:applyLinearImpulse(0,-45*dt)
             end
         end
-    end
 
-    --when item and player collide, "remove" and add item to player inventory
-    function item:addToPlayer()
         if math.abs(self.xPos-Player.xPos)<10 and math.abs(self.yPos-Player.yPos)<10 then 
             --remove item from entities table
             self.removeEntity=true

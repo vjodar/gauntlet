@@ -9,29 +9,41 @@ function Entities:load()
     --updated and then sorted by their yPos value before being drawn
     self.entitiesTable={}
 
+    --Only entities that are within draw distance (in the camera's view) 
+    --will be updated and drawn. This table will hold those entities.
+    self.entitiesInDrawDistance={}
+
     --sorting function to be used in table.sort()
     --takes two entities and returns the one with the larger yPos value.
     self.sort=function(e1,e2) return e1.yPos<e2.yPos end
 end
 
-function Entities:update() 
-    --sort the entitiesTable by yPos value
-    table.sort(self.entitiesTable, self.sort)
+function Entities:update()
+    self.entitiesInDrawDistance={} --reset table
 
+    --go through entitiesTable, add entities that are within draw distance to
+    --entitiesInDrawDistance table.
     for i,entity in pairs(self.entitiesTable) do 
-        if math.abs(camTarget.xPos-entity.xPos)<400 and 
-        math.abs(camTarget.yPos-entity.yPos)<300 then
-            --update entity, if it returns false, remove it from game
-            if entity:update()==false then table.remove(self.entitiesTable,i) end 
-        end
+        if math.abs(camTarget.xPos-entity.xPos)<400
+        and math.abs(camTarget.yPos-entity.yPos)<300
+        then table.insert(self.entitiesInDrawDistance,entity) end 
+    end
+    --sort the entitiesInDrawDistance by yPos value
+    table.sort(self.entitiesInDrawDistance, self.sort)
+
+    --update all entities within draw distance
+    for i,entity in pairs(self.entitiesInDrawDistance) do 
+        --update entity, if it returns false, remove it from game (both tables)
+        if entity:update()==false then 
+            for j,e in pairs(self.entitiesTable) do 
+                if e==entity then table.remove(self.entitiesTable,j) end 
+            end
+            table.remove(self.entitiesInDrawDistance,i)
+        end 
     end
 end
 
 function Entities:draw() 
-    for i,entity in pairs(self.entitiesTable) do 
-        if math.abs(camTarget.xPos-entity.xPos)<400 and 
-        math.abs(camTarget.yPos-entity.yPos)<300 then
-            entity:draw() 
-        end
-    end
+    --draw all entities within draw distance
+    for i,entity in pairs(self.entitiesInDrawDistance) do entity:draw() end
 end

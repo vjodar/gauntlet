@@ -10,6 +10,7 @@ require 'resourceNodes'
 require 'craftingNodes'
 require 'items'
 require 'shadows'
+require 'projectiles'
 require 'hud'
 require 'dialog'
 

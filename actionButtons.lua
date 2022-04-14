@@ -86,7 +86,11 @@ function ActionButtons:addActionButtonWeapons()
                     --swap current weapons
                     if button.state.currentWeapon=='bow' then 
                         button.state.currentWeapon='staff'
-                    else button.state.currentWeapon='bow' end 
+                    else 
+                        button.state.currentWeapon='bow' 
+                    end 
+                    --update player's equipped weapon type
+                    Player.equippedWeapon=Player.currentGear.weapons[button.state.currentWeapon]
                 end)
             end
         end

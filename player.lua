@@ -26,6 +26,7 @@ function Player:load()
         legs_t1=love.graphics.newImage('assets/armor_legs_t1.png'),
         legs_t2=love.graphics.newImage('assets/armor_legs_t2.png'),
         legs_t3=love.graphics.newImage('assets/armor_legs_t3.png'),
+
         bow_t1=love.graphics.newImage('assets/weapon_bow_t1.png'),
         bow_t2=love.graphics.newImage('assets/weapon_bow_t2.png'),
         bow_t3=love.graphics.newImage('assets/weapon_bow_t3.png'),
@@ -53,7 +54,9 @@ function Player:load()
     self.combatData.inCombat=false 
     self.combatData.currentEnemy=nil --current combat target
     self.combatData.prevEnemies={} --holds previously targeted enemies
-    self.combatData.prevEnemiesLimit=6 --how many prevEnemies will be stored
+    self.combatData.prevEnemiesLimit=6 
+    self.combatData.attackOnCooldown=false --true when awaiting for cooldown between attacks
+    self.combatData.attackCooldownTime=1 --time in sec between attacks
     
     self.inventory={
         arcane_shards=0, 
@@ -98,6 +101,9 @@ function Player:load()
         weapons={bow='bow_t0',staff='staff_t0'},
         armor={head='head_t0',chest='chest_t0',legs='legs_t0'}
     }
+
+    --what weapon the player will attack with when entering combat (updated by weapon actionButton)
+    self.equippedWeapon='bow_t0'
 
     self.dialog=Dialog:newDialogSystem() --dialog system
 
@@ -321,5 +327,27 @@ function Player:fightEnemy()
         Player.combatData.prevEnemies={} --clear prevEnemies table
         self.combatData.currentEnemy=nil --remove currentEnemy from player data
         camTarget=self
+        return 
+    end
+
+    --Check LOS. If any obstructions are between player and enemy, return
+    if #world:queryLine(
+        self.xPos,self.yPos,
+        self.combatData.currentEnemy.xPos,self.combatData.currentEnemy.yPos,
+        {'outerWall','innerWall','craftingNode'}
+    )>0 then return end
+
+    --Launch projectile toward target when attack is off cooldown
+    if not self.combatData.attackOnCooldown then 
+        self.combatData.attackOnCooldown=true
+        TimerState:after(self.combatData.attackCooldownTime,function() 
+            self.combatData.attackOnCooldown=false
+        end)
+
+        --TODO---------------------------------------
+        --launch the projectile of the equippedWeapon toward the currentEnemy
+        Projectiles:launch(self.xPos,self.yPos,self.equippedWeapon,self.combatData.currentEnemy)
+        -- print('attacking '..self.combatData.currentEnemy.xPos..' with '..self.equippedWeapon)
+        --TODO---------------------------------------
     end
 end
