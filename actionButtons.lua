@@ -61,8 +61,6 @@ function ActionButtons:addActionButtonWeapons()
     --button data
     button.state={} --state metatable
     button.state.acceptInput=true --used to prevent player from pressing before animation ends.
-    button.state.hasBow=true --player has a bow
-    button.state.hasStaff=true --player has a staff
     button.state.currentWeapon='bow' --either 'bow' or 'staff'
     button.state.pressedFlag=0 --1/0 boolean, not true false.
     
@@ -91,6 +89,9 @@ function ActionButtons:addActionButtonWeapons()
                     end 
                     --update player's equipped weapon type
                     Player.equippedWeapon=Player.currentGear.weapons[button.state.currentWeapon]
+                    --reset player weapon animations
+                    Player.animations.bow:gotoFrame(1)
+                    Player.animations.staff:gotoFrame(1)
                 end)
             end
         end
@@ -439,6 +440,9 @@ function ActionButtons:addActionButtonCombatInteract()
                         Player.combatData.inCombat=false
                         Player.combatData.prevEnemies={} --clear prevEnemies table
                         Player.combatData.currentEnemy=nil --remove currentEnemy from player data
+                        --reset player attack animation
+                        Player.animations.bow:pauseAtStart()
+                        Player.animations.staff:pauseAtStart()
                         camTarget=Player --restore camera to following player
                     end
 

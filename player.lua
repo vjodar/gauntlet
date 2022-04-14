@@ -11,6 +11,7 @@ function Player:load()
     self.collider:setObject(self) --attach collider to this object
     self.moveSpeed=2400 --40 at 60fps
     self.moveSpeedDiag=self.moveSpeed*0.61
+    self.scaleX=1 --used to flip sprites horizontally
 
     --sprites and animations
     self.spriteSheets={
@@ -34,6 +35,16 @@ function Player:load()
         staff_t2=love.graphics.newImage('assets/weapon_staff_t2.png'),
         staff_t3=love.graphics.newImage('assets/weapon_staff_t3.png')
     }
+    self.yOffsets={
+        bow_t0=-8,
+        bow_t1=-8,
+        bow_t2=-8,
+        bow_t3=-8,
+        staff_t0=0,
+        staff_t1=-22,
+        staff_t2=-22,
+        staff_t3=-44
+    }
     self.grids={} --holds animation grids
     self.grids.armor=anim8.newGrid(
         16,22,self.spriteSheets.head_t0:getWidth(),
@@ -50,9 +61,34 @@ function Player:load()
     self.animations={ --animations for each armor piece and tier
         idle=anim8.newAnimation(self.grids.armor('1-4',1), 0.1),
         moving=anim8.newAnimation(self.grids.armor('5-8',1), 0.1),
-        bow=anim8.newAnimation(self.grids.bow('1-9',1),0.15),
-        staff=anim8.newAnimation(self.grids.staff('1-18',1),0.075)
+        bow=anim8.newAnimation(
+            self.grids.bow('1-9',1),0.075,
+            --onLoop function
+            function()
+                Projectiles:launch( --at the end of animation, launch projectile
+                    self.xPos+(self.scaleX*8),
+                    self.yPos+self.yOffsets[self.equippedWeapon],
+                    self.equippedWeapon,self.combatData.currentEnemy
+                )
+                self.animations.bow:pauseAtStart() 
+            end
+        ),        
+        staff=anim8.newAnimation(
+            self.grids.staff('1-16',1),0.0375,
+            --onLoop function
+            function()                  
+                Projectiles:launch( --at the end of animation, launch projectile
+                    self.xPos+(self.scaleX*7),
+                    self.yPos+self.yOffsets[self.equippedWeapon],
+                    self.equippedWeapon,self.combatData.currentEnemy
+                )
+                self.animations.staff:pauseAtStart() 
+            end
+        )
     }
+    --immediately pause attack animations
+    self.animations.bow:pause()
+    self.animations.staff:pause() 
     --used to swap between character moving and idle animations
     self.currentAnim=self.animations.idle
 
@@ -165,41 +201,45 @@ function Player:draw()
     --draw shadow before sprite
     self.shadow:draw(self.xPos,self.yPos)
 
-    local scaleX=1 --used to flip sprite when facing left
-    if self.state.facing=='left' then scaleX=-1 end
+    if self.state.facing=='left' then self.scaleX=-1 else self.scaleX=1 end
     
     --draw the appropriate current animation for each armor piece
     self.currentAnim:draw(
         self.spriteSheets[self.currentGear.armor.head],
-        self.xPos,self.yPos,nil,scaleX,1,8,20
+        self.xPos,self.yPos,nil,self.scaleX,1,8,20
     )
     self.currentAnim:draw(
         self.spriteSheets[self.currentGear.armor.chest],
-        self.xPos,self.yPos,nil,scaleX,1,8,20
+        self.xPos,self.yPos,nil,self.scaleX,1,8,20
     )
     self.currentAnim:draw(
         self.spriteSheets[self.currentGear.armor.legs],
-        self.xPos,self.yPos,nil,scaleX,1,8,20
+        self.xPos,self.yPos,nil,self.scaleX,1,8,20
     )
 
-    --draw weapon, if applicable
-    if self.equippedWeapon=='bow_t1' 
-        or self.equippedWeapon=='bow_t2' 
-        or self.equippedWeapon=='bow_t3'
+    --draw weapon when attacking, if applicable    
+    if self.combatData.inCombat and 
+        (self.equippedWeapon=='bow_t1' 
+        or self.equippedWeapon=='bow_t2'
+        or self.equippedWeapon=='bow_t3')
     then 
         self.animations.bow:draw(
-            self.spriteSheets[self.currentGear.weapons.bow],
-            self.xPos,self.yPos,nil,scaleX,1,0,24
+            self.spriteSheets[self.equippedWeapon],
+            self.xPos,self.yPos,nil,self.scaleX,1,5,23
         )
     end
-    if self.equippedWeapon=='staff_t1' 
-        or self.equippedWeapon=='staff_t2' 
-        or self.equippedWeapon=='staff_t3'
+    if self.combatData.inCombat and 
+        (self.equippedWeapon=='staff_t1' 
+        or self.equippedWeapon=='staff_t2'
+        or self.equippedWeapon=='staff_t3')
     then 
         self.animations.staff:draw(
-            self.spriteSheets[self.currentGear.weapons.staff],
-            self.xPos,self.yPos,nil,scaleX,1,0,44
+            self.spriteSheets[self.equippedWeapon],
+            self.xPos,self.yPos,nil,self.scaleX,1,0,44
         )
+        -- love.graphics.rectangle(
+        --     'line',self.xPos+(self.scaleX*7),self.yPos+self.yOffsets[self.equippedWeapon],1,1
+        -- )
     end
 end
 
@@ -376,12 +416,17 @@ function Player:fightEnemy()
         return 
     end
 
-    --Check LOS. If any obstructions are between player and enemy, return
+    --Check LOS. If any obstructions are between player and enemy,
+    --reset attack animations, return
     if #world:queryLine(
         self.xPos,self.yPos,
         self.combatData.currentEnemy.xPos,self.combatData.currentEnemy.yPos,
         {'outerWall','innerWall','craftingNode'}
-    )>0 then return end
+    )>0 then 
+        self.animations.bow:pauseAtStart()
+        self.animations.staff:pauseAtStart()
+        return 
+    end
 
     --Launch projectile toward target when attack is off cooldown
     if not self.combatData.attackOnCooldown then 
@@ -390,10 +435,6 @@ function Player:fightEnemy()
             self.combatData.attackOnCooldown=false
         end)
 
-        --launch the projectile of the equippedWeapon toward the currentEnemy
-        Projectiles:launch(
-            self.xPos,self.yPos,
-            self.equippedWeapon,self.combatData.currentEnemy
-        )
+        self.animations[ActionButtons.weapons.state.currentWeapon]:resume()        
     end
 end

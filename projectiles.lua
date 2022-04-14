@@ -1,6 +1,8 @@
 Projectiles={}
 
 function Projectiles:load()
+    self.projectilesTable={} --stores all projectile objects
+
     self.sprites={}
     self.sprites.bow_t0=love.graphics.newImage('assets/weapon_stone_projectile.png')
     self.sprites.staff_t0=self.sprites.bow_t0 
@@ -47,10 +49,9 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         self.targetWidth=Projectiles.targetHitboxesSizes[_target.name].w
         self.targetHeight=Projectiles.targetHitboxesSizes[_target.name].h
         self.angle,self.xVel,self.yVel=0,0,0
-        self.speed=120 --speed of the projectile
+        self.speed=240 --speed of the projectile
 
-        --insert into entitiesTable for dynamic draw order
-        table.insert(Entities.entitiesTable,p)
+        table.insert(Projectiles.projectilesTable,p) --insert into projectiles table
     end
 
     function p:update()
@@ -84,4 +85,16 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
     end
 
     p:load()
+end
+
+--update all projectiles, if a projectile returns false, remove it from game
+function Projectiles:update()
+    for i,p in pairs(self.projectilesTable) do 
+        if p:update()==false then table.remove(self.projectilesTable,i) end
+    end
+end
+
+--draw all projectiles
+function Projectiles:draw() 
+    for i,p in pairs(self.projectilesTable) do p:draw() end
 end
