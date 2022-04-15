@@ -55,9 +55,12 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         --how quickly the sprite will lower to the ground after being launched
         --the closer the distance to the target and the more negative the yOffset,
         --the faster it will be lowered to the ground.
+        --Only applies to staff projectiles, since they start high up.
         self.lowerRate=-180*(self.yOffset)/(
             ((self.target.xPos-self.xPos)^2+(self.target.yPos-self.yPos)^2)^0.5
         )
+
+        self.shadow=Shadows:newShadow('projectile_'.._type) --shadow
 
         table.insert(Entities.entitiesTable,p) --insert into projectiles table
     end
@@ -87,8 +90,8 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         end
 
         --when projectile reaches target
-        if math.abs(self.xPos-self.target.xPos)<self.targetWidth+3 --need +3 here
-        and math.abs(self.yPos-self.target.yPos)<self.targetHeight+3 --need +3 here
+        if math.abs(self.xPos-self.target.xPos)<self.targetWidth+4 --need +4 here
+        and math.abs(self.yPos-self.target.yPos)<self.targetHeight+4 --need +4 here
         then
             --knockback enemy
             self.target.collider:applyLinearImpulse(self.xVel*0.2,self.yVel*0.2)
@@ -97,14 +100,12 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
     end
 
     function p:draw() 
+        self.shadow:draw(self.xPos,self.yPos,self.rotation)
         love.graphics.draw(
             self.sprite,self.xPos,self.yPos+self.yOffset,
             self.rotation,1,1, --arrows will rotate toward enemy target
             self.xCenter,self.yCenter
         )
-        --testing-----------------------------------------------
-        love.graphics.rectangle('line',self.xPos,self.yPos,1,1)
-        --testing----------------------------------------------
     end
 
     p:load()

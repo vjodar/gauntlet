@@ -32,12 +32,12 @@ function Shadows:load()
     self.broken_staff=love.graphics.newImage('assets/shadow_broken_staff.png') --not elipse 
     self.potion=love.graphics.newImage('assets/shadow_potion.png') --10,6
 
-    self.weapon_bow_t1=love.graphics.newImage('assets/shadow_weapon.png') --8,5
-    self.weapon_bow_t2=love.graphics.newImage('assets/shadow_weapon.png') --8,5
-    self.weapon_bow_t3=love.graphics.newImage('assets/shadow_weapon.png') --8,5
-    self.weapon_staff_t1=love.graphics.newImage('assets/shadow_weapon.png') --8,5
-    self.weapon_staff_t2=love.graphics.newImage('assets/shadow_weapon.png') --8,5
-    self.weapon_staff_t3=love.graphics.newImage('assets/shadow_weapon.png') --8,5
+    self.weapon_bow_t1=love.graphics.newImage('assets/shadow_weapon.png') --8,6
+    self.weapon_bow_t2=love.graphics.newImage('assets/shadow_weapon.png') --8,6
+    self.weapon_bow_t3=love.graphics.newImage('assets/shadow_weapon.png') --8,6
+    self.weapon_staff_t1=love.graphics.newImage('assets/shadow_weapon.png') --8,6
+    self.weapon_staff_t2=love.graphics.newImage('assets/shadow_weapon.png') --8,6
+    self.weapon_staff_t3=love.graphics.newImage('assets/shadow_weapon.png') --8,6
 
     self.armor_head_t1=love.graphics.newImage('assets/shadow_small.png') --12,6
     self.armor_head_t2=love.graphics.newImage('assets/shadow_small.png') --12,6
@@ -48,6 +48,16 @@ function Shadows:load()
     self.armor_legs_t1=love.graphics.newImage('assets/shadow_legs.png') --not elipse
     self.armor_legs_t2=love.graphics.newImage('assets/shadow_legs.png') --not elipse
     self.armor_legs_t3=love.graphics.newImage('assets/shadow_legs.png') --not elipse
+
+    --projectile shadows
+    self.projectile_bow_t0=love.graphics.newImage('assets/shadow_stone_projectile.png') --4,3
+    self.projectile_bow_t1=love.graphics.newImage('assets/shadow_bow_projectile.png') --not elipse
+    self.projectile_bow_t2=self.projectile_bow_t1
+    self.projectile_bow_t3=self.projectile_bow_t1
+    self.projectile_staff_t0=self.projectile_bow_t0
+    self.projectile_staff_t1=self.projectile_bow_t0
+    self.projectile_staff_t2=love.graphics.newImage('assets/shadow_staff_t2_projectile.png') --6,4
+    self.projectile_staff_t3=love.graphics.newImage('assets/shadow_potion.png') --10,6
 end
 
 function Shadows:newShadow(_type)
@@ -60,11 +70,17 @@ function Shadows:newShadow(_type)
     shadow.w=shadow.sprite:getWidth()*0.5
     shadow.h=shadow.sprite:getHeight()*0.5
 
-    function shadow:draw(_xPos,_yPos)
+    function shadow:draw(_xPos,_yPos,_rotation)
+        local rotation=_rotation or 0
+
         --draw shadow with 0.5 alpha to make it transparent
         love.graphics.setColor(1,1,1,0.6)
 
-        love.graphics.draw(self.sprite,_xPos-self.w,_yPos-self.h) --draw shadow
+        if self.rotation~=0 then 
+            love.graphics.draw(self.sprite,_xPos,_yPos,rotation,1,1,self.w,self.h)
+        else
+            love.graphics.draw(self.sprite,_xPos-self.w,_yPos-self.h) --draw shadow
+        end
 
         --revert color settings so everything after has full opacity
         love.graphics.setColor(1,1,1,1)
