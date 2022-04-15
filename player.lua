@@ -34,17 +34,7 @@ function Player:load()
         staff_t1=love.graphics.newImage('assets/weapon_staff_t1.png'),
         staff_t2=love.graphics.newImage('assets/weapon_staff_t2.png'),
         staff_t3=love.graphics.newImage('assets/weapon_staff_t3.png')
-    }
-    self.yOffsets={
-        bow_t0=-8,
-        bow_t1=-8,
-        bow_t2=-8,
-        bow_t3=-8,
-        staff_t0=0,
-        staff_t1=-22,
-        staff_t2=-22,
-        staff_t3=-44
-    }
+    }    
     self.grids={} --holds animation grids
     self.grids.armor=anim8.newGrid(
         16,22,self.spriteSheets.head_t0:getWidth(),
@@ -66,8 +56,7 @@ function Player:load()
             --onLoop function
             function()
                 Projectiles:launch( --at the end of animation, launch projectile
-                    self.xPos+(self.scaleX*8),
-                    self.yPos+self.yOffsets[self.equippedWeapon],
+                    self.xPos+(self.scaleX*8),self.yPos,
                     self.equippedWeapon,self.combatData.currentEnemy
                 )
                 self.animations.bow:pauseAtStart() 
@@ -78,8 +67,7 @@ function Player:load()
             --onLoop function
             function()                  
                 Projectiles:launch( --at the end of animation, launch projectile
-                    self.xPos+(self.scaleX*7),
-                    self.yPos+self.yOffsets[self.equippedWeapon],
+                    self.xPos+(self.scaleX*7),self.yPos,
                     self.equippedWeapon,self.combatData.currentEnemy
                 )
                 self.animations.staff:pauseAtStart() 
@@ -235,11 +223,8 @@ function Player:draw()
     then 
         self.animations.staff:draw(
             self.spriteSheets[self.equippedWeapon],
-            self.xPos,self.yPos,nil,self.scaleX,1,0,44
+            self.xPos,self.yPos,nil,1,1,8+8*-self.scaleX,44
         )
-        -- love.graphics.rectangle(
-        --     'line',self.xPos+(self.scaleX*7),self.yPos+self.yOffsets[self.equippedWeapon],1,1
-        -- )
     end
 end
 
@@ -412,6 +397,8 @@ function Player:fightEnemy()
         self.combatData.inCombat=false 
         Player.combatData.prevEnemies={} --clear prevEnemies table
         self.combatData.currentEnemy=nil --remove currentEnemy from player data
+        self.animations.bow:pauseAtStart() --reset attack animations
+        self.animations.staff:pauseAtStart()
         camTarget=self
         return 
     end

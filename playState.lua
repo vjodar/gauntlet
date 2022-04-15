@@ -51,7 +51,6 @@ function PlayState:update()
     world:update(dt) --update physics colliders
     Dungeon:update() --update dungeon
     Entities:update() --update all entities
-    Projectiles:update() --update all projectiles
 
     cam:lockPosition(camTarget.xPos,camTarget.yPos,camSmoother) --update camera
 
@@ -66,7 +65,6 @@ function PlayState:draw()
         Dungeon:draw() --draw the dungeon's rooms
         -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
-        Projectiles:draw() --draw all projectiles
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
 
         Player.dialog:draw(Player.xPos,Player.yPos) --will probably move this later
