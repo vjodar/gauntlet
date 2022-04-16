@@ -13,6 +13,13 @@ function Player:load()
     self.moveSpeedDiag=self.moveSpeed*0.61
     self.scaleX=1 --used to flip sprites horizontally
 
+    --colliders that will be used for sprites that pop in and out of game (like weapons)
+    --these colliders will be sensors until their associated sprites are drawn in the game
+    self.collider:addShape('left','RectangleShape',self.xPos-14,self.yPos-2,8,4)
+    self.collider.fixtures['left']:setSensor(true)
+    self.collider:addShape('right','RectangleShape',self.xPos+2,self.yPos-2,8,4)
+    self.collider.fixtures['right']:setSensor(true)
+
     --sprites and animations
     self.spriteSheets={
         head_t0=love.graphics.newImage('assets/armor_head_t0.png'),
@@ -160,6 +167,9 @@ function Player:update()
     self.state.moving=false 
     self.state.movingHorizontally=false 
     self.state.movingVertically=false 
+
+    --default sprite colliders to be sensors (have no collision)
+    self.collider.fixtures[self.state.facing]:setSensor(true)
 
     --update scaleX
     if self.state.facing=='left' then self.scaleX=-1 else self.scaleX=1 end       
@@ -386,21 +396,15 @@ function Player:fightEnemy()
         yPos=((self.yPos+self.combatData.currentEnemy.yPos)*0.5)
     }
 
-    --When there's a wall directly in front of the player and the player
-    --has a bow or staff equipped, turn the player around in order to prevent
-    --weapon sprite clipping bugs.
-    if #world:queryRectangleArea(
-        self.xPos-4-10*-self.scaleX,self.yPos-3,8,6,{'outerWall'}
-    )>0 and not (self.equippedWeapon=='bow_t0' or self.equippedWeapon=='staff_t0')
-    then 
-        self.scaleX=-self.scaleX --turn player around
-        --update facing state
-        if self.state.facing=='left' then self.state.facing='right'
-        else self.state.facing='right' end
-
-    --otherwise, make the player face the enemy
-    elseif self.combatData.currentEnemy.xPos>self.xPos then 
+    --face player toward enemy
+    if self.combatData.currentEnemy.xPos>self.xPos then 
         self.state.facing='right' else self.state.facing='left'
+    end
+
+    --give the bow or staff sprite collision
+    if self.equippedWeapon~='bow_t0' and self.equippedWeapon~='staff_t0' then 
+        --set the shape to have collision
+        self.collider.fixtures[self.state.facing]:setSensor(false)
     end
 
     --if enemy is too far from player, disengage combat

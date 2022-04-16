@@ -423,7 +423,7 @@ end
 --helper function for generateWalls(). Creates collider, sets it to static,
 --adds it to 'outerWall' collision class
 function Rooms:addWallCollider(_x,_y,_w,_h) 
-    local w=world:newBSGRectangleCollider(_x,_y,_w,_h,3)
+    local w=world:newBSGRectangleCollider(_x,_y,_w,_h,2)
     w:setType('static')
     w:setCollisionClass('outerWall')
 end
