@@ -254,25 +254,30 @@ function Rooms:newRoom(_coordinates)
     function room:draw() 
         love.graphics.draw(self.backgroundSprite,self.xPos,self.yPos)
         for i,button in pairs(self.doorButtons) do button:draw() end 
-    end
-
-    function room:drawForeground() 
-        love.graphics.draw(self.foregroundSprite,self.xPos,self.yPos)
         --draw room lights
         if self.isLit.top then 
             love.graphics.draw(self.lightSprites.top,self.xPos+130,self.yPos) 
             love.graphics.draw(self.lightSprites.top,self.xPos+242,self.yPos)
         end
+        if self.isLit.left then 
+            love.graphics.draw(self.lightSprites.left,self.xPos,self.yPos+83)
+        end        
+        if self.isLit.right then --must flip horizontally
+            love.graphics.draw(self.lightSprites.right,self.xPos+384,self.yPos+83,nil,-1,1)
+        end
+    end
+
+    function room:drawForeground() 
+        love.graphics.draw(self.foregroundSprite,self.xPos,self.yPos)
+        --draw foreground room lights
         if self.isLit.bottom then 
             love.graphics.draw(self.lightSprites.bottom,self.xPos+130,self.yPos+274) 
             love.graphics.draw(self.lightSprites.bottom,self.xPos+242,self.yPos+274) 
         end
         if self.isLit.left then 
-            love.graphics.draw(self.lightSprites.left,self.xPos,self.yPos+83)
             love.graphics.draw(self.lightSprites.left,self.xPos,self.yPos+192)
         end        
         if self.isLit.right then --must flip horizontally
-            love.graphics.draw(self.lightSprites.right,self.xPos+384,self.yPos+83,nil,-1,1)
             love.graphics.draw(self.lightSprites.right,self.xPos+384,self.yPos+192,nil,-1,1)
         end
 

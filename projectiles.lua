@@ -32,6 +32,17 @@ function Projectiles:load()
         staff_t2=-22,
         staff_t3=-44
     }
+
+    self.knockbackValues={
+        bow_t0=0.05,
+        bow_t1=0.1,
+        bow_t2=0.2,
+        bow_t3=0.3,
+        staff_t0=0.05,
+        staff_t1=0.1,
+        staff_t2=0.2,
+        staff_t3=0.3
+    }
 end 
 
 --Create and launch a new projectile at a given target entity
@@ -41,7 +52,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
     function p:load()
         self.type=_type
         self.sprite=Projectiles.sprites[_type]
-        self.xPos,self.yPos=_xPos,_yPos 
+        self.xPos,self.yPos=_xPos,_yPos
         self.xCenter=Projectiles.centers[_type].x
         self.yCenter=Projectiles.centers[_type].y
         self.yOffset=Projectiles.yOffsets[_type]
@@ -51,6 +62,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         self.angle,self.xVel,self.yVel=0,0,0
         self.rotation=nil --used to rotate arrows to target
         self.speed=240 --speed of the projectile
+        self.knockback=Projectiles.knockbackValues[_type]
 
         --how quickly the sprite will lower to the ground after being launched
         --the closer the distance to the target and the more negative the yOffset,
@@ -65,11 +77,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         table.insert(Entities.entitiesTable,p) --insert into projectiles table
     end
 
-    function p:update()
-        --update position
-        self.xPos=self.xPos+self.xVel*dt
-        self.yPos=self.yPos+self.yVel*dt
-        
+    function p:update()        
         --calculate angle toward the target and set velocities such that
         --projectile will home in on target at a constant speed (self.speed)
         self.angle=math.atan2(
@@ -78,6 +86,10 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         )
         self.xVel=math.cos(self.angle)*self.speed
         self.yVel=math.sin(self.angle)*self.speed
+
+        --update position
+        self.xPos=self.xPos+self.xVel*dt
+        self.yPos=self.yPos+self.yVel*dt
 
         --rotate only if projectile is an arrow
         if self.type=='bow_t1' or self.type=='bow_t2' or self.type=='bow_t3' then 
@@ -90,11 +102,13 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         end
 
         --when projectile reaches target
-        if math.abs(self.xPos-self.target.xPos)<self.targetWidth+4 --need +4 here
-        and math.abs(self.yPos-self.target.yPos)<self.targetHeight+4 --need +4 here
+        if math.abs(self.xPos-self.target.xPos)<=self.targetWidth
+        and math.abs(self.yPos-self.target.yPos)<=self.targetHeight
         then
             --knockback enemy
-            self.target.collider:applyLinearImpulse(self.xVel*0.2,self.yVel*0.2)
+            self.target.collider:applyLinearImpulse(
+                self.xVel*self.knockback,self.yVel*self.knockback
+            )
             return false --remove projectile from game
         end
     end

@@ -159,7 +159,10 @@ function Player:update()
     --default movement states to idle
     self.state.moving=false 
     self.state.movingHorizontally=false 
-    self.state.movingVertically=false     
+    self.state.movingVertically=false 
+
+    --update scaleX
+    if self.state.facing=='left' then self.scaleX=-1 else self.scaleX=1 end       
     
     --Only accept inputs when currently on top of state stack
     if acceptInput then 
@@ -188,8 +191,6 @@ end
 function Player:draw()
     --draw shadow before sprite
     self.shadow:draw(self.xPos,self.yPos)
-
-    if self.state.facing=='left' then self.scaleX=-1 else self.scaleX=1 end
     
     --draw the appropriate current animation for each armor piece
     self.currentAnim:draw(
@@ -223,7 +224,7 @@ function Player:draw()
     then 
         self.animations.staff:draw(
             self.spriteSheets[self.equippedWeapon],
-            self.xPos,self.yPos,nil,1,1,8+8*-self.scaleX,44
+            self.xPos-8+8*self.scaleX,self.yPos-46
         )
     end
 end
@@ -385,8 +386,20 @@ function Player:fightEnemy()
         yPos=((self.yPos+self.combatData.currentEnemy.yPos)*0.5)
     }
 
-    --face toward the enemy
-    if self.combatData.currentEnemy.xPos>self.xPos then 
+    --When there's a wall directly in front of the player and the player
+    --has a bow or staff equipped, turn the player around in order to prevent
+    --weapon sprite clipping bugs.
+    if #world:queryRectangleArea(
+        self.xPos-4-10*-self.scaleX,self.yPos-3,8,6,{'outerWall'}
+    )>0 and not (self.equippedWeapon=='bow_t0' or self.equippedWeapon=='staff_t0')
+    then 
+        self.scaleX=-self.scaleX --turn player around
+        --update facing state
+        if self.state.facing=='left' then self.state.facing='right'
+        else self.state.facing='right' end
+
+    --otherwise, make the player face the enemy
+    elseif self.combatData.currentEnemy.xPos>self.xPos then 
         self.state.facing='right' else self.state.facing='left'
     end
 
