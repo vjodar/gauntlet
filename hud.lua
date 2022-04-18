@@ -6,11 +6,11 @@ Hud={}
 function Hud:load() 
     --health and mana bar
     self.healthbar={
-        sprite=love.graphics.newImage('assets/hud_healthbar.png'),
+        sprite=love.graphics.newImage('assets/hud/bars/hud_healthbar.png'),
         xPos=2*WINDOWSCALE_X, yPos=2*WINDOWSCALE_Y
     }
     self.manabar={
-        sprite=love.graphics.newImage('assets/hud_manabar.png'),
+        sprite=love.graphics.newImage('assets/hud/bars/hud_manabar.png'),
         xPos=2*WINDOWSCALE_X, yPos=22*WINDOWSCALE_Y
     }
 

@@ -2,32 +2,32 @@ ResourceNodes={}
 
 function ResourceNodes:load()
     self.tree={} --stores tree sprites
-    self.tree.sprite=love.graphics.newImage('assets/tree.png')
-    self.tree.spriteDepleted=love.graphics.newImage('assets/tree_depleted.png')
-    self.tree.spriteTool=love.graphics.newImage('assets/tool_hatchet.png')
-    self.tree.spriteParticle=love.graphics.newImage('assets/tree_particle.png')
+    self.tree.sprite=love.graphics.newImage('assets/nodes/tree.png')
+    self.tree.spriteDepleted=love.graphics.newImage('assets/nodes/tree_depleted.png')
+    self.tree.spriteTool=love.graphics.newImage('assets/nodes/tool_hatchet.png')
+    self.tree.spriteParticle=love.graphics.newImage('assets/nodes/tree_particle.png')
 
     self.rock={} --stores rock sprites
-    self.rock.sprite=love.graphics.newImage('assets/rock.png')
-    self.rock.spriteTool=love.graphics.newImage('assets/tool_pickaxe.png')
-    self.rock.spriteDepleted=love.graphics.newImage('assets/rock_depleted.png')
-    self.rock.spriteParticle=love.graphics.newImage('assets/rock_particle.png')
+    self.rock.sprite=love.graphics.newImage('assets/nodes/rock.png')
+    self.rock.spriteTool=love.graphics.newImage('assets/nodes/tool_pickaxe.png')
+    self.rock.spriteDepleted=love.graphics.newImage('assets/nodes/rock_depleted.png')
+    self.rock.spriteParticle=love.graphics.newImage('assets/nodes/rock_particle.png')
 
     self.vine={} --stores vine sprites
-    self.vine.sprite=love.graphics.newImage('assets/vine.png')
-    self.vine.spriteDepleted=love.graphics.newImage('assets/vine_depleted.png')
-    self.vine.spriteParticle=love.graphics.newImage('assets/vine_particle.png')
+    self.vine.sprite=love.graphics.newImage('assets/nodes/vine.png')
+    self.vine.spriteDepleted=love.graphics.newImage('assets/nodes/vine_depleted.png')
+    self.vine.spriteParticle=love.graphics.newImage('assets/nodes/vine_particle.png')
 
     self.fungi={} --stores fungi sprites
-    self.fungi.sprite=love.graphics.newImage('assets/fungi.png')
-    self.fungi.spriteDepleted=love.graphics.newImage('assets/fungi_depleted.png')
-    self.fungi.spriteParticle=love.graphics.newImage('assets/fungi_particle.png')
+    self.fungi.sprite=love.graphics.newImage('assets/nodes/fungi.png')
+    self.fungi.spriteDepleted=love.graphics.newImage('assets/nodes/fungi_depleted.png')
+    self.fungi.spriteParticle=love.graphics.newImage('assets/nodes/fungi_particle.png')
 
     self.fishingHole={} --store fishing hole sprites
-    self.fishingHole.spriteSheet=love.graphics.newImage('assets/fishing_hole.png')
-    self.fishingHole.spriteSheetTool=love.graphics.newImage('assets/tool_harpoon.png')
-    self.fishingHole.spriteDepleted=love.graphics.newImage('assets/fishing_hole_depleted.png')
-    self.fishingHole.spriteParticle=love.graphics.newImage('assets/fishing_hole_particle.png')
+    self.fishingHole.spriteSheet=love.graphics.newImage('assets/nodes/fishing_hole.png')
+    self.fishingHole.spriteSheetTool=love.graphics.newImage('assets/nodes/tool_harpoon.png')
+    self.fishingHole.spriteDepleted=love.graphics.newImage('assets/nodes/fishing_hole_depleted.png')
+    self.fishingHole.spriteParticle=love.graphics.newImage('assets/nodes/fishing_hole_particle.png')
 end
 
 ResourceNodes.nodeSpawnFunctions={}

@@ -2,11 +2,11 @@ CraftingNodes={}
 
 function CraftingNodes:load()
     self.sprites={} --stores sprites
-    self.sprites.furnace=love.graphics.newImage('assets/crafting_furnace.png')
-    self.sprites.grill=love.graphics.newImage('assets/crafting_grill.png')
-    self.sprites.sawmill=love.graphics.newImage('assets/crafting_sawmill.png')
-    self.sprites.spinning_wheel=love.graphics.newImage('assets/crafting_spinning_wheel.png')
-    self.sprites.crafting_table=love.graphics.newImage('assets/crafting_table.png')
+    self.sprites.furnace=love.graphics.newImage('assets/nodes/crafting_furnace.png')
+    self.sprites.grill=love.graphics.newImage('assets/nodes/crafting_grill.png')
+    self.sprites.sawmill=love.graphics.newImage('assets/nodes/crafting_sawmill.png')
+    self.sprites.spinning_wheel=love.graphics.newImage('assets/nodes/crafting_spinning_wheel.png')
+    self.sprites.crafting_table=love.graphics.newImage('assets/nodes/crafting_table.png')
 
     self.grids={} --animation grids
     self.grids.furnace=anim8.newGrid(
@@ -74,10 +74,10 @@ function CraftingNodes:load()
     self.colliderSizes.crafting_table={w=32,h=12,c=3}
 
     self.particleSprites={} --particle sprites
-    self.particleSprites.furnace=love.graphics.newImage('assets/crafting_furnace_particle.png')
-    self.particleSprites.grill=love.graphics.newImage('assets/crafting_grill_particle.png')
-    self.particleSprites.sawmill=love.graphics.newImage('assets/crafting_sawmill_particle.png')
-    self.particleSprites.spinning_wheel=love.graphics.newImage('assets/tree_particle.png')
+    self.particleSprites.furnace=love.graphics.newImage('assets/nodes/crafting_furnace_particle.png')
+    self.particleSprites.grill=love.graphics.newImage('assets/nodes/crafting_grill_particle.png')
+    self.particleSprites.sawmill=love.graphics.newImage('assets/nodes/crafting_sawmill_particle.png')
+    self.particleSprites.spinning_wheel=love.graphics.newImage('assets/nodes/tree_particle.png')
 
     self.particleOffsets={ --offsets to draw particles in correct area with respect to node
         furnace={x=0,y=-7},

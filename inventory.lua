@@ -2,21 +2,21 @@ Inventory={}
 
 function Inventory:load() 
     self.inv_yPos=love.graphics.getHeight()-30*WINDOWSCALE_Y --yPos for all segments and icons
-    self.inv_middle=love.graphics.newImage('assets/hud_inv_middle.png') --middle segment sprite
+    self.inv_middle=love.graphics.newImage('assets/hud/inventory/hud_inv_middle.png') --middle segment sprite
     self.defaultClosed=7*WINDOWSCALE_X --xPos_closed for all segments and icons except endpieces
 
     self.inventorySegments={} --holds all middle and end inventory segments
     self.inventoryItems={} --holds all item icons/sprites
 
     self.inventorySegments.endLeft={} --left endpiece segment
-    self.inventorySegments.endLeft.sprite=love.graphics.newImage('assets/hud_inv_endleft.png')
+    self.inventorySegments.endLeft.sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_endleft.png')
     self.inventorySegments.endLeft.xPos_open=2*WINDOWSCALE_X
     self.inventorySegments.endLeft.xPos_current=2*WINDOWSCALE_X
     self.inventorySegments.endLeft.xPos_closed=2*WINDOWSCALE_X
     self.inventorySegments.endLeft.yPos=self.inv_yPos-WINDOWSCALE_X
 
     self.inventorySegments.endRight={} --right endpiece segment
-    self.inventorySegments.endRight.sprite=love.graphics.newImage('assets/hud_inv_endright.png')
+    self.inventorySegments.endRight.sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_endright.png')
     self.inventorySegments.endRight.xPos_open=274*WINDOWSCALE_X
     self.inventorySegments.endRight.xPos_current=26*WINDOWSCALE_X
     self.inventorySegments.endRight.xPos_closed=26*WINDOWSCALE_X
@@ -35,88 +35,88 @@ function Inventory:load()
     --inventory items/icons
     table.insert(self.inventoryItems, 1, {
         name="chest",
-        spriteOpen=love.graphics.newImage('assets/hud_inv_chest_open.png'), --open sprite
-        spriteClosed=love.graphics.newImage('assets/hud_inv_chest_closed.png'), --closed sprite
-        spriteHalf=love.graphics.newImage('assets/hud_inv_chest_half.png'), --halfway sprite
-        sprite=love.graphics.newImage('assets/hud_inv_chest_closed.png'),
+        spriteOpen=love.graphics.newImage('assets/hud/inventory/hud_inv_chest_open.png'), --open sprite
+        spriteClosed=love.graphics.newImage('assets/hud/inventory/hud_inv_chest_closed.png'), --closed sprite
+        spriteHalf=love.graphics.newImage('assets/hud/inventory/hud_inv_chest_half.png'), --halfway sprite
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_chest_closed.png'),
         xPos_open=7*WINDOWSCALE_X, xPos_current=7*WINDOWSCALE_X, 
         xPos_closed=self.defaultClosed
     })
     table.insert(self.inventoryItems, 1, {
         name="arcane_shards",
-        sprite=love.graphics.newImage('assets/hud_inv_arcane_shards.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_arcane_shards.png'),
         xPos_open=26*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="broken_bow",
-        sprite=love.graphics.newImage('assets/hud_inv_broken_bow.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_broken_bow.png'),
         xPos_open=45*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="broken_staff",
-        sprite=love.graphics.newImage('assets/hud_inv_broken_staff.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_broken_staff.png'),
         xPos_open=64*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="arcane_orb",
-        sprite=love.graphics.newImage('assets/hud_inv_arcane_orb.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_arcane_orb.png'),
         xPos_open=83*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="arcane_bowstring",
-        sprite=love.graphics.newImage('assets/hud_inv_arcane_bowstring.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_arcane_bowstring.png'),
         xPos_open=102*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="tree_wood",
-        sprite=love.graphics.newImage('assets/hud_inv_wood.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_wood.png'),
         xPos_open=121*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="rock_ore",
-        sprite=love.graphics.newImage('assets/hud_inv_ore.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_ore.png'),
         xPos_open=140*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="vine_fiber",
-        sprite=love.graphics.newImage('assets/hud_inv_fiber.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_fiber.png'),
         xPos_open=159*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="fungi_mushroom",
-        sprite=love.graphics.newImage('assets/hud_inv_mushroom.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_mushroom.png'),
         xPos_open=178*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="fish_raw",
-        sprite=love.graphics.newImage('assets/hud_inv_fish_raw.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_fish_raw.png'),
         xPos_open=197*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="rock_metal",
-        sprite=love.graphics.newImage('assets/hud_inv_metal.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_metal.png'),
         xPos_open=216*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="tree_planks",
-        sprite=love.graphics.newImage('assets/hud_inv_planks.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_planks.png'),
         xPos_open=235*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })
     table.insert(self.inventoryItems, 1, {
         name="vine_thread",
-        sprite=love.graphics.newImage('assets/hud_inv_thread.png'),
+        sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_thread.png'),
         xPos_open=254*WINDOWSCALE_X, xPos_closed=self.defaultClosed,
         xPos_current=self.defaultClosed, count=0
     })

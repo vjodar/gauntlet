@@ -2,8 +2,8 @@ ActionButtons={} --action button cluster on HUD
 
 function ActionButtons:load()
     --pressed and unpressed blank buttons
-    self.blankUp=love.graphics.newImage('assets/hud_action_blank_up.png')
-    self.blankDown=love.graphics.newImage('assets/hud_action_blank_down.png')
+    self.blankUp=love.graphics.newImage('assets/hud/action_buttons/hud_action_blank_up.png')
+    self.blankDown=love.graphics.newImage('assets/hud/action_buttons/hud_action_blank_down.png')
     --create and store action buttons
     self.weapons=self:addActionButtonWeapons()
     self.supplies=self:addActionButtonSupplies()
@@ -35,8 +35,8 @@ function ActionButtons:addActionButtonWeapons()
     --sprites and animations
     button.blankSprite={self.blankUp,self.blankDown} --[1]=up sprite,[2]=down sprite
     button.spriteSheet={
-        bow=love.graphics.newImage('assets/hud_action_weapons_bow.png'),
-        staff=love.graphics.newImage('assets/hud_action_weapons_staff.png')
+        bow=love.graphics.newImage('assets/hud/action_buttons/hud_action_weapons_bow.png'),
+        staff=love.graphics.newImage('assets/hud/action_buttons/hud_action_weapons_staff.png')
     }
     button.grid=anim8.newGrid(24,24,button.spriteSheet.bow:getWidth(),button.spriteSheet.bow:getHeight())
     button.animations={}
@@ -142,8 +142,8 @@ function ActionButtons:addActionButtonSupplies()
     --sprites and animations
     button.blankSprite={self.blankUp,self.blankDown} --[1]=up sprite,[2]=down sprite
     button.spriteSheet={
-        fish=love.graphics.newImage('assets/hud_action_supplies_fish.png'),
-        potion=love.graphics.newImage('assets/hud_action_supplies_potion.png')
+        fish=love.graphics.newImage('assets/hud/action_buttons/hud_action_supplies_fish.png'),
+        potion=love.graphics.newImage('assets/hud/action_buttons/hud_action_supplies_potion.png')
     }
     button.grid=anim8.newGrid(24,24,button.spriteSheet.fish:getWidth(),button.spriteSheet.fish:getHeight())
     button.animations={}
@@ -269,8 +269,8 @@ function ActionButtons:addActionButtonProtectionMagics()
     --sprites and animations
     button.blankSprite={self.blankUp,self.blankDown} --[1]=up sprite,[2]=down sprite
     button.spriteSheet={
-        physical=love.graphics.newImage('assets/hud_action_protection_physical.png'),
-        magical=love.graphics.newImage('assets/hud_action_protection_magical.png')
+        physical=love.graphics.newImage('assets/hud/action_buttons/hud_action_protection_physical.png'),
+        magical=love.graphics.newImage('assets/hud/action_buttons/hud_action_protection_magical.png')
     }
     button.grid=anim8.newGrid(24,24,button.spriteSheet.physical:getWidth(),button.spriteSheet.physical:getHeight())
     button.animations={}
@@ -386,7 +386,7 @@ function ActionButtons:addActionButtonCombatInteract()
 
     --sprites and animations
     button.blankSprite={self.blankUp,self.blankDown} --[1]=up sprite,[2]=down sprite
-    button.spriteSheet=love.graphics.newImage('assets/hud_action_combat_interact.png')
+    button.spriteSheet=love.graphics.newImage('assets/hud/action_buttons/hud_action_combat_interact.png')
     button.grid=anim8.newGrid(24,24,button.spriteSheet:getWidth(),button.spriteSheet:getHeight())
     button.animations={}
     button.animations.forward=anim8.newAnimation(

@@ -42,7 +42,7 @@ function Rooms:load()
     self.lightSprites.side=love.graphics.newImage('assets/maps/room_light_side.png')
 
     --ladder sprite
-    self.ladderSprite=love.graphics.newImage('assets/ladder.png')
+    self.ladderSprite=love.graphics.newImage('assets/nodes/ladder.png')
     
     DoorButton:load() --initialize DoorButton class
     Walls:load() --initialize Walls class
@@ -646,8 +646,10 @@ function Rooms:generateFog(_room)
         for i=1,8 do 
             room.fogTable.top[i]={
                 x=room.xPos+32,
-                y=room.yPos,
-                w=320,h=34-(2*i)
+                y=room.yPos-16,
+                --height is taller than other sides in order to allow tall sprites
+                --such as the staff_t3 attack animation.
+                w=320,h=50-(2*i)
             }
         end 
     end

@@ -2,14 +2,14 @@ Enemies={}
 
 function Enemies:load()
     self.spriteSheets={} --stores spriteSheets of enemies
-    self.spriteSheets.orcT1=love.graphics.newImage('assets/orc_t1.png')
-    self.spriteSheets.demonT1=love.graphics.newImage('assets/demon_t1.png')
-    self.spriteSheets.skeletonT1=love.graphics.newImage('assets/skeleton_t1.png')
-    self.spriteSheets.orcT2=love.graphics.newImage('assets/orc_t2.png')
-    self.spriteSheets.demonT2=love.graphics.newImage('assets/demon_t2.png')
-    self.spriteSheets.mageT2=love.graphics.newImage('assets/mage_t2.png')
-    self.spriteSheets.orcT3=love.graphics.newImage('assets/orc_t3.png')
-    self.spriteSheets.demonT3=love.graphics.newImage('assets/demon_t3.png')
+    self.spriteSheets.orcT1=love.graphics.newImage('assets/enemies/orc_t1.png')
+    self.spriteSheets.demonT1=love.graphics.newImage('assets/enemies/demon_t1.png')
+    self.spriteSheets.skeletonT1=love.graphics.newImage('assets/enemies/skeleton_t1.png')
+    self.spriteSheets.orcT2=love.graphics.newImage('assets/enemies/orc_t2.png')
+    self.spriteSheets.demonT2=love.graphics.newImage('assets/enemies/demon_t2.png')
+    self.spriteSheets.mageT2=love.graphics.newImage('assets/enemies/mage_t2.png')
+    self.spriteSheets.orcT3=love.graphics.newImage('assets/enemies/orc_t3.png')
+    self.spriteSheets.demonT3=love.graphics.newImage('assets/enemies/demon_t3.png')
 end
 
 --holds spawn functions for each tier of enemy

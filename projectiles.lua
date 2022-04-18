@@ -2,14 +2,14 @@ Projectiles={}
 
 function Projectiles:load()
     self.sprites={}
-    self.sprites.bow_t0=love.graphics.newImage('assets/weapon_stone_projectile.png')
+    self.sprites.bow_t0=love.graphics.newImage('assets/projectiles/weapon_stone_projectile.png')
     self.sprites.staff_t0=self.sprites.bow_t0 
-    self.sprites.bow_t1=love.graphics.newImage('assets/weapon_bow_projectile.png')
-    self.sprites.staff_t1=love.graphics.newImage('assets/weapon_staff_t1_projectile.png')
+    self.sprites.bow_t1=love.graphics.newImage('assets/projectiles/weapon_bow_projectile.png')
+    self.sprites.staff_t1=love.graphics.newImage('assets/projectiles/weapon_staff_t1_projectile.png')
     self.sprites.bow_t2=self.sprites.bow_t1
-    self.sprites.staff_t2=love.graphics.newImage('assets/weapon_staff_t2_projectile.png')
+    self.sprites.staff_t2=love.graphics.newImage('assets/projectiles/weapon_staff_t2_projectile.png')
     self.sprites.bow_t3=self.sprites.bow_t1
-    self.sprites.staff_t3=love.graphics.newImage('assets/weapon_staff_t3_projectile.png')
+    self.sprites.staff_t3=love.graphics.newImage('assets/projectiles/weapon_staff_t3_projectile.png')
 
     self.centers={ --used to draw sprites at their center
         bow_t0={x=3,y=3},

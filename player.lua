@@ -22,25 +22,25 @@ function Player:load()
 
     --sprites and animations
     self.spriteSheets={
-        head_t0=love.graphics.newImage('assets/armor_head_t0.png'),
-        head_t1=love.graphics.newImage('assets/armor_head_t1.png'),
-        head_t2=love.graphics.newImage('assets/armor_head_t2.png'),
-        head_t3=love.graphics.newImage('assets/armor_head_t3.png'),
-        chest_t0=love.graphics.newImage('assets/armor_chest_t0.png'),
-        chest_t1=love.graphics.newImage('assets/armor_chest_t1.png'),
-        chest_t2=love.graphics.newImage('assets/armor_chest_t2.png'),
-        chest_t3=love.graphics.newImage('assets/armor_chest_t3.png'),
-        legs_t0=love.graphics.newImage('assets/armor_legs_t0.png'),
-        legs_t1=love.graphics.newImage('assets/armor_legs_t1.png'),
-        legs_t2=love.graphics.newImage('assets/armor_legs_t2.png'),
-        legs_t3=love.graphics.newImage('assets/armor_legs_t3.png'),
+        head_t0=love.graphics.newImage('assets/hero/armor_head_t0.png'),
+        head_t1=love.graphics.newImage('assets/hero/armor_head_t1.png'),
+        head_t2=love.graphics.newImage('assets/hero/armor_head_t2.png'),
+        head_t3=love.graphics.newImage('assets/hero/armor_head_t3.png'),
+        chest_t0=love.graphics.newImage('assets/hero/armor_chest_t0.png'),
+        chest_t1=love.graphics.newImage('assets/hero/armor_chest_t1.png'),
+        chest_t2=love.graphics.newImage('assets/hero/armor_chest_t2.png'),
+        chest_t3=love.graphics.newImage('assets/hero/armor_chest_t3.png'),
+        legs_t0=love.graphics.newImage('assets/hero/armor_legs_t0.png'),
+        legs_t1=love.graphics.newImage('assets/hero/armor_legs_t1.png'),
+        legs_t2=love.graphics.newImage('assets/hero/armor_legs_t2.png'),
+        legs_t3=love.graphics.newImage('assets/hero/armor_legs_t3.png'),
 
-        bow_t1=love.graphics.newImage('assets/weapon_bow_t1.png'),
-        bow_t2=love.graphics.newImage('assets/weapon_bow_t2.png'),
-        bow_t3=love.graphics.newImage('assets/weapon_bow_t3.png'),
-        staff_t1=love.graphics.newImage('assets/weapon_staff_t1.png'),
-        staff_t2=love.graphics.newImage('assets/weapon_staff_t2.png'),
-        staff_t3=love.graphics.newImage('assets/weapon_staff_t3.png')
+        bow_t1=love.graphics.newImage('assets/hero/weapon_bow_t1.png'),
+        bow_t2=love.graphics.newImage('assets/hero/weapon_bow_t2.png'),
+        bow_t3=love.graphics.newImage('assets/hero/weapon_bow_t3.png'),
+        staff_t1=love.graphics.newImage('assets/hero/weapon_staff_t1.png'),
+        staff_t2=love.graphics.newImage('assets/hero/weapon_staff_t2.png'),
+        staff_t3=love.graphics.newImage('assets/hero/weapon_staff_t3.png')
     }    
     self.grids={} --holds animation grids
     self.grids.armor=anim8.newGrid(
