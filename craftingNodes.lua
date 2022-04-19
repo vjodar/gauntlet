@@ -271,7 +271,7 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
     node:load()
 end
 
---seperate function for spawning the enchanted crafting table as its 
+--seperate function for spawning the crafting table as its 
 --functionality is different from the four basic crafting nodes.
 function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
     local node={}

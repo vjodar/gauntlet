@@ -296,7 +296,7 @@ function ActionButtons:addActionButtonProtectionMagics()
     button.state={} --state metatable
     button.state.buttonDuration=0 --used to differentiate between button taps and holds
     button.state.acceptInput=true --used to prevent player from pressing before animation ends.
-    button.state.currentSpell='protect physical' --either 'physical' or 'magical'
+    button.state.currentSpell='physical' --either 'physical' or 'magical'
     button.state.pressedFlag=0 --1/0 boolean, not true false.
     
 
@@ -313,9 +313,15 @@ function ActionButtons:addActionButtonProtectionMagics()
             end 
 
             if button.state.acceptInput and button.state.buttonDuration>=0.3 then --button HOLD
-                --TODO-----------------------
-                --Start/Stop casting protection spell
-                --TODO-----------------------
+                --if player is not currently using protection magics, then activate.
+                --otherwise deactivate
+                if not Player.state.protectionActivated then 
+                    Player.protectionMagics:activate(self.state.currentSpell,Player)
+                    Player.collider.fixtures['magic']:setSensor(false)
+                elseif Player.state.protectionActivated then 
+                    Player.protectionMagics:deactivate()
+                    Player.collider.fixtures['magic']:setSensor(true)
+                end
                 
                 --after button hold, don't listen for any more holds until 0.3s
                 button.state.acceptInput=false 
@@ -326,17 +332,22 @@ function ActionButtons:addActionButtonProtectionMagics()
                 if button.state.acceptInput and button.state.buttonDuration<0.3 then 
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.state.acceptInput=false --won't accept input until animation is done
-                    --TODO
-                    --set current spell to be opposite the one currently chosen
-                    --TODO
                     
                     --set timer to restore input accepting
                     TimerState:after(button.animationTime, function() 
                         button.state.acceptInput=true 
                         --swap current protection spell
-                        if button.state.currentSpell=='protect physical' then 
-                            button.state.currentSpell='protect magical'
-                        else button.state.currentSpell='protect physical' end 
+                        if button.state.currentSpell=='physical' then 
+                            button.state.currentSpell='magical'
+                        else button.state.currentSpell='physical' end 
+                        --if player is currently protecting, deactivate
+                        --previous protection type and activate current one
+                        if Player.state.protectionActivated then 
+                            Player.protectionMagics:deactivate()
+                            Player.protectionMagics:activate(
+                                button.state.currentSpell,Player
+                            )
+                        end
                     end)
                     button.state.buttonDuration=0 --reset buttonDuration
                 else 
@@ -542,7 +553,7 @@ function ActionButtons:addActionButtonCombatInteract()
             if Player.combatData.inCombat and #nearbyColliders>1 then 
                 local switch=nil --stores the enemy to switch to
 
-                --Using the prevEnemies table, we can construct a 'history' of targeted
+                --Using the prevEnemies table, we can construct a 'history' of targets
                 --and when they were targeted in relation to each other by comparing 
                 --their elements and positions to those of our queried nearbyColliders.
 

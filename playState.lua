@@ -18,7 +18,6 @@ function PlayState:load()
     cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5))
 
     world=wf.newWorld() --initialize physics world which handles colliders
-    world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
     world:addCollisionClass('player')
     world:addCollisionClass('enemy')
     world:addCollisionClass('resourceNode')
@@ -34,10 +33,11 @@ function PlayState:load()
 
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
+    ProtectionMagics:load() --initialize protectionMagics
     Player:load() --initialize player character
     Enemies:load() --initialize enemies
     ResourceNodes:load() --initialize resource nodes
-    CraftingNodes:load()
+    CraftingNodes:load() --initialize crafting nodes
     Dungeon:load() --initialize dungeon
     Items:load() --initialize items
     Projectiles:load() --initialize projectiles
@@ -85,11 +85,15 @@ function PlayState:start()
     camTarget=Player
 
     --testing----------------------------------
+    world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
     print('spawning enemy')
     Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
 
-    Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t1')
-    Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t1')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
     -- for i=1,24 do Items:spawn_item(playerStartX,playerStartY,'arcane_shards') end

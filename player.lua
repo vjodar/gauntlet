@@ -19,6 +19,18 @@ function Player:load()
     self.collider.fixtures['left']:setSensor(true)
     self.collider:addShape('right','RectangleShape',self.xPos+2,self.yPos-2,8,4)
     self.collider.fixtures['right']:setSensor(true)
+    self.collider:addShape(
+        'magic','PolygonShape',
+        self.xPos-21,self.yPos-3,
+        self.xPos-12,self.yPos-6,
+        self.xPos,self.yPos-6,
+        self.xPos+9,self.yPos-3,
+        self.xPos+9,self.yPos-1,
+        self.xPos,self.yPos+2,
+        self.xPos-12,self.yPos+2,
+        self.xPos-21,self.yPos-1
+    )
+    self.collider.fixtures['magic']:setSensor(true)
 
     --sprites and animations
     self.spriteSheets={
@@ -88,22 +100,6 @@ function Player:load()
     self.currentAnim=self.animations.idle
 
     self.shadow=Shadows:newShadow('medium')  --shadow
-
-    --'metatable' containing info of the player's current state
-    self.state={}
-    self.state.facing='right'
-    self.state.moving=false
-    self.state.movingHorizontally=false 
-    self.state.movingVertially=false 
-    self.state.isNearNode=false 
-
-    self.combatData={} --combat related data
-    self.combatData.inCombat=false 
-    self.combatData.currentEnemy=nil --current combat target
-    self.combatData.prevEnemies={} --holds previously targeted enemies
-    self.combatData.prevEnemiesLimit=6 
-    self.combatData.attackOnCooldown=false --true when awaiting for cooldown between attacks
-    self.combatData.attackCooldownTime=1.35 --time in sec between attacks
     
     self.inventory={
         arcane_shards=0, 
@@ -154,6 +150,25 @@ function Player:load()
     self.equippedWeapon='bow_t0'
 
     self.dialog=Dialog:newDialogSystem() --dialog system
+
+    self.protectionMagics=ProtectionMagics:newProtectionMagicSystem()
+
+    --'metatable' containing info of the player's current state
+    self.state={}
+    self.state.facing='right'
+    self.state.moving=false
+    self.state.movingHorizontally=false 
+    self.state.movingVertially=false 
+    self.state.isNearNode=false 
+    self.state.protectionActivated=false --true when protection magics activated
+
+    self.combatData={} --combat related data
+    self.combatData.inCombat=false 
+    self.combatData.currentEnemy=nil --current combat target
+    self.combatData.prevEnemies={} --holds previously targeted enemies
+    self.combatData.prevEnemiesLimit=6 
+    self.combatData.attackOnCooldown=false --true when awaiting for cooldown between attacks
+    self.combatData.attackCooldownTime=1.35 --time in sec between attacks
 
     table.insert(Entities.entitiesTable,self)
 end
@@ -283,7 +298,7 @@ end
 --harvest resources / craft items / open or reveal adjascent rooms
 function Player:queryInteractables()
     local nodeColliders=world:queryRectangleArea(
-        self.xPos-9,self.yPos-6,18,12, --where to query
+        self.xPos-11,self.yPos-6,22,12, --where to query
         {'resourceNode','doorButton','craftingNode','ladder'} --what to query for
     )
     if #nodeColliders>0 then --found a resource node

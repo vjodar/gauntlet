@@ -77,7 +77,7 @@ function Rooms:newRoom(_coordinates)
     --fog
     room.fogTable={top={},bottom={},left={},right={}}
     room.fogColor=2/15 --palette black
-    room.fogAlpha=0.5
+    room.fogAlpha=0.51
     --fog states to prevent unnecessary additional function calls 
     --fog will be removed next frame
     room.fogTable.toRemove={top=false,bottom=false,left=false,right=false}
@@ -423,7 +423,7 @@ end
 --helper function for generateWalls(). Creates collider, sets it to static,
 --adds it to 'outerWall' collision class
 function Rooms:addWallCollider(_x,_y,_w,_h) 
-    local w=world:newBSGRectangleCollider(_x,_y,_w,_h,2)
+    local w=world:newBSGRectangleCollider(_x,_y,_w,_h,1)
     w:setType('static')
     w:setCollisionClass('outerWall')
 end
