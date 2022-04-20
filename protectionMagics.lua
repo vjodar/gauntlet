@@ -43,9 +43,9 @@ function ProtectionMagics:newProtectionMagicSystem()
 
             function symbol:update()
                 --update offsets
-                self.oscillation=self.oscillation+dt*2
-                self.yOffset=math.cos(self.oscillation+dt)
-                self.xOffset=6*math.sin(self.oscillation+dt)
+                self.oscillation=self.oscillation+dt*3
+                self.yOffset=math.cos(self.oscillation)
+                self.xOffset=6*math.sin(self.oscillation)
 
                 --update position. Must get the current position at of the collider
                 --because otherwise grphical flickering occurs likely due to the symbols

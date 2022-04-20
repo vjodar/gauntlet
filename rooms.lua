@@ -930,7 +930,11 @@ function Rooms:spawnLadder(_room)
 
     function ladder:nodeInteract()
         --TODO---------------------------
-        --go to boss room
+        --go to boss room        
+        if self.dialogBoolean then 
+            Player.dialog:say("I wonder what's down there...") 
+            self.dialogBoolean=false
+        end
         --TODO---------------------------
     end
 

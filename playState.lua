@@ -89,13 +89,15 @@ function PlayState:start()
     print('spawning enemy')
     Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
 
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
+    Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
+    Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
+    Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
+    Items:spawn_item(playerStartX,playerStartY,'potion')
     -- for i=1,24 do Items:spawn_item(playerStartX,playerStartY,'arcane_shards') end
     --testing----------------------------------
 end

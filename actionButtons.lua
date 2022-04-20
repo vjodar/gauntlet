@@ -171,8 +171,10 @@ function ActionButtons:addActionButtonSupplies()
     button.state.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state.hasFish=true --player has a bow
     button.state.hasPotion=true --player has a staff
-    button.state.currentSupply='fish' --either 'fish' or 'potion'
+    button.state.currentSupply='fish_cooked' --either 'fish' or 'potion'
     button.state.pressedFlag=0 --1/0 boolean
+    button.state.consumeOnCooldown=false --consume at the same rate as attacking enemies
+    button.state.holdOnCooldown=false --listen for HOLDs after cooldown period from last HOLD
     
 
     function button:update()
@@ -187,14 +189,39 @@ function ActionButtons:addActionButtonSupplies()
                 end
             end 
 
-            if button.state.acceptInput and button.state.buttonDuration>=0.3 then --button hold
-                --TODO----------------------------------------------
-                --consume fish or potion                
-                --TODO----------------------------------------------
+            if button.state.acceptInput --button HOLD
+                and button.state.buttonDuration>=0.3 
+                and not button.state.consumeOnCooldown 
+                and not button.state.holdOnCooldown
+            then
+                if Player.suppliesPouch[button.state.currentSupply]<=0 then
+                    if button.state.currentSupply=='fish_cooked' then 
+                        Player.dialog:say("No more fish.")
+                    elseif button.state.currentSupply=='potion' then 
+                        Player.dialog:say("No more potions.")
+                    end 
 
-                --after button hold, don't listen for any more holds until after 0.3s                
-                button.state.acceptInput=false
-                TimerState:after(0.3,function() button.state.acceptInput=true end)
+                    --put button on 0.6s cooldown to prevent spamming messages
+                    button.state.consumeOnCooldown=true 
+                    TimerState:after(0.6,function() 
+                        button.state.consumeOnCooldown=false 
+                    end)
+
+                elseif Player.suppliesPouch[self.state.currentSupply]>0 then 
+                    Player:consumeSupply(self.state.currentSupply) --consume the supply
+                    
+                    --consuming takes the same amount of time at attacking
+                    --and delays the next attack until 1.35s after consuming a supply
+                    button.state.consumeOnCooldown=true
+                    Player.suppliesData.consumingCooldown=true 
+                    TimerState:after(Player.combatData.attackCooldownTime,function() 
+                        button.state.consumeOnCooldown=false 
+                        Player.suppliesData.consumingCooldown=false --player can attak again
+                    end)
+                end
+                --won't listen to any more holds until after 0.3s
+                button.state.holdOnCooldown=true
+                TimerState:after(0.3,function() button.state.holdOnCooldown=false end)
             end
 
             if releasedKey==controls.btnLeft then
@@ -206,12 +233,9 @@ function ActionButtons:addActionButtonSupplies()
                     TimerState:after(button.animationTime, function() 
                         button.state.acceptInput=true 
                         --swap current supply
-                        if button.state.currentSupply=='fish' then 
+                        if button.state.currentSupply=='fish_cooked' then 
                             button.state.currentSupply='potion'
-                        else button.state.currentSupply='fish' end 
-                        --TODO
-                        --set player's current supply to be opposite the one currently chosen
-                        --TODO
+                        else button.state.currentSupply='fish_cooked' end 
                     end)
                     button.state.buttonDuration=0 --reset buttonDuration
                 else 
@@ -298,6 +322,7 @@ function ActionButtons:addActionButtonProtectionMagics()
     button.state.acceptInput=true --used to prevent player from pressing before animation ends.
     button.state.currentSpell='physical' --either 'physical' or 'magical'
     button.state.pressedFlag=0 --1/0 boolean, not true false.
+    button.state.holdOnCooldown=false --wait for cooldown period before listening for another HOLD
     
 
     function button:update()
@@ -312,7 +337,10 @@ function ActionButtons:addActionButtonProtectionMagics()
                 end
             end 
 
-            if button.state.acceptInput and button.state.buttonDuration>=0.3 then --button HOLD
+            if button.state.acceptInput --button HOLD
+                and button.state.holdOnCooldown==false
+                and button.state.buttonDuration>=0.3 
+            then 
                 --if player is not currently using protection magics, then activate.
                 --otherwise deactivate
                 if not Player.state.protectionActivated then 
@@ -324,12 +352,12 @@ function ActionButtons:addActionButtonProtectionMagics()
                 end
                 
                 --after button hold, don't listen for any more holds until 0.3s
-                button.state.acceptInput=false 
-                TimerState:after(0.3,function() button.state.acceptInput=true end)
+                button.state.holdOnCooldown=true
+                TimerState:after(0.3,function() button.state.holdOnCooldown=false end)
             end
 
-            if releasedKey==controls.btnRight  then --only change items when button accepts input
-                if button.state.acceptInput and button.state.buttonDuration<0.3 then 
+            if releasedKey==controls.btnRight  then
+                if button.state.acceptInput and button.state.buttonDuration<0.3 then --button TAP
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.state.acceptInput=false --won't accept input until animation is done
                     

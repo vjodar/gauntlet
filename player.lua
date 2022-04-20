@@ -52,7 +52,10 @@ function Player:load()
         bow_t3=love.graphics.newImage('assets/hero/weapon_bow_t3.png'),
         staff_t1=love.graphics.newImage('assets/hero/weapon_staff_t1.png'),
         staff_t2=love.graphics.newImage('assets/hero/weapon_staff_t2.png'),
-        staff_t3=love.graphics.newImage('assets/hero/weapon_staff_t3.png')
+        staff_t3=love.graphics.newImage('assets/hero/weapon_staff_t3.png'),
+
+        fish_cooked=love.graphics.newImage('assets/items/fish_cooked.png'),
+        potion=love.graphics.newImage('assets/items/potion.png')
     }    
     self.grids={} --holds animation grids
     self.grids.armor=anim8.newGrid(
@@ -170,6 +173,29 @@ function Player:load()
     self.combatData.attackOnCooldown=false --true when awaiting for cooldown between attacks
     self.combatData.attackCooldownTime=1.35 --time in sec between attacks
 
+    self.suppliesData={ --data related to consuming supplies
+        consuming={ --true when currently consuming fish/potion
+            fish=false,
+            potion=false
+        },
+        yOffsetFish=0,
+        yOffsetPotion=0,
+        oscillation=0, --used to increase/decrease offsets with sin()        
+        --true for attackCooldown (1.35) seconds after start of consuming a supply.
+        --this is to delay attacking after consuming a fish or potion.
+        consumingCooldown=false
+    } 
+
+    --health and mana
+    self.health={
+        max=100,
+        current=100
+    }
+    self.mana={
+        max=100,
+        current=100
+    }
+
     table.insert(Entities.entitiesTable,self)
 end
 
@@ -207,6 +233,15 @@ function Player:update()
         self.currentAnim=self.animations.idle 
     end
 
+    --animate appropriate supply when player is consuming a fish/potion
+    if self.suppliesData.consuming.fish_cooked then 
+        self.suppliesData.oscillation=self.suppliesData.oscillation+dt*4
+        self.suppliesData.yOffsetFish=-40*math.sin(1.4*self.suppliesData.oscillation)
+    elseif self.suppliesData.consuming.potion then 
+        self.suppliesData.oscillation=self.suppliesData.oscillation+dt*4
+        self.suppliesData.yOffsetPotion=-40*math.sin(1.4*self.suppliesData.oscillation)
+    end
+
     self.currentAnim:update(dt) --update animation 
     self.animations.bow:update(dt)
     self.animations.staff:update(dt)
@@ -231,25 +266,40 @@ function Player:draw()
         self.xPos,self.yPos,nil,self.scaleX,1,8,20
     )
 
-    --draw weapon when attacking, if applicable    
-    if self.combatData.inCombat and 
-        (self.equippedWeapon=='bow_t1' 
-        or self.equippedWeapon=='bow_t2'
-        or self.equippedWeapon=='bow_t3')
-    then 
-        self.animations.bow:draw(
-            self.spriteSheets[self.equippedWeapon],
-            self.xPos,self.yPos,nil,self.scaleX,1,5,23
-        )
+    --draw weapon when attacking, if player has a bow or staff and isn't 
+    --currenlty consuming a fish or potion
+    if not self.suppliesData.consumingCooldown then 
+        if self.combatData.inCombat and 
+            (self.equippedWeapon=='bow_t1' 
+            or self.equippedWeapon=='bow_t2'
+            or self.equippedWeapon=='bow_t3')
+        then 
+            self.animations.bow:draw(
+                self.spriteSheets[self.equippedWeapon],
+                self.xPos,self.yPos,nil,self.scaleX,1,5,23
+            )
+        elseif self.combatData.inCombat and 
+            (self.equippedWeapon=='staff_t1' 
+            or self.equippedWeapon=='staff_t2'
+            or self.equippedWeapon=='staff_t3')
+        then 
+            self.animations.staff:draw(
+                self.spriteSheets[self.equippedWeapon],
+                self.xPos-8+8*self.scaleX,self.yPos-46
+            )
+        end
     end
-    if self.combatData.inCombat and 
-        (self.equippedWeapon=='staff_t1' 
-        or self.equippedWeapon=='staff_t2'
-        or self.equippedWeapon=='staff_t3')
-    then 
-        self.animations.staff:draw(
-            self.spriteSheets[self.equippedWeapon],
-            self.xPos-8+8*self.scaleX,self.yPos-46
+
+    --draw fish/potion when consuming
+    if self.suppliesData.consuming.fish_cooked then 
+        love.graphics.draw(
+            self.spriteSheets.fish_cooked,self.xPos-6,
+            self.yPos-14+self.suppliesData.yOffsetFish
+        )
+    elseif self.suppliesData.consuming.potion then 
+        love.graphics.draw(
+            self.spriteSheets.potion,self.xPos-5,
+            self.yPos-14+self.suppliesData.yOffsetPotion
         )
     end
 end
@@ -347,6 +397,11 @@ end
 
 --decreasee the amount of an item in player's inventory and the HUD by an amount
 function Player:removeFromInventory(_item,_amount)
+    if _item=='fish_cooked' or _item=='potion' then 
+        self.suppliesPouch[_item]=self.suppliesPouch[_item]-_amount
+        return
+    end
+
     self.inventory[_item]=self.inventory[_item]-_amount
     
     --if _item is a weapon or armor, update the current gear to reflect the removal
@@ -447,13 +502,33 @@ function Player:fightEnemy()
         return 
     end
 
-    --Launch projectile toward target when attack is off cooldown
+    --if player is currently consuming a supply, delay attack by reseting animations
+    if self.suppliesData.consumingCooldown then 
+        self.animations.bow:pauseAtStart()
+        self.animations.staff:pauseAtStart()
+    end
+
+    --Launch projectile toward target when attack is off cooldown and player
+    --isn't currently consuming a fish or potion
     if not self.combatData.attackOnCooldown then 
         self.combatData.attackOnCooldown=true
         TimerState:after(self.combatData.attackCooldownTime,function() 
             self.combatData.attackOnCooldown=false
         end)
 
-        self.animations[ActionButtons.weapons.state.currentWeapon]:resume()        
+        self.animations[ActionButtons.weapons.state.currentWeapon]:resume()   
     end
+end
+
+function Player:consumeSupply(_supply)
+    self.suppliesData.consuming[_supply]=true 
+    TimerState:after(0.5,function()
+        self.suppliesData.consuming[_supply]=false
+        --TODO--------------------------
+        --restore health/mana
+        --emit some particles perhaps
+        --TODO--------------------------
+        Player:removeFromInventory(_supply,1)
+        self.suppliesData.oscillation=0 --reset oscillation
+    end)
 end

@@ -305,6 +305,7 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
     function node:update()
         --TODO--------
         --update animations and particles
+        --  maybe emit some particles upon crafting an item
         --TODO--------
     end
 
