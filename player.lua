@@ -525,10 +525,28 @@ function Player:consumeSupply(_supply)
     TimerState:after(0.5,function()
         self.suppliesData.consuming[_supply]=false
         --TODO--------------------------
-        --restore health/mana
+        if _supply=='fish_cooked' then self:updateHealthOrMana('health',20)
+        elseif _supply=='potion' then self:updateHealthOrMana('mana',20)
+        end
         --emit some particles perhaps
         --TODO--------------------------
         Player:removeFromInventory(_supply,1)
         self.suppliesData.oscillation=0 --reset oscillation
     end)
+end
+
+--updates the player's health or mana
+function Player:updateHealthOrMana(_which,_val)
+    if _which=='health' then 
+        self.health.current=self.health.current+_val
+        if self.health.current>self.health.max then 
+            self.health.current=self.health.max 
+        end 
+    elseif _which=='mana' then 
+        self.mana.current=self.mana.current+_val 
+        if self.mana.current>self.mana.max then 
+            self.mana.current=self.mana.max 
+        end 
+    end    
+    Meters:updateMeterValues() --update the HUD
 end
