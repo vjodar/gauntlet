@@ -541,12 +541,18 @@ function Player:updateHealthOrMana(_which,_val)
         self.health.current=self.health.current+_val
         if self.health.current>self.health.max then 
             self.health.current=self.health.max 
-        end 
+        elseif self.health.current<0 then 
+            self.health.current=0
+            Player.dialog:say("I'm dead")
+        end
     elseif _which=='mana' then 
         self.mana.current=self.mana.current+_val 
         if self.mana.current>self.mana.max then 
-            self.mana.current=self.mana.max 
-        end 
+            self.mana.current=self.mana.max  
+        elseif self.mana.current<0 then 
+            self.mana.current=0
+            Player.dialog:say('Out of mana')
+        end
     end    
     Meters:updateMeterValues() --update the HUD
 end
