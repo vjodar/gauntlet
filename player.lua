@@ -55,7 +55,10 @@ function Player:load()
         staff_t3=love.graphics.newImage('assets/hero/weapon_staff_t3.png'),
 
         fish_cooked=love.graphics.newImage('assets/items/fish_cooked.png'),
-        potion=love.graphics.newImage('assets/items/potion.png')
+        potion=love.graphics.newImage('assets/items/potion.png'),
+
+        health_particle=love.graphics.newImage('assets/hero/health_particle.png'),
+        mana_particle=love.graphics.newImage('assets/hero/mana_particle.png'),
     }    
     self.grids={} --holds animation grids
     self.grids.armor=anim8.newGrid(
@@ -154,7 +157,37 @@ function Player:load()
 
     self.dialog=Dialog:newDialogSystem() --dialog system
 
+    --system that manages the floating symbols when using protection magics
     self.protectionMagics=ProtectionMagics:newProtectionMagicSystem()
+
+    self.suppliesData={ --data related to consuming supplies
+        consuming={ --true when currently consuming fish/potion
+            fish=false,
+            potion=false
+        },
+        yOffsetFish=0,
+        yOffsetPotion=0,
+        oscillation=0, --used to increase/decrease offsets with sin()        
+        --true for attackCooldown (1.35) seconds after start of consuming a supply.
+        --this is to delay attacking after consuming a fish or potion.
+        consumingCooldown=false
+    }
+
+    self.particleSystems={} --holds all particle systems
+
+    --particle system for restoring health
+    self.particleSystems.health=love.graphics.newParticleSystem(self.spriteSheets.health_particle,100)    
+    self.particleSystems.health:setParticleLifetime(0.6)
+    self.particleSystems.health:setLinearAcceleration(-50,-50,50,-200)
+    self.particleSystems.health:setEmissionArea('uniform',9,4)  
+    self.particleSystems.health:setSizes(0.5,1,0)
+
+    --particle system for restoring mana
+    self.particleSystems.mana=love.graphics.newParticleSystem(self.spriteSheets.mana_particle,100)    
+    self.particleSystems.mana:setParticleLifetime(1)
+    self.particleSystems.mana:setLinearAcceleration(0,-10,0,-20)
+    self.particleSystems.mana:setEmissionArea('uniform',11,9)
+    self.particleSystems.mana:setSizes(0,1,0)
 
     --'metatable' containing info of the player's current state
     self.state={}
@@ -172,19 +205,6 @@ function Player:load()
     self.combatData.prevEnemiesLimit=6 
     self.combatData.attackOnCooldown=false --true when awaiting for cooldown between attacks
     self.combatData.attackCooldownTime=1.35 --time in sec between attacks
-
-    self.suppliesData={ --data related to consuming supplies
-        consuming={ --true when currently consuming fish/potion
-            fish=false,
-            potion=false
-        },
-        yOffsetFish=0,
-        yOffsetPotion=0,
-        oscillation=0, --used to increase/decrease offsets with sin()        
-        --true for attackCooldown (1.35) seconds after start of consuming a supply.
-        --this is to delay attacking after consuming a fish or potion.
-        consumingCooldown=false
-    } 
 
     --health and mana
     self.health={
@@ -246,6 +266,7 @@ function Player:update()
     self.animations.bow:update(dt)
     self.animations.staff:update(dt)
     self.dialog:update() --update dialog system
+    for i,p in pairs(self.particleSystems) do p:update(dt) end --update particle systems
 end
 
 function Player:draw()
@@ -301,6 +322,11 @@ function Player:draw()
             self.spriteSheets.potion,self.xPos-5,
             self.yPos-14+self.suppliesData.yOffsetPotion
         )
+    end
+
+    --draw particles for each particle system
+    for i,p in pairs(self.particleSystems) do
+        love.graphics.draw(p,self.xPos,self.yPos-10)
     end
 end
 
@@ -524,13 +550,20 @@ function Player:consumeSupply(_supply)
     self.suppliesData.consuming[_supply]=true 
     TimerState:after(0.5,function()
         self.suppliesData.consuming[_supply]=false
-        --TODO--------------------------
-        if _supply=='fish_cooked' then self:updateHealthOrMana('health',20)
-        elseif _supply=='potion' then self:updateHealthOrMana('mana',20)
+        if _supply=='fish_cooked' then 
+            self:updateHealthOrMana('health',20)
+            self.particleSystems.health:emit(2)
+            TimerState:after(0.1,function() self.particleSystems.health:emit(1) end)
+            TimerState:after(0.2,function() self.particleSystems.health:emit(1) end)
+            TimerState:after(0.3,function() self.particleSystems.health:emit(1) end)
+        elseif _supply=='potion' then 
+            self:updateHealthOrMana('mana',20)
+            self.particleSystems.mana:emit(3)
+            TimerState:after(0.1,function() self.particleSystems.mana:emit(2) end)
+            TimerState:after(0.2,function() self.particleSystems.mana:emit(2) end)
+            TimerState:after(0.3,function() self.particleSystems.mana:emit(2) end)
         end
-        --emit some particles perhaps
-        --TODO--------------------------
-        Player:removeFromInventory(_supply,1)
+        -- Player:removeFromInventory(_supply,1)
         self.suppliesData.oscillation=0 --reset oscillation
     end)
 end

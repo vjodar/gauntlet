@@ -5,16 +5,16 @@ function Meters:load()
         spriteBar=love.graphics.newImage('assets/hud/meters/hud_health.png'),
         xPos=2*WINDOWSCALE_X, yPos=WINDOWSCALE_Y,
         spritePiece=love.graphics.newImage('assets/hud/meters/hud_health_piece.png'),
-        filledPiecesMax=math.ceil(Player.health.current/2), --how many actual pieces
-        filledPiecesCurrent=math.ceil(Player.health.current/2), --how many pieces are shown
+        filledPieces=math.ceil(Player.health.current/2), --how many actual pieces
+        filledPiecesShown=math.ceil(Player.health.current/2), --how many pieces are shown
         timer=0 --to tween health pieces over time
     }
     self.mana={
         spriteBar=love.graphics.newImage('assets/hud/meters/hud_mana.png'),
         xPos=2*WINDOWSCALE_X, yPos=18*WINDOWSCALE_Y,        
         spritePiece=love.graphics.newImage('assets/hud/meters/hud_mana_piece.png'),
-        filledPiecesMax=math.ceil(Player.mana.current/2), --how many actual pieces
-        filledPiecesCurrent=math.ceil(Player.mana.current/2), --how many pieces are shown
+        filledPieces=math.ceil(Player.mana.current/2), --how many actual pieces
+        filledPiecesShown=math.ceil(Player.mana.current/2), --how many pieces are shown
         timer=0 --to tween mana pieces over time
     }
     self.meterMovementRate=0.02 --rate in sec at which meters inc/dec by 1 piece 
@@ -22,29 +22,29 @@ end
 
 function Meters:update() 
     --tween health/mana pieces when max~=current
-    if self.health.filledPiecesMax>self.health.filledPiecesCurrent then 
+    if self.health.filledPieces>self.health.filledPiecesShown then 
         self.health.timer=self.health.timer+dt
         if self.health.timer>self.meterMovementRate then --increase health by 1 piece          
-            self.health.filledPiecesCurrent=self.health.filledPiecesCurrent+1
+            self.health.filledPiecesShown=self.health.filledPiecesShown+1
             self.health.timer=0 --reset timer
         end
-    elseif self.health.filledPiecesMax<self.health.filledPiecesCurrent then 
+    elseif self.health.filledPieces<self.health.filledPiecesShown then 
         self.health.timer=self.health.timer+dt
         if self.health.timer>self.meterMovementRate then --decrease health by 1 piece         
-            self.health.filledPiecesCurrent=self.health.filledPiecesCurrent-1
+            self.health.filledPiecesShown=self.health.filledPiecesShown-1
             self.health.timer=0 --reset timer
         end
     end
-    if self.mana.filledPiecesMax>self.mana.filledPiecesCurrent then 
+    if self.mana.filledPieces>self.mana.filledPiecesShown then 
         self.mana.timer=self.mana.timer+dt
         if self.mana.timer>self.meterMovementRate then --increase health by 1 piece          
-            self.mana.filledPiecesCurrent=self.mana.filledPiecesCurrent+1
+            self.mana.filledPiecesShown=self.mana.filledPiecesShown+1
             self.mana.timer=0 --reset timer
         end
-    elseif self.mana.filledPiecesMax<self.mana.filledPiecesCurrent then 
+    elseif self.mana.filledPieces<self.mana.filledPiecesShown then 
         self.mana.timer=self.mana.timer+dt
         if self.mana.timer>self.meterMovementRate then --decrease health by 1 piece         
-            self.mana.filledPiecesCurrent=self.mana.filledPiecesCurrent-1
+            self.mana.filledPiecesShown=self.mana.filledPiecesShown-1
             self.mana.timer=0 --reset timer
         end
     end
@@ -64,7 +64,7 @@ function Meters:draw()
     )
 
     --fill meters with health/mana pieces to represent current health/mana
-    for i=1,self.health.filledPiecesCurrent+math.floor(self.health.filledPiecesCurrent/5) do 
+    for i=1,self.health.filledPiecesShown+math.floor(self.health.filledPiecesShown/5) do 
         if i%6~=0 then --skip every 6th piece to separate into segments
             love.graphics.draw(
                 self.health.spritePiece,
@@ -74,7 +74,7 @@ function Meters:draw()
             )
         end
     end
-    for i=1,self.mana.filledPiecesCurrent+math.floor(self.mana.filledPiecesCurrent/5) do 
+    for i=1,self.mana.filledPiecesShown+math.floor(self.mana.filledPiecesShown/5) do 
         if i%6~=0 then --skip every 6th piece to separate into segments
             love.graphics.draw(
                 self.mana.spritePiece,
@@ -89,6 +89,6 @@ end
 --updates the HUD's health and mana meters. Called by Player
 function Meters:updateMeterValues()
     --1 piece represents up to 2 health/mana
-    self.health.filledPiecesMax=math.ceil(Player.health.current/2)
-    self.mana.filledPiecesMax=math.ceil(Player.mana.current/2)
+    self.health.filledPieces=math.ceil(Player.health.current/2)
+    self.mana.filledPieces=math.ceil(Player.mana.current/2)
 end
