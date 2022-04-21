@@ -555,15 +555,15 @@ function Player:consumeSupply(_supply)
             self.particleSystems.health:emit(2)
             TimerState:after(0.1,function() self.particleSystems.health:emit(1) end)
             TimerState:after(0.2,function() self.particleSystems.health:emit(1) end)
-            TimerState:after(0.3,function() self.particleSystems.health:emit(1) end)
+            TimerState:after(0.3,function() self.particleSystems.health:emit(2) end)
         elseif _supply=='potion' then 
             self:updateHealthOrMana('mana',20)
-            self.particleSystems.mana:emit(3)
+            self.particleSystems.mana:emit(2)
             TimerState:after(0.1,function() self.particleSystems.mana:emit(2) end)
             TimerState:after(0.2,function() self.particleSystems.mana:emit(2) end)
             TimerState:after(0.3,function() self.particleSystems.mana:emit(2) end)
         end
-        -- Player:removeFromInventory(_supply,1)
+        Player:removeFromInventory(_supply,1)
         self.suppliesData.oscillation=0 --reset oscillation
     end)
 end

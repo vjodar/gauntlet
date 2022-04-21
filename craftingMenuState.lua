@@ -355,6 +355,7 @@ function CraftingMenuState:craft(_item)
     end
     failureDialog=string.sub(failureDialog,1,#failureDialog-1) --remove the last comma
 
+    --upon failure to craft, make player say the failureDialog, then return.
     if #failureDialog>6 then Player.dialog:say(failureDialog) return end 
 
     --at this point, they player has full quantities of all required items,
@@ -367,6 +368,7 @@ function CraftingMenuState:craft(_item)
     if _item=='potion' then --if potion, spawn 2 more (1 mushroom makes 3 potions)
         for i=1,2 do Items:spawn_item(Player.xPos,Player.yPos,_item) end 
     end
+    Dungeon.craftingTable.particles:emit(20) --particle effect
 
     self:updateCraftingOptions(_item) --update current craft options
 end

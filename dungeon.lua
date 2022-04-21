@@ -7,6 +7,10 @@ function Dungeon:load()
 
     self.roomsTable={} --holds all rooms in a dungeon
 
+    --will store the just the crafting table, as we need its reference in order
+    --to emit particles from it from within the Crafting Menu code
+    self.craftingTable={} 
+
     --choose a random starting room that's adjacent to the boss room
     local startRoomsTable={{3,4},{4,3},{4,5},{5,4}}
     self.startRoom=startRoomsTable[love.math.random(4)]

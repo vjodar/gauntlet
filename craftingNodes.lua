@@ -78,6 +78,7 @@ function CraftingNodes:load()
     self.particleSprites.grill=love.graphics.newImage('assets/nodes/crafting_grill_particle.png')
     self.particleSprites.sawmill=love.graphics.newImage('assets/nodes/crafting_sawmill_particle.png')
     self.particleSprites.spinning_wheel=love.graphics.newImage('assets/nodes/tree_particle.png')
+    self.particleSprites.crafting_table=love.graphics.newImage('assets/hero/mana_particle.png')
 
     self.particleOffsets={ --offsets to draw particles in correct area with respect to node
         furnace={x=0,y=-7},
@@ -127,6 +128,15 @@ function CraftingNodes:load()
     --currently no particle system for spinning wheel, so immediately stop
     self.particleSystems.spinning_wheel=love.graphics.newParticleSystem(self.particleSprites.spinning_wheel,50)
     self.particleSystems.spinning_wheel:stop()
+
+    self.particleSystems.crafting_table=love.graphics.newParticleSystem(self.particleSprites.crafting_table,100)
+    self.particleSystems.crafting_table:setParticleLifetime(0.2,2) --min and max lifespawn
+    self.particleSystems.crafting_table:setDirection(4.7) --shoot upward
+    self.particleSystems.crafting_table:setSpread(2) --in 120degree spread    
+    self.particleSystems.crafting_table:setSpeed(50,250) --min and max speed
+    self.particleSystems.crafting_table:setLinearDamping(3) --slow speed over time
+    self.particleSystems.crafting_table:setLinearAcceleration(0,50,0,100) --accelerate down
+    self.particleSystems.crafting_table:setSizes(1,0.5) --shrink over time
 
     self.dialogs={ --dialogs the player will say upon trying to craft without required item
         furnace='I need some Ore to smelt.',
@@ -298,20 +308,23 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
         --position origin is center of collider
         self.xPos,self.yPos=self.collider:getPosition()
 
+        --particle system
+        self.particles=CraftingNodes.particleSystems.crafting_table 
+
         --inset into entitiesTable for dynamic draw and update order
         table.insert(Entities.entitiesTable,node)
+
+        Dungeon.craftingTable=self --store reference in Dungeon's craftingTable
     end
 
     function node:update()
-        --TODO--------
-        --update animations and particles
-        --  maybe emit some particles upon crafting an item
-        --TODO--------
+        self.particles:update(dt) --update particle system
     end
 
     function node:draw()
         self.shadow:draw(self.xPos,self.yPos) --draw shadow first
         love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,1,1,self.xOffset,self.yOffset)
+        love.graphics.draw(self.particles,self.xPos,self.yPos-8) --draw particles
     end
 
     function node:nodeInteract()
