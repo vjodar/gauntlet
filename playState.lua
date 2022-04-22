@@ -67,7 +67,7 @@ function PlayState:draw()
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
 
-        Player.dialog:draw(Player.xPos,Player.yPos) --will probably move this later
+        UI:draw() --draw ui elements
     cam:detach()
     
     Hud:draw() --draw hud 

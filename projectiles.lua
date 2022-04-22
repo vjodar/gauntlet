@@ -77,7 +77,10 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         table.insert(Entities.entitiesTable,p) --insert into projectiles table
     end
 
-    function p:update()        
+    function p:update()
+        --if enemy has died while projectile is still traveling, destory projectile
+        if self.target.health.current==0 then return false end 
+        
         --calculate angle toward the target and set velocities such that
         --projectile will home in on target at a constant speed (self.speed)
         self.angle=math.atan2(
@@ -105,6 +108,8 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         if math.abs(self.xPos-self.target.xPos)<=self.targetWidth
         and math.abs(self.yPos-self.target.yPos)<=self.targetHeight
         then
+            --damage enemy
+            self.target:takeDamage(12)
             --knockback enemy
             self.target.collider:applyLinearImpulse(
                 self.xVel*self.knockback,self.yVel*self.knockback

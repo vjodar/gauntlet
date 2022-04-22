@@ -2,7 +2,7 @@ Player={}
 
 function Player:load()
     --setup player's physics collider and position, velocity vectors
-    self.collider=world:newBSGRectangleCollider(0,0,12,5,3)
+    self.collider=world:newBSGRectangleCollider(0,0,12,5,3) print(self.collider:getMass())
     self.xPos, self.yPos=self.collider:getPosition()
     self.xVel, self.yVel=self.collider:getLinearVelocity()
     self.collider:setLinearDamping(20) --apply increased 'friction'
@@ -31,6 +31,9 @@ function Player:load()
         self.xPos-21,self.yPos-1
     )
     self.collider.fixtures['magic']:setSensor(true)
+
+    --manually set collider's mass to ignore added shapes/fixtures
+    self.collider:setMass(0.09375)
 
     --sprites and animations
     self.spriteSheets={
@@ -486,11 +489,34 @@ end
 
 --fight the currently targeted enemy
 function Player:fightEnemy()
+    --if enemy died, disengage combat
+    if self.combatData.currentEnemy==nil then 
+        self.combatData.inCombat=false
+        self.animations.bow:pauseAtStart()
+        self.animations.staff:pauseAtStart()
+        camTarget=self 
+        return 
+    end
+
     --update camTarget to be the midpoint between player and enemy
     camTarget={
         xPos=((self.xPos+self.combatData.currentEnemy.xPos)*0.5),
         yPos=((self.yPos+self.combatData.currentEnemy.yPos)*0.5)
     }
+
+    --if enemy is too far, disengage combat
+    if math.abs(self.xPos-self.combatData.currentEnemy.xPos)>300
+        or math.abs(self.yPos-self.combatData.currentEnemy.yPos)>200
+    then 
+        self.combatData.inCombat=false
+        Player.combatData.prevEnemies={} --clear prevEnemies table
+        self.combatData.currentEnemy.state.isTargetted=false
+        self.combatData.currentEnemy=nil --remove currentEnemy from player data
+        self.animations.bow:pauseAtStart() --reset attack animations
+        self.animations.staff:pauseAtStart()
+        camTarget=self
+        return 
+    end
 
     --face player toward enemy
     if self.combatData.currentEnemy.xPos>self.xPos then 
@@ -501,19 +527,6 @@ function Player:fightEnemy()
     if self.equippedWeapon~='bow_t0' and self.equippedWeapon~='staff_t0' then 
         --set the shape to have collision
         self.collider.fixtures[self.state.facing]:setSensor(false)
-    end
-
-    --if enemy is too far from player, disengage combat
-    if math.abs(self.xPos-self.combatData.currentEnemy.xPos)>300
-        or math.abs(self.yPos-self.combatData.currentEnemy.yPos)>200
-    then 
-        self.combatData.inCombat=false 
-        Player.combatData.prevEnemies={} --clear prevEnemies table
-        self.combatData.currentEnemy=nil --remove currentEnemy from player data
-        self.animations.bow:pauseAtStart() --reset attack animations
-        self.animations.staff:pauseAtStart()
-        camTarget=self
-        return 
     end
 
     --Check LOS. If any obstructions are between player and enemy,
@@ -588,4 +601,8 @@ function Player:updateHealthOrMana(_which,_val)
         end
     end    
     Meters:updateMeterValues() --update the HUD
+end
+
+function Player:drawUIelements()
+    self.dialog:draw(self.xPos,self.yPos) --draw dialog
 end

@@ -14,6 +14,7 @@ require 'projectiles'
 require 'hud'
 require 'dialog'
 require 'protectionMagics'
+require 'ui'
 
 function love.load()
     --set pixelated look

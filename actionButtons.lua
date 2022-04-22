@@ -478,6 +478,7 @@ function ActionButtons:addActionButtonCombatInteract()
                     if Player.combatData.inCombat then 
                         Player.combatData.inCombat=false
                         Player.combatData.prevEnemies={} --clear prevEnemies table
+                        Player.combatData.currentEnemy.state.isTargetted=false
                         Player.combatData.currentEnemy=nil --remove currentEnemy from player data
                         --reset player attack animation
                         Player.animations.bow:pauseAtStart()
@@ -495,6 +496,9 @@ function ActionButtons:addActionButtonCombatInteract()
                 if button.state.buttonDuration<0.3 then --button TAP
                     --find a combat target for the player, is possible
                     Player.combatData.currentEnemy=self:getCombatTarget()
+                    if Player.combatData.currentEnemy~=nil then 
+                        Player.combatData.currentEnemy.state.isTargetted=true 
+                    end
                                 
                     button.state.buttonDuration=0 --reset buttonDuration
                 else
@@ -579,6 +583,8 @@ function ActionButtons:addActionButtonCombatInteract()
 
             --player is already in combat, switch to next target, if availble
             if Player.combatData.inCombat and #nearbyColliders>1 then 
+                --tell current enemy they're not being targetted anymore
+                Player.combatData.currentEnemy.state.isTargetted=false 
                 local switch=nil --stores the enemy to switch to
 
                 --Using the prevEnemies table, we can construct a 'history' of targets
