@@ -20,7 +20,7 @@ function Enemies:load()
 
     self.healthRGB={red=218/255,green=78/255,blue=56/255} --for drawing remaining health of enemy
 
-    self.sharedEnemyFunctions={} --functions shared by all enemies
+    self.sharedEnemyFunctions={} --common enemy functions
 
     self.sharedEnemyFunctions.updateHealthFunction=function(_enemy) --smoothly updates healthbar
         if _enemy.health.current<_enemy.health.currentShown then 
@@ -37,13 +37,72 @@ function Enemies:load()
         if _enemy.health.current==0 then _enemy.state.willDie=true end 
     end
 
-    self.sharedEnemyFunctions.die=function(_enemy) 
+    self.sharedEnemyFunctions.die=function(_enemy)         
+        _enemy:dropLoot() --drop loot
+
         --if player is still targeting enemy at this point, stop targeting it
         if Player.combatData.currentEnemy==_enemy then 
             Player.combatData.currentEnemy=nil 
         end 
         _enemy.collider:destroy() --destroy collider
         return false --return false to remove entity from game
+    end
+
+    self.sharedEnemyFunctions.dropLoot_t1=function(_enemy) 
+        for i=love.math.random(3),3 do --drop up to 3 shards
+            Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_shards')
+        end
+        if love.math.random(3)==1 then --1/3 chance to spawn a broken bow or staff
+            if Dungeon.nextBrokenItem==1 then 
+                Items:spawn_item(_enemy.xPos,_enemy.yPos,'broken_bow') 
+                Dungeon.nextBrokenItem=2
+            elseif Dungeon.nextBrokenItem==2 then 
+                Items:spawn_item(_enemy.xPos,_enemy.yPos,'broken_staff') 
+                Dungeon.nextBrokenItem=1
+            end
+        end
+        if love.math.random(3)==1 then --1/3 chance to spawn a fish
+            Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw')
+        end
+    end
+
+    self.sharedEnemyFunctions.dropLoot_t2=function(_enemy) 
+        for i=love.math.random(5),10 do --drop 5 to 10 shards
+            Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_shards')
+        end
+        if love.math.random(2)==1 then --1/2 chance to spawn a broken bow or staff
+            if Dungeon.nextBrokenItem==1 then 
+                Items:spawn_item(_enemy.xPos,_enemy.yPos,'broken_bow') 
+                Dungeon.nextBrokenItem=2
+            elseif Dungeon.nextBrokenItem==2 then 
+                Items:spawn_item(_enemy.xPos,_enemy.yPos,'broken_staff') 
+                Dungeon.nextBrokenItem=1
+            end
+        end
+        if love.math.random(3)==1 then --1/3 chance to spawn 2 fish
+            for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end            
+        end
+    end
+
+    self.sharedEnemyFunctions.dropLoot_t3=function(_enemy) 
+        for i=love.math.random(5),10 do --drop 5 to 10 shards
+            Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_shards')
+        end        
+        if Dungeon.nextBrokenItem==1 then --always spawn broken bow or staff
+            Items:spawn_item(_enemy.xPos,_enemy.yPos,'broken_bow') 
+            Dungeon.nextBrokenItem=2
+        elseif Dungeon.nextBrokenItem==2 then 
+            Items:spawn_item(_enemy.xPos,_enemy.yPos,'broken_staff') 
+            Dungeon.nextBrokenItem=1
+        end        
+        if _enemy.name=='demon_t3' then --spawn appropriate t3 weapon component
+            Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_orb')
+        elseif _enemy.name=='orc_t3' then 
+            Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_bowstring')
+        end
+        if love.math.random(2)==1 then --1/2 chance to spawn 3 fish
+            for i=1,3 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end         
+        end
     end
 end
 
@@ -126,14 +185,15 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
                 'fill',self.xPos-5,self.yPos-15,
-                self.health.currentShown*0.5,1)
+                self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
     enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage
-    enemy.die=Enemies.sharedEnemyFunctions.die 
+    enemy.dropLoot=Enemies.sharedEnemyFunctions.dropLoot_t1
+    enemy.die=Enemies.sharedEnemyFunctions.die
 
     enemy:load() --initialize enemy
 end
@@ -214,13 +274,14 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
                 'fill',self.xPos-5,self.yPos-15,
-                self.health.currentShown*0.5,1)
+                self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
     enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage
+    enemy.dropLoot=Enemies.sharedEnemyFunctions.dropLoot_t1
     enemy.die=Enemies.sharedEnemyFunctions.die 
 
     enemy:load() --initialize enemy
@@ -302,13 +363,14 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
                 'fill',self.xPos-5.5,self.yPos-21,
-                self.health.currentShown*0.5,1)
+                self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
     enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage
+    enemy.dropLoot=Enemies.sharedEnemyFunctions.dropLoot_t1
     enemy.die=Enemies.sharedEnemyFunctions.die 
 
     enemy:load() --initialize enemy
@@ -390,13 +452,14 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
                 'fill',self.xPos-12,self.yPos-19,
-                self.health.currentShown*0.5,1)
+                self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
     enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage
+    enemy.dropLoot=Enemies.sharedEnemyFunctions.dropLoot_t2
     enemy.die=Enemies.sharedEnemyFunctions.die 
 
     enemy:load() --initialize enemy
@@ -478,13 +541,14 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
                 'fill',self.xPos-12,self.yPos-24,
-                self.health.currentShown*0.5,1)
+                self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
     enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage
+    enemy.dropLoot=Enemies.sharedEnemyFunctions.dropLoot_t2
     enemy.die=Enemies.sharedEnemyFunctions.die 
 
     enemy:load() --initialize enemy
@@ -563,13 +627,14 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
                 'fill',self.xPos-12,self.yPos-21,
-                self.health.currentShown*0.5,1)
+                self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
     enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage
+    enemy.dropLoot=Enemies.sharedEnemyFunctions.dropLoot_t2
     enemy.die=Enemies.sharedEnemyFunctions.die 
 
     enemy:load() --initialize enemy
@@ -651,13 +716,14 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
                 'fill',self.xPos-24,self.yPos-31,
-                self.health.currentShown*0.5,1)
+                self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
     enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage
+    enemy.dropLoot=Enemies.sharedEnemyFunctions.dropLoot_t3
     enemy.die=Enemies.sharedEnemyFunctions.die 
 
     enemy:load() --initialize enemy
@@ -740,13 +806,14 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
                 'fill',self.xPos-24,self.yPos-31,
-                self.health.currentShown*0.5,1)
+                self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
-    enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage
+    enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage    
+    enemy.dropLoot=Enemies.sharedEnemyFunctions.dropLoot_t3
     enemy.die=Enemies.sharedEnemyFunctions.die 
 
     enemy:load() --initialize enemy

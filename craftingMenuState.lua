@@ -365,9 +365,6 @@ function CraftingMenuState:craft(_item)
     end
     
     Items:spawn_item(Player.xPos,Player.yPos,_item) --spawn crafted item
-    if _item=='potion' then --if potion, spawn 2 more (1 mushroom makes 3 potions)
-        for i=1,2 do Items:spawn_item(Player.xPos,Player.yPos,_item) end 
-    end
     Dungeon.craftingTable.particles:emit(20) --particle effect
 
     self:updateCraftingOptions(_item) --update current craft options

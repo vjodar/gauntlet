@@ -296,7 +296,10 @@ function ActionButtons:addActionButtonProtectionMagics()
         physical=love.graphics.newImage('assets/hud/action_buttons/hud_action_protection_physical.png'),
         magical=love.graphics.newImage('assets/hud/action_buttons/hud_action_protection_magical.png')
     }
-    button.grid=anim8.newGrid(24,24,button.spriteSheet.physical:getWidth(),button.spriteSheet.physical:getHeight())
+    button.grid=anim8.newGrid(
+        24,24,button.spriteSheet.physical:getWidth(),
+        button.spriteSheet.physical:getHeight()
+    )
     button.animations={}
     button.animations.forward=anim8.newAnimation(
         button.grid('1-19',1), 0.015,
@@ -341,19 +344,21 @@ function ActionButtons:addActionButtonProtectionMagics()
                 and button.state.holdOnCooldown==false
                 and button.state.buttonDuration>=0.3 
             then 
-                --if player is not currently using protection magics, then activate.
-                --otherwise deactivate
+                --if player is not currently using protection magics,
+                --activate and give symbols collision.
                 if not Player.state.protectionActivated then 
                     Player.protectionMagics:activate(self.state.currentSpell,Player)
                     Player.collider.fixtures['magic']:setSensor(false)
+
+                --otherwise, deactivate and remove collision.
                 elseif Player.state.protectionActivated then 
                     Player.protectionMagics:deactivate()
                     Player.collider.fixtures['magic']:setSensor(true)
                 end
                 
-                --after button hold, don't listen for any more holds until 0.3s
+                --after button hold, don't listen for any more holds until after
+                --player releases button. (to prevent rapidly toggling on/off)
                 button.state.holdOnCooldown=true
-                TimerState:after(0.3,function() button.state.holdOnCooldown=false end)
             end
 
             if releasedKey==controls.btnRight  then
@@ -381,6 +386,7 @@ function ActionButtons:addActionButtonProtectionMagics()
                 else 
                     --This is a release after a button HOLD, not a button TAP
                     button.state.buttonDuration=0
+                    button.state.holdOnCooldown=false --restore HOLD listening
                 end
             end
         else --playState no longer accepts input; reset buttonDuration to prevent bugs
@@ -584,7 +590,9 @@ function ActionButtons:addActionButtonCombatInteract()
             --player is already in combat, switch to next target, if availble
             if Player.combatData.inCombat and #nearbyColliders>1 then 
                 --tell current enemy they're not being targetted anymore
-                Player.combatData.currentEnemy.state.isTargetted=false 
+                if Player.combatData.currentEnemy~=nil then 
+                    Player.combatData.currentEnemy.state.isTargetted=false 
+                end
                 local switch=nil --stores the enemy to switch to
 
                 --Using the prevEnemies table, we can construct a 'history' of targets

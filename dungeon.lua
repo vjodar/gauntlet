@@ -19,6 +19,10 @@ function Dungeon:load()
     --will also be used to alternate demi boss spawns
     self.nextDemiBoss=love.math.random(2)
 
+    --randomly choose what broken item will spawn first (bow or staff)
+    --will also be used to alternate between next broken item to spawn
+    self.nextBrokenItem=love.math.random(2)
+
     Rooms:newRoom({self.startRoom[1],self.startRoom[2]}) --create starting room
     
     --populate starting room with crafting nodes

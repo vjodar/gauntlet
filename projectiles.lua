@@ -43,6 +43,17 @@ function Projectiles:load()
         staff_t2=0.2,
         staff_t3=0.3
     }
+
+    self.damageValues={
+        bow_t0=5,
+        bow_t1=10,
+        bow_t2=20,
+        bow_t3=30,
+        staff_t0=5,
+        staff_t1=10,
+        staff_t2=20,
+        staff_t3=30
+    }
 end 
 
 --Create and launch a new projectile at a given target entity
@@ -63,6 +74,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         self.rotation=nil --used to rotate arrows to target
         self.speed=240 --speed of the projectile
         self.knockback=Projectiles.knockbackValues[_type]
+        self.damage=Projectiles.damageValues[_type]
 
         --how quickly the sprite will lower to the ground after being launched
         --the closer the distance to the target and the more negative the yOffset,
@@ -109,7 +121,10 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         and math.abs(self.yPos-self.target.yPos)<=self.targetHeight
         then
             --damage enemy
-            self.target:takeDamage(12)
+            self.target:takeDamage(
+                --minimum of 1 damage
+                math.max((self.damage+love.math.random(-5,5)),1)
+            )
             --knockback enemy
             self.target.collider:applyLinearImpulse(
                 self.xVel*self.knockback,self.yVel*self.knockback

@@ -87,17 +87,17 @@ function PlayState:start()
     --testing----------------------------------
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
     print('spawning enemy')
-    Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
+    -- Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
 
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t2')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t2')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
-    Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
-    Items:spawn_item(playerStartX,playerStartY,'potion')
+    -- Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
+    -- Items:spawn_item(playerStartX,playerStartY,'potion')
     -- Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')
     -- Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')
     -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'arcane_shards') end
