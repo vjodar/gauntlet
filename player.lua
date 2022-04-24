@@ -2,7 +2,7 @@ Player={}
 
 function Player:load()
     --setup player's physics collider and position, velocity vectors
-    self.collider=world:newBSGRectangleCollider(0,0,12,5,3) print(self.collider:getMass())
+    self.collider=world:newBSGRectangleCollider(0,0,12,5,3)
     self.xPos, self.yPos=self.collider:getPosition()
     self.xVel, self.yVel=self.collider:getLinearVelocity()
     self.collider:setLinearDamping(20) --apply increased 'friction'
@@ -197,7 +197,6 @@ function Player:load()
     self.state.facing='right'
     self.state.moving=false
     self.state.movingHorizontally=false 
-    self.state.movingVertially=false 
     self.state.isNearNode=false 
     self.state.protectionActivated=false --true when protection magics activated
 
@@ -230,7 +229,6 @@ function Player:update()
     --default movement states to idle
     self.state.moving=false 
     self.state.movingHorizontally=false 
-    self.state.movingVertically=false 
 
     --default sprite colliders to be sensors (have no collision)
     self.collider.fixtures[self.state.facing]:setSensor(true)
@@ -354,7 +352,6 @@ function Player:move()
             self.yVel=self.yVel-self.moveSpeed*dt
         end 
         self.state.moving=true
-        self.state.movingVertially=true
     end
     if love.keyboard.isDown(controls.dirDown) then 
         --accomodate for diagonal speed
@@ -364,7 +361,6 @@ function Player:move()
             self.yVel=self.yVel+self.moveSpeed*dt
         end 
         self.state.moving=true
-        self.state.movingVertially=true 
     end
 
     --apply updated velocities to collider

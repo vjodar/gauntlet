@@ -63,10 +63,9 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        -- world:draw() --draws all physics colliders
+        world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
-        Dungeon:drawForeground() --draw room's foreground features (these appear in front of entities)
-
+        Dungeon:drawForeground() --draw room's foreground features 
         UI:draw() --draw ui elements
     cam:detach()
     
@@ -87,7 +86,14 @@ function PlayState:start()
     --testing----------------------------------
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
     print('spawning enemy')
-    -- Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
+    Enemies.enemySpawner.t1[1](playerStartX,playerStartY)
+    Enemies.enemySpawner.t1[2](playerStartX,playerStartY)
+    Enemies.enemySpawner.t1[3](playerStartX,playerStartY)
+    Enemies.enemySpawner.t2[1](playerStartX,playerStartY)
+    Enemies.enemySpawner.t2[2](playerStartX,playerStartY)
+    Enemies.enemySpawner.t2[3](playerStartX,playerStartY)
+    Enemies.enemySpawner.t3[1](playerStartX,playerStartY)
+    Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t2')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t2')
