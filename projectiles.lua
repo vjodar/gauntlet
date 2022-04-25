@@ -10,6 +10,10 @@ function Projectiles:load()
     self.sprites.staff_t2=love.graphics.newImage('assets/projectiles/weapon_staff_t2_projectile.png')
     self.sprites.bow_t3=self.sprites.bow_t1
     self.sprites.staff_t3=love.graphics.newImage('assets/projectiles/weapon_staff_t3_projectile.png')
+    self.sprites.demon_t3=love.graphics.newImage('assets/projectiles/demon_t3_projectile.png')
+    self.sprites.orc_t3=self.sprites.bow_t1
+    self.sprites.mage_t2=love.graphics.newImage('assets/projectiles/mage_t2_projectile.png')
+    self.sprites.orc_t2=love.graphics.newImage('assets/projectiles/orc_t2_projectile.png')
 
     self.centers={ --used to draw sprites at their center
         bow_t0={x=3,y=3},
@@ -19,7 +23,11 @@ function Projectiles:load()
         staff_t0={x=3,y=3},
         staff_t1={x=3,y=3},
         staff_t2={x=4,y=4},
-        staff_t3={x=6,y=6}
+        staff_t3={x=6,y=6},
+        demon_t3={x=5,y=5},
+        orc_t3={x=10.5,y=3},
+        orc_t2={x=10.5,y=2.5},
+        mage_t2={x=4,y=4},
     }
 
     self.yOffsets={ --used to offset sprites so they are 'above' the ground
@@ -30,7 +38,11 @@ function Projectiles:load()
         staff_t0=-8,
         staff_t1=-22,
         staff_t2=-22,
-        staff_t3=-44
+        staff_t3=-44,
+        demon_t3=-11,
+        orc_t3=-15,
+        orc_t2=-6,
+        mage_t2=-17,
     }
 
     self.knockbackValues={
@@ -41,7 +53,11 @@ function Projectiles:load()
         staff_t0=0.05,
         staff_t1=0.1,
         staff_t2=0.2,
-        staff_t3=0.3
+        staff_t3=0.3,
+        demon_t3=0.1,
+        orc_t3=0.1,
+        orc_t2=0.1,
+        mage_t2=0.1,
     }
 
     self.damageValues={
@@ -52,7 +68,26 @@ function Projectiles:load()
         staff_t0=5,
         staff_t1=10,
         staff_t2=20,
-        staff_t3=30
+        staff_t3=30,
+        demon_t3=1,
+        orc_t3=1,
+        orc_t2=1,
+        mage_t2=1,
+    }
+
+    self.projectileSpeeds={
+        bow_t0=240,
+        bow_t1=240,
+        bow_t2=240,
+        bow_t3=240,
+        staff_t0=240,
+        staff_t1=240,
+        staff_t2=240,
+        staff_t3=240,
+        demon_t3=240,
+        orc_t3=240,
+        orc_t2=180,
+        mage_t2=240,
     }
 end 
 
@@ -72,7 +107,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         self.targetHeight=self.target.shadow.h
         self.angle,self.xVel,self.yVel=0,0,0
         self.rotation=nil --used to rotate arrows to target
-        self.speed=240 --speed of the projectile
+        self.speed=Projectiles.projectileSpeeds[_type] --speed of the projectile
         self.knockback=Projectiles.knockbackValues[_type]
         self.damage=Projectiles.damageValues[_type]
 
@@ -84,7 +119,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
             ((self.target.xPos-self.xPos)^2+(self.target.yPos-self.yPos)^2)^0.5
         )
 
-        self.shadow=Shadows:newShadow('projectile_'.._type) --shadow
+        self.shadow=Shadows:newShadow('projectile_'.._type) --shadow (NOT FOLLOWING STANDARDS!)
 
         table.insert(Entities.entitiesTable,p) --insert into projectiles table
     end
@@ -107,7 +142,12 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         self.yPos=self.yPos+self.yVel*dt
 
         --rotate only if projectile is an arrow
-        if self.type=='bow_t1' or self.type=='bow_t2' or self.type=='bow_t3' then 
+        if self.type=='bow_t1' 
+        or self.type=='bow_t2' 
+        or self.type=='bow_t3' 
+        or self.type=='orc_t3' 
+        or self.type=='orc_t2' 
+        then 
             self.rotation=self.angle 
         end
 

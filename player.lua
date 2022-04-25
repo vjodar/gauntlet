@@ -10,7 +10,7 @@ function Player:load()
     self.collider:setCollisionClass('player')
     self.collider:setObject(self) --attach collider to this object
     self.moveSpeed=2400 --40 at 60fps
-    self.moveSpeedDiag=self.moveSpeed*0.61
+    self.moveSpeedDiag=self.moveSpeed*0.3
     self.scaleX=1 --used to flip sprites horizontally
 
     --colliders that will be used for sprites that pop in and out of game (like weapons)
@@ -601,4 +601,8 @@ end
 
 function Player:drawUIelements()
     self.dialog:draw(self.xPos,self.yPos) --draw dialog
+end
+
+function Player:takeDamage(_val)
+    self:updateHealthOrMana('health',-_val)
 end

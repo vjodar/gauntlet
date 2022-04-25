@@ -58,6 +58,10 @@ function Shadows:load()
     self.projectile_staff_t1=self.projectile_bow_t0
     self.projectile_staff_t2=love.graphics.newImage('assets/shadows/shadow_staff_t2_projectile.png') --6,4
     self.projectile_staff_t3=love.graphics.newImage('assets/shadows/shadow_potion.png') --10,6
+    self.projectile_demon_t3=self.weapon_bow_t1 --8,6
+    self.projectile_orc_t3=self.projectile_bow_t1
+    self.projectile_orc_t2=love.graphics.newImage('assets/shadows/shadow_orc_t2_projectile.png')
+    self.projectile_mage_t2=self.projectile_staff_t2
 end
 
 function Shadows:newShadow(_type)
