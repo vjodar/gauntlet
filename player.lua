@@ -333,16 +333,22 @@ end
 
 function Player:move()
     if love.keyboard.isDown(controls.dirLeft) then 
-        self.xVel=self.xVel-self.moveSpeed*dt
-        self.state.facing='left'
-        self.state.moving=true
-        self.state.movingHorizontally=true
+        --can't move left and right at the same time
+        if not love.keyboard.isDown(controls.dirRight) then 
+            self.xVel=self.xVel-self.moveSpeed*dt
+            self.state.facing='left'
+            self.state.moving=true
+            self.state.movingHorizontally=true
+        end
     end
     if love.keyboard.isDown(controls.dirRight) then 
-        self.xVel=self.xVel+self.moveSpeed*dt 
-        self.state.facing='right'
-        self.state.moving=true
-        self.state.movingHorizontally=true
+        --can't move left and right at the same time
+        if not love.keyboard.isDown(controls.dirLeft) then 
+            self.xVel=self.xVel+self.moveSpeed*dt 
+            self.state.facing='right'
+            self.state.moving=true
+            self.state.movingHorizontally=true
+        end
     end
     if love.keyboard.isDown(controls.dirUp) then 
         --accomodate for diagonal speed
