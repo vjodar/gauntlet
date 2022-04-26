@@ -8,6 +8,7 @@ function Player:load()
     self.collider:setLinearDamping(20) --apply increased 'friction'
     self.collider:setFixedRotation(true) --collider won't spin/rotate
     self.collider:setCollisionClass('player')
+    self.collider:setRestitution(0)
     self.collider:setObject(self) --attach collider to this object
     self.moveSpeed=2400 --40 at 60fps
     self.moveSpeedDiag=self.moveSpeed*0.3
@@ -589,7 +590,7 @@ function Player:updateHealthOrMana(_which,_val)
         self.health.current=self.health.current+_val
         if self.health.current>self.health.max then 
             self.health.current=self.health.max 
-        elseif self.health.current<0 then 
+        elseif self.health.current<=0 then 
             self.health.current=0
             Player.dialog:say("I'm dead")
         end
@@ -597,7 +598,7 @@ function Player:updateHealthOrMana(_which,_val)
         self.mana.current=self.mana.current+_val 
         if self.mana.current>self.mana.max then 
             self.mana.current=self.mana.max  
-        elseif self.mana.current<0 then 
+        elseif self.mana.current<=0 then 
             self.mana.current=0
             Player.dialog:say('Out of mana')
         end
@@ -609,6 +610,12 @@ function Player:drawUIelements()
     self.dialog:draw(self.xPos,self.yPos) --draw dialog
 end
 
-function Player:takeDamage(_val)
+--player takes some damage depending on the attackType(melee or projectile),
+--damageType(physical or magical), knockback, and angle of the hit.
+function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
     self:updateHealthOrMana('health',-_val)
+
+    self.collider:applyLinearImpulse( --apply knockback
+        math.cos(_angle)*_knockback*dt,math.sin(_angle)*_knockback*dt
+    )
 end

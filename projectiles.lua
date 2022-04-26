@@ -46,18 +46,18 @@ function Projectiles:load()
     }
 
     self.knockbackValues={
-        bow_t0=0.05,
-        bow_t1=0.1,
-        bow_t2=0.2,
-        bow_t3=0.3,
-        staff_t0=0.05,
-        staff_t1=0.1,
-        staff_t2=0.2,
-        staff_t3=0.3,
-        demon_t3=0.1,
-        orc_t3=0.1,
-        orc_t2=0.1,
-        mage_t2=0.1,
+        bow_t0=600,
+        bow_t1=600,
+        bow_t2=600,
+        bow_t3=600,
+        staff_t0=600,
+        staff_t1=600,
+        staff_t2=600,
+        staff_t3=600,
+        demon_t3=600,
+        orc_t3=600,
+        orc_t2=600,
+        mage_t2=600,
     }
 
     self.damageValues={
@@ -89,6 +89,21 @@ function Projectiles:load()
         orc_t2=180,
         mage_t2=240,
     }
+
+    self.damageTypes={
+        bow_t0='physical',
+        bow_t1='physical',
+        bow_t2='physical',
+        bow_t3='physical',
+        staff_t0='physical',
+        staff_t1='magical',
+        staff_t2='magical',
+        staff_t3='magical',
+        demon_t3='magical',
+        orc_t3='physical',
+        orc_t2='physical',
+        mage_t2='magical',
+    }
 end 
 
 --Create and launch a new projectile at a given target entity
@@ -110,6 +125,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         self.speed=Projectiles.projectileSpeeds[_type] --speed of the projectile
         self.knockback=Projectiles.knockbackValues[_type]
         self.damage=Projectiles.damageValues[_type]
+        self.damageType=Projectiles.damageTypes[_type]
 
         --how quickly the sprite will lower to the ground after being launched
         --the closer the distance to the target and the more negative the yOffset,
@@ -141,7 +157,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         self.xPos=self.xPos+self.xVel*dt
         self.yPos=self.yPos+self.yVel*dt
 
-        --rotate only if projectile is an arrow
+        --rotate only if projectile is an arrow or spear
         if self.type=='bow_t1' 
         or self.type=='bow_t2' 
         or self.type=='bow_t3' 
@@ -160,14 +176,9 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         if math.abs(self.xPos-self.target.xPos)<=self.targetWidth
         and math.abs(self.yPos-self.target.yPos)<=self.targetHeight
         then
-            --damage enemy
-            self.target:takeDamage(
-                --minimum of 1 damage
+            self.target:takeDamage( --damage and knockback target
+                'projectile',self.damageType,self.knockback,self.angle,
                 math.max((self.damage+love.math.random(-5,5)),1)
-            )
-            --knockback enemy
-            self.target.collider:applyLinearImpulse(
-                self.xVel*self.knockback,self.yVel*self.knockback
             )
             return false --remove projectile from game
         end

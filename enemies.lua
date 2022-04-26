@@ -32,9 +32,17 @@ function Enemies:load()
         end
     end
 
-    self.sharedEnemyFunctions.takeDamage=function(_enemy,_val) --enemy takes some damage
+    --enemy takes some damage depending on the
+    self.sharedEnemyFunctions.takeDamage=function(
+        _enemy,_attackType,_damageType,_knockback,_angle,_val
+    ) 
         _enemy.health.current=math.max(_enemy.health.current-_val,0) --can't be lower than 0
         if _enemy.health.current==0 then _enemy.state.willDie=true end 
+
+        --apply knockback
+        _enemy.collider:applyLinearImpulse(
+            math.cos(_angle)*_knockback*dt,math.sin(_angle)*_knockback*dt
+        )
     end
 
     self.sharedEnemyFunctions.die=function(_enemy)         
@@ -273,8 +281,7 @@ function Enemies:load()
 
     --checks if player is within Line of Sight and in range of enemy,
     --update enemy states accordingly.
-    --specifically for ranged enemies.
-    self.sharedEnemyFunctions.checkTargetPositionRanged=function(_enemy)              
+    self.sharedEnemyFunctions.checkTargetPosition=function(_enemy)              
         if #world:queryLine( --check if player is within LOS
             _enemy.xPos,_enemy.yPos,Player.xPos,Player.yPos,
             {'outerWall','innerWall','craftingNode'}
@@ -332,6 +339,49 @@ function Enemies:load()
             _enemy.animations.combat:resume()
         end
     end
+
+    self.sharedEnemyFunctions.enterCombatMelee=function(_enemy) --combat for melee enemies
+        if _enemy.xPos<Player.xPos then _enemy.state.facing='right'
+        else _enemy.state.facing='left' end 
+        if not _enemy.state.attackOnCooldown then
+            _enemy.currentAnim=_enemy.animations.combat 
+
+            local angle=math.atan2( --calculate launch angle
+                (Player.yPos-_enemy.yPos), --y distance component
+                (Player.xPos-_enemy.xPos)  --x distance component
+            )
+            _enemy.collider:applyLinearImpulse( --lunge toward player
+                math.cos(angle)*_enemy.state.moveSpeed*8*dt,
+                math.sin(angle)*_enemy.state.moveSpeed*8*dt
+            )
+
+            --put attack on cooldown for 1.35s
+            _enemy.state.attackOnCooldown=true
+            TimerState:after(1.35,function() 
+                _enemy.state.attackOnCooldown=false
+                _enemy.state.dealtDamageThisAttack=false
+            end)
+    
+            _enemy.animations.combat:resume()
+        else 
+            --if attack is still on cooldown, continue approaching target
+            _enemy.state.inCombat=false 
+            _enemy.state.approachingTarget=true
+        end
+        if _enemy.collider:enter('player') then 
+            --if player hasn't already been hit this attack cycle
+            if _enemy.state.dealtDamageThisAttack==false then 
+                _enemy.state.dealtDamageThisAttack=true
+                --damage player
+                Player:takeDamage(
+                    -- _attackType,_damageType,_knockback,_angle,_val
+                    'melee','physical',600, --test knockback
+                    math.atan2((Player.yPos-_enemy.yPos),(Player.xPos-_enemy.xPos)),
+                    1 --test damage
+                )
+            end
+        end
+    end
 end
 
 --holds spawn functions for each tier of enemy
@@ -349,6 +399,8 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
+        self.collider:setBullet(true)
+        self.collider:setRestitution(0.2)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
@@ -357,6 +409,14 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
+        self.animations.combat=anim8.newAnimation(
+            self.grid(6,1), 0.675,
+            function() --onLoop
+                self.animations.combat:pauseAtStart()
+                self.currentAnim=self.animations.idle
+                self.state.inCombat=false 
+            end
+        )
         self.currentAnim=self.animations.idle 
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('tiny') --shadow
@@ -378,6 +438,11 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
+        self.state.attackRange={x=25,y=15}
+        self.state.aggroRange={x=150,y=112}
+        --true when enemy has damaged player. This is to prevent the player colliding
+        --again after already being hit by the enemy's attack
+        self.state.dealtDamageThisAttack=false 
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -415,8 +480,13 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
 
         if Player.health.current==0 then self:wanderingAI() return end
 
+        --check if player is in range and LOS of enemy, update state accordingly
+        self:checkTargetPosition() 
+
         if self.state.inCombat then 
-            --combat
+            self:enterCombatMelee()            
+        elseif self.state.approachingTarget then 
+            self:approachTarget()
         else 
             self:wanderingAI()
         end
@@ -449,6 +519,9 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
     enemy.move=Enemies.sharedEnemyFunctions.move 
     enemy.setNewMoveTarget=Enemies.sharedEnemyFunctions.setNewMoveTarget 
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI 
+    enemy.enterCombatMelee=Enemies.sharedEnemyFunctions.enterCombatMelee
+    enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
+    enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
     enemy:load() --initialize enemy
 end
@@ -465,6 +538,8 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
+        self.collider:setBullet(true) --won't phase through player
+        self.collider:setRestitution(0.2)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
@@ -473,6 +548,14 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
+        self.animations.combat=anim8.newAnimation(
+            self.grid(6,1), 0.675,
+            function() --onLoop
+                self.animations.combat:pauseAtStart()
+                self.currentAnim=self.animations.idle
+                self.state.inCombat=false 
+            end
+        )
         self.currentAnim=self.animations.idle 
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('tiny') --shadow
@@ -494,6 +577,11 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
+        self.state.attackRange={x=25,y=15}
+        self.state.aggroRange={x=150,y=112}
+        --true when enemy has damaged player. This is to prevent the player colliding
+        --again after already being hit by the enemy's attack
+        self.state.dealtDamageThisAttack=false 
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -530,8 +618,13 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
 
         if Player.health.current==0 then self:wanderingAI() return end
 
+        --check if player is in range and LOS of enemy, update state accordingly
+        self:checkTargetPosition() 
+
         if self.state.inCombat then 
-            --combat
+            self:enterCombatMelee()            
+        elseif self.state.approachingTarget then 
+            self:approachTarget()
         else 
             self:wanderingAI()
         end
@@ -564,6 +657,9 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
     enemy.move=Enemies.sharedEnemyFunctions.move 
     enemy.setNewMoveTarget=Enemies.sharedEnemyFunctions.setNewMoveTarget 
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI 
+    enemy.enterCombatMelee=Enemies.sharedEnemyFunctions.enterCombatMelee
+    enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
+    enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
     enemy:load() --initialize enemy
 end
@@ -580,6 +676,8 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
+        self.collider:setBullet(true) --wont phase through player
+        self.collider:setRestitution(0.2)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
@@ -588,6 +686,14 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
+        self.animations.combat=anim8.newAnimation(
+            self.grid(5,1), 0.675,
+            function() --onLoop
+                self.animations.combat:pauseAtStart()
+                self.currentAnim=self.animations.idle
+                self.state.inCombat=false 
+            end
+        )
         self.currentAnim=self.animations.idle 
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('small') --shadow
@@ -609,6 +715,11 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
+        self.state.attackRange={x=25,y=15}
+        self.state.aggroRange={x=150,y=112}
+        --true when enemy has damaged player. This is to prevent the player colliding
+        --again after already being hit by the enemy's attack
+        self.state.dealtDamageThisAttack=false 
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -646,8 +757,13 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
 
         if Player.health.current==0 then self:wanderingAI() return end
 
+        --check if player is in range and LOS of enemy, update state accordingly
+        self:checkTargetPosition() 
+
         if self.state.inCombat then 
-            --combat
+            self:enterCombatMelee()            
+        elseif self.state.approachingTarget then 
+            self:approachTarget()
         else 
             self:wanderingAI()
         end
@@ -680,6 +796,9 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
     enemy.move=Enemies.sharedEnemyFunctions.move 
     enemy.setNewMoveTarget=Enemies.sharedEnemyFunctions.setNewMoveTarget 
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI 
+    enemy.enterCombatMelee=Enemies.sharedEnemyFunctions.enterCombatMelee
+    enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
+    enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
     enemy:load() --initialize enemy
 end
@@ -778,7 +897,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         if Player.health.current==0 then self:wanderingAI() return end
 
         --check if player is in range and LOS of enemy, update state accordingly
-        self:checkTargetPositionRanged() --specifically for ranged enemies
+        self:checkTargetPosition() 
 
         if self.state.inCombat then 
             self:enterCombatRanged()
@@ -818,7 +937,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI 
     enemy.enterCombatRanged=Enemies.sharedEnemyFunctions.enterCombatRanged
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
-    enemy.checkTargetPositionRanged=Enemies.sharedEnemyFunctions.checkTargetPositionRanged
+    enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
     enemy:load() --initialize enemy
 end
@@ -835,6 +954,8 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.collider:setLinearDamping(20)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
+        self.collider:setBullet(true) --won't phase through player
+        self.collider:setRestitution(0.2)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
@@ -843,6 +964,14 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
+        self.animations.combat=anim8.newAnimation(
+            self.grid('9-17',1), 0.075,
+            function() --onLoop
+                self.animations.combat:pauseAtStart()
+                self.currentAnim=self.animations.idle
+                self.state.inCombat=false 
+            end
+        )
         self.currentAnim=self.animations.idle 
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('small') --shadow
@@ -856,6 +985,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.state.movingHorizontally=false 
         self.state.idle=true 
         self.state.inCombat=false 
+        self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=700
@@ -864,6 +994,11 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
+        self.state.attackRange={x=40,y=30}
+        self.state.aggroRange={x=150,y=112}
+        --true when enemy has damaged player. This is to prevent the player colliding
+        --again after already being hit by the enemy's attack
+        self.state.dealtDamageThisAttack=false 
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -901,8 +1036,13 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
 
         if Player.health.current==0 then self:wanderingAI() return end
 
+        --check if player is in range and LOS of enemy, update state accordingly
+        self:checkTargetPosition() 
+
         if self.state.inCombat then 
-            --combat
+            self:enterCombatMelee()            
+        elseif self.state.approachingTarget then 
+            self:approachTarget()
         else 
             self:wanderingAI()
         end
@@ -935,6 +1075,9 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
     enemy.move=Enemies.sharedEnemyFunctions.move 
     enemy.setNewMoveTarget=Enemies.sharedEnemyFunctions.setNewMoveTarget 
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI 
+    enemy.enterCombatMelee=Enemies.sharedEnemyFunctions.enterCombatMelee
+    enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
+    enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
     enemy:load() --initialize enemy
 end
@@ -1034,7 +1177,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         if Player.health.current==0 then self:wanderingAI() return end
 
         --check if player is in range and LOS of enemy, update state accordingly
-        self:checkTargetPositionRanged() --specifically for ranged enemies
+        self:checkTargetPosition() 
 
         if self.state.inCombat then 
             self:enterCombatRanged()
@@ -1074,7 +1217,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI 
     enemy.enterCombatRanged=Enemies.sharedEnemyFunctions.enterCombatRanged
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
-    enemy.checkTargetPositionRanged=Enemies.sharedEnemyFunctions.checkTargetPositionRanged
+    enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
     enemy:load() --initialize enemy
 end
@@ -1174,7 +1317,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         if Player.health.current==0 then self:wanderingAI() return end
 
         --check if player is in range and LOS of enemy, update state accordingly
-        self:checkTargetPositionRanged() --specifically for ranged enemies
+        self:checkTargetPosition() 
 
         if self.state.inCombat then 
             self:enterCombatRanged()
@@ -1214,7 +1357,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI 
     enemy.enterCombatRanged=Enemies.sharedEnemyFunctions.enterCombatRanged
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
-    enemy.checkTargetPositionRanged=Enemies.sharedEnemyFunctions.checkTargetPositionRanged
+    enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
     enemy:load() --initialize enemy
 end
@@ -1314,7 +1457,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         if Player.health.current==0 then self:wanderingAI() return end
 
         --check if player is in range and LOS of enemy, update state accordingly
-        self:checkTargetPositionRanged() --specifically for ranged enemies
+        self:checkTargetPosition() 
 
         if self.state.inCombat then 
             self:enterCombatRanged()
@@ -1354,7 +1497,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI
     enemy.enterCombatRanged=Enemies.sharedEnemyFunctions.enterCombatRanged
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
-    enemy.checkTargetPositionRanged=Enemies.sharedEnemyFunctions.checkTargetPositionRanged
+    enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
     enemy:load() --initialize enemy
 end
