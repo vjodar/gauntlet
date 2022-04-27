@@ -41,7 +41,7 @@ function Enemies:load()
 
         --apply knockback
         _enemy.collider:applyLinearImpulse(
-            math.cos(_angle)*_knockback*dt,math.sin(_angle)*_knockback*dt
+            math.cos(_angle)*_knockback,math.sin(_angle)*_knockback
         )
     end
 
@@ -351,8 +351,8 @@ function Enemies:load()
                 (Player.xPos-_enemy.xPos)  --x distance component
             )
             _enemy.collider:applyLinearImpulse( --lunge toward player
-                math.cos(angle)*_enemy.state.moveSpeed*4*dt,
-                math.sin(angle)*_enemy.state.moveSpeed*4*dt
+                math.cos(angle)*_enemy.state.moveSpeed*0.067,
+                math.sin(angle)*_enemy.state.moveSpeed*0.067
             )
 
             --put attack on cooldown for 1.35s
@@ -371,10 +371,10 @@ function Enemies:load()
         if _enemy.collider:enter('player') or _enemy.collider:exit('player') then 
             --if player hasn't already been hit this attack cycle
             if _enemy.state.dealtDamageThisAttack==false then 
-                _enemy.state.dealtDamageThisAttack=true print('hit!')
+                _enemy.state.dealtDamageThisAttack=true
                 --damage player
                 Player:takeDamage(                    
-                    'melee','physical',600, --test knockback
+                    'melee','physical',30, --test knockback
                     math.atan2((Player.yPos-_enemy.yPos),(Player.xPos-_enemy.xPos)),
                     1 --test damage
                 )
@@ -399,7 +399,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true)
-        self.collider:setRestitution(0.1) print(self.collider:getMass())
+        self.collider:setRestitution(0.1)
         self.collider:setMass(0.06)
         self.collider:setObject(self) --attach collider to this object
 

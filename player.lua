@@ -616,15 +616,17 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
     if self.state.protectionActivated 
     and ActionButtons.protectionMagics.state.currentSpell==_damageType 
     then 
-        if _attackType=='melee' then --greatly reduce knockback from melee attacks
-            self.collider:setLinearVelocity(0,0)
+        if _attackType=='projectile' then --greatly reduce knockback from ranged attacks
+            self.collider:applyLinearImpulse( --apply knockback
+                math.cos(_angle)*_knockback*0.1,math.sin(_angle)*_knockback*0.1
+            )  
         end
         print('protected')
-        return
-    end 
 
-    self:updateHealthOrMana('health',-_val)
-    self.collider:applyLinearImpulse( --apply knockback
-        math.cos(_angle)*_knockback*dt,math.sin(_angle)*_knockback*dt
-    )    
+    else 
+        self:updateHealthOrMana('health',-_val)
+        self.collider:applyLinearImpulse( --apply knockback
+            math.cos(_angle)*_knockback,math.sin(_angle)*_knockback
+        )   
+    end 
 end

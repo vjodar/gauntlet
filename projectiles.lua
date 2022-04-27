@@ -46,18 +46,18 @@ function Projectiles:load()
     }
 
     self.knockbackValues={
-        bow_t0=600,
-        bow_t1=600,
-        bow_t2=600,
-        bow_t3=600,
-        staff_t0=600,
-        staff_t1=600,
-        staff_t2=600,
-        staff_t3=600,
-        demon_t3=600,
-        orc_t3=600,
-        orc_t2=600,
-        mage_t2=600,
+        bow_t0=30,
+        bow_t1=30,
+        bow_t2=30,
+        bow_t3=30,
+        staff_t0=30,
+        staff_t1=30,
+        staff_t2=30,
+        staff_t3=30,
+        demon_t3=30,
+        orc_t3=30,
+        orc_t2=30,
+        mage_t2=30,
     }
 
     self.damageValues={
