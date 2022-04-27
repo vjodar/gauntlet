@@ -351,8 +351,8 @@ function Enemies:load()
                 (Player.xPos-_enemy.xPos)  --x distance component
             )
             _enemy.collider:applyLinearImpulse( --lunge toward player
-                math.cos(angle)*_enemy.state.moveSpeed*8*dt,
-                math.sin(angle)*_enemy.state.moveSpeed*8*dt
+                math.cos(angle)*_enemy.state.moveSpeed*4*dt,
+                math.sin(angle)*_enemy.state.moveSpeed*4*dt
             )
 
             --put attack on cooldown for 1.35s
@@ -368,13 +368,12 @@ function Enemies:load()
             _enemy.state.inCombat=false 
             _enemy.state.approachingTarget=true
         end
-        if _enemy.collider:enter('player') then 
+        if _enemy.collider:enter('player') or _enemy.collider:exit('player') then 
             --if player hasn't already been hit this attack cycle
             if _enemy.state.dealtDamageThisAttack==false then 
-                _enemy.state.dealtDamageThisAttack=true
+                _enemy.state.dealtDamageThisAttack=true print('hit!')
                 --damage player
-                Player:takeDamage(
-                    -- _attackType,_damageType,_knockback,_angle,_val
+                Player:takeDamage(                    
                     'melee','physical',600, --test knockback
                     math.atan2((Player.yPos-_enemy.yPos),(Player.xPos-_enemy.xPos)),
                     1 --test damage
@@ -396,11 +395,12 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.xVel, self.yVel = 0,0
         self.halfWidth,self.halfHeight=4.5,2.5
         self.name='orc_t1'
-        self.collider:setLinearDamping(20)
+        self.collider:setLinearDamping(10)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true)
-        self.collider:setRestitution(0.2)
+        self.collider:setRestitution(0.1) print(self.collider:getMass())
+        self.collider:setMass(0.06)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
@@ -432,13 +432,13 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=500
+        self.state.moveSpeed=400
         self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
-        self.state.attackRange={x=25,y=15}
+        self.state.attackRange={x=30,y=22.5}
         self.state.aggroRange={x=150,y=112}
         --true when enemy has damaged player. This is to prevent the player colliding
         --again after already being hit by the enemy's attack
@@ -535,11 +535,12 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.xVel, self.yVel = 0,0
         self.halfWidth,self.halfHeight=4.5,2.5
         self.name='demon_t1'
-        self.collider:setLinearDamping(20)
+        self.collider:setLinearDamping(10)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true) --won't phase through player
-        self.collider:setRestitution(0.2)
+        self.collider:setRestitution(0.1)
+        self.collider:setMass(0.06)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
@@ -571,13 +572,13 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=500
+        self.state.moveSpeed=400
         self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
-        self.state.attackRange={x=25,y=15}
+        self.state.attackRange={x=30,y=22.5}
         self.state.aggroRange={x=150,y=112}
         --true when enemy has damaged player. This is to prevent the player colliding
         --again after already being hit by the enemy's attack
@@ -673,11 +674,12 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.xVel, self.yVel = 0,0
         self.halfWidth,self.halfHeight=4.5,2.5
         self.name='skeleton_t1'
-        self.collider:setLinearDamping(20)
+        self.collider:setLinearDamping(10)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true) --wont phase through player
-        self.collider:setRestitution(0.2)
+        self.collider:setRestitution(0.1)
+        self.collider:setMass(0.06)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
@@ -709,13 +711,13 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=500
+        self.state.moveSpeed=400
         self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
-        self.state.attackRange={x=25,y=15}
+        self.state.attackRange={x=30,y=22.5}
         self.state.aggroRange={x=150,y=112}
         --true when enemy has damaged player. This is to prevent the player colliding
         --again after already being hit by the enemy's attack
@@ -951,11 +953,12 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.xVel, self.yVel = 0,0
         self.halfWidth,self.halfHeight=5.5,3
         self.name='demon_t2'
-        self.collider:setLinearDamping(20)
+        self.collider:setLinearDamping(10)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true) --won't phase through player
-        self.collider:setRestitution(0.2)
+        self.collider:setRestitution(0.1) 
+        self.collider:setMass(0.06)
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
@@ -988,7 +991,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=700
+        self.state.moveSpeed=500
         self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target

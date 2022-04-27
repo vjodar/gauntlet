@@ -34,7 +34,7 @@ function Player:load()
     self.collider.fixtures['magic']:setSensor(true)
 
     --manually set collider's mass to ignore added shapes/fixtures
-    self.collider:setMass(0.09375)
+    self.collider:setMass(0.1)
 
     --sprites and animations
     self.spriteSheets={
@@ -613,9 +613,18 @@ end
 --player takes some damage depending on the attackType(melee or projectile),
 --damageType(physical or magical), knockback, and angle of the hit.
 function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
-    self:updateHealthOrMana('health',-_val)
+    if self.state.protectionActivated 
+    and ActionButtons.protectionMagics.state.currentSpell==_damageType 
+    then 
+        if _attackType=='melee' then --greatly reduce knockback from melee attacks
+            self.collider:setLinearVelocity(0,0)
+        end
+        print('protected')
+        return
+    end 
 
+    self:updateHealthOrMana('health',-_val)
     self.collider:applyLinearImpulse( --apply knockback
         math.cos(_angle)*_knockback*dt,math.sin(_angle)*_knockback*dt
-    )
+    )    
 end
