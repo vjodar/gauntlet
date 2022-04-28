@@ -156,6 +156,10 @@ function Player:load()
     self.equippedWeapon='bow_t0'
 
     self.dialog=Dialog:newDialogSystem() --dialog system
+    self.dialogLines={}
+    self.dialogLines.outOfMana={
+        "All out of mana!","No more mana!","Need to drink a potion!"
+    }
 
     --system that manages the floating symbols when using protection magics
     self.protectionMagics=ProtectionMagics:newProtectionMagicSystem()
@@ -207,6 +211,8 @@ function Player:load()
     self.combatData.attackCooldownTime=1.35 --time in sec between attacks
     self.combatData.damageBonus=0 --damage bonus given by armor
     self.combatData.damageResistance=0 --damage resistance given by armor
+    self.combatData.magicBonus=0 --determines the rate mana drains when using protection magics
+    self.combatData.manaDrainTimer=0 --frequency mana drains when using protection magics
 
     --health and mana
     self.health={
@@ -262,6 +268,15 @@ function Player:update()
     elseif self.suppliesData.consuming.potion then 
         self.suppliesData.oscillation=self.suppliesData.oscillation+dt*4
         self.suppliesData.yOffsetPotion=-40*math.sin(1.4*self.suppliesData.oscillation)
+    end
+
+    --drain mana when using a protection magic
+    if self.state.protectionActivated then
+        self.combatData.manaDrainTimer=self.combatData.manaDrainTimer+dt 
+        if self.combatData.manaDrainTimer>=0.5 then --drain every 0.5s
+            self.combatData.manaDrainTimer=0
+            self:updateMana(-5+self.combatData.magicBonus)
+        end
     end
 
     self.currentAnim:update(dt) --update animation 
@@ -373,6 +388,8 @@ function Player:move()
     if self.state.movingHorizontally and self.state.movingVertically then 
         --accomodate for diagonal speed with cheap approximation of
         --normalizing the vector
+        -- self.xVel=self.xVel*0.905
+        -- self.yVel=self.yVel*0.905
         self.xVel=self.xVel*0.905
         self.yVel=self.yVel*0.905
     end
@@ -458,66 +475,77 @@ end
 
 --update currently equipped weapons and armor to be the highest tier gear the player owns,
 --also update armor based damage bonuses, resistance, and mass (knockback resistance)
+--also update magic bonus (determines the drain rate of mana when using protection magic)
 function Player:updateCurrentGear()
     local headBonus,chestBonus,legsBonus=0,0,0
     local headResist,chestResist,legsResist=0,0,0
-    local headMass,chestMass,legsMass=0,0,0    
+    local headMagic,chestMagic,legsMagic=0,0,0
+    local headMass,chestMass,legsMass=0,0,0
 
-    --update head armor, damage bonus, and player's mass
+    --update head armor, bonuses and resistances
     if self.inventory['armor_head_t3']>0 then
         self.currentGear.armor.head='head_t3'
         headBonus=4
         headResist=30
+        headMagic=1.5
         headMass=0.15
     elseif self.inventory['armor_head_t2']>0 then 
         self.currentGear.armor.head='head_t2'
         headBonus=2
         headResist=20
+        headMagic=1
         headMass=0.1
     elseif self.inventory['armor_head_t1']>0 then 
         self.currentGear.armor.head='head_t1'
         headBonus=1
         headResist=10
+        headMagic=0.5
         headMass=0.05
     else 
         self.currentGear.armor.head='head_t0'
     end
 
-    --update chest armor, damage bonus, and player's mass
+    --update chest armor, bonuses and resistances
     if self.inventory['armor_chest_t3']>0 then 
         self.currentGear.armor.chest='chest_t3'
         chestBonus=2
         chestResist=15
+        chestMagic=0.75
         chestMass=0.075
     elseif self.inventory['armor_chest_t2']>0 then 
         self.currentGear.armor.chest='chest_t2'
         chestBonus=1
         chestResist=10
+        chestMagic=0.5
         chestMass=0.05
     elseif self.inventory['armor_chest_t1']>0 then 
         self.currentGear.armor.chest='chest_t1'
         chestBonus=0.5
         chestResist=5
+        chestMagic=0.25
         chestMass=0.025
     else 
         self.currentGear.armor.chest='chest_t0'
     end
 
-    --update legs armor, damage bonus, and player's mass
+    --update legs armor, bonuses and resistances
     if self.inventory['armor_legs_t3']>0 then 
         self.currentGear.armor.legs='legs_t3'
         legsBonus=2
         legsResist=15
+        legsMagic=0.75
         legsMass=0.075
     elseif self.inventory['armor_legs_t2']>0 then 
         self.currentGear.armor.legs='legs_t2'
         legsBonus=1
         legsResist=10
+        legsMagic=0.5
         legsMass=0.05
     elseif self.inventory['armor_legs_t1']>0 then 
         self.currentGear.armor.legs='legs_t1'
         legsBonus=0.5
         legsResist=5
+        legsMagic=0.25
         legsMass=0.025
     else 
         self.currentGear.armor.legs='legs_t0' 
@@ -526,6 +554,7 @@ function Player:updateCurrentGear()
     --update total armor based damage bonus, damage resistance, and mass
     self.combatData.damageBonus=headBonus+chestBonus+legsBonus
     self.combatData.damageResistance=headResist+chestResist+legsResist
+    self.combatData.magicBonus=headMagic+chestMagic+legsMagic
     self.collider:setMass(0.1+headMass+chestMass+legsMass)
 
     --update bow weapon
@@ -631,13 +660,13 @@ function Player:consumeSupply(_supply)
     TimerState:after(0.5,function()
         self.suppliesData.consuming[_supply]=false
         if _supply=='fish_cooked' then 
-            self:updateHealthOrMana('health',20)
+            self:updateHealth(20)
             self.particleSystems.health:emit(2)
             TimerState:after(0.1,function() self.particleSystems.health:emit(1) end)
             TimerState:after(0.2,function() self.particleSystems.health:emit(1) end)
             TimerState:after(0.3,function() self.particleSystems.health:emit(2) end)
         elseif _supply=='potion' then 
-            self:updateHealthOrMana('mana',20)
+            self:updateMana(20)
             self.particleSystems.mana:emit(2)
             TimerState:after(0.1,function() self.particleSystems.mana:emit(2) end)
             TimerState:after(0.2,function() self.particleSystems.mana:emit(2) end)
@@ -648,25 +677,29 @@ function Player:consumeSupply(_supply)
     end)
 end
 
---updates the player's health or mana
-function Player:updateHealthOrMana(_which,_val)
-    if _which=='health' then 
-        self.health.current=self.health.current+_val
-        if self.health.current>self.health.max then 
-            self.health.current=self.health.max 
-        elseif self.health.current<=0 then 
-            self.health.current=0
-            Player.dialog:say("I'm dead")
-        end
-    elseif _which=='mana' then 
-        self.mana.current=self.mana.current+_val 
-        if self.mana.current>self.mana.max then 
-            self.mana.current=self.mana.max  
-        elseif self.mana.current<=0 then 
-            self.mana.current=0
-            Player.dialog:say('Out of mana')
-        end
-    end    
+--updates the player's health
+function Player:updateHealth(_val)
+    self.health.current=self.health.current+_val
+    if self.health.current>self.health.max then 
+        self.health.current=self.health.max 
+    elseif self.health.current<=0 then 
+        self.health.current=0
+        self.dialog:say("I'm dead")
+    end
+    Meters:updateMeterValues() --update the HUD
+end
+
+--updates the player's mana
+function Player:updateMana(_val)
+    self.mana.current=self.mana.current+_val 
+    if self.mana.current>self.mana.max then 
+        self.mana.current=self.mana.max  
+    elseif self.mana.current<=0 then 
+        self.mana.current=0        
+        self.protectionMagics:deactivate()
+        self.collider.fixtures['magic']:setSensor(true)
+        self.dialog:say('Out of mana!')
+    end
     Meters:updateMeterValues() --update the HUD
 end
 
@@ -691,7 +724,7 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
         ) 
         modifiedDamage=math.max(modifiedDamage,1) --can't hit lower than 1
         self.dialog:say(modifiedDamage) --testing---------------
-        self:updateHealthOrMana('health',-modifiedDamage)
+        self:updateHealth(-modifiedDamage)
         self.collider:applyLinearImpulse( --apply knockback
             math.cos(_angle)*_knockback,math.sin(_angle)*_knockback
         )   

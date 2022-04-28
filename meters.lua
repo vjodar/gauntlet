@@ -37,13 +37,13 @@ function Meters:update()
     end
     if self.mana.filledPieces>self.mana.filledPiecesShown then 
         self.mana.timer=self.mana.timer+dt
-        if self.mana.timer>self.meterMovementRate then --increase health by 1 piece          
+        if self.mana.timer>self.meterMovementRate then --increase mana by 1 piece          
             self.mana.filledPiecesShown=self.mana.filledPiecesShown+1
             self.mana.timer=0 --reset timer
         end
     elseif self.mana.filledPieces<self.mana.filledPiecesShown then 
         self.mana.timer=self.mana.timer+dt
-        if self.mana.timer>self.meterMovementRate then --decrease health by 1 piece         
+        if self.mana.timer>self.meterMovementRate then --decrease mana by 1 piece         
             self.mana.filledPiecesShown=self.mana.filledPiecesShown-1
             self.mana.timer=0 --reset timer
         end

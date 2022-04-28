@@ -347,8 +347,16 @@ function ActionButtons:addActionButtonProtectionMagics()
                 --if player is not currently using protection magics,
                 --activate and give symbols collision.
                 if not Player.state.protectionActivated then 
-                    Player.protectionMagics:activate(self.state.currentSpell,Player)
-                    Player.collider.fixtures['magic']:setSensor(false)
+                    if Player.mana.current>0 then 
+                        Player.protectionMagics:activate(self.state.currentSpell,Player)
+                        Player.collider.fixtures['magic']:setSensor(false)
+                    else --if player has no mana left, don't activate
+                        Player.dialog:say( --choose random 'out of mana' line to say
+                            Player.dialogLines.outOfMana[
+                                love.math.random(#Player.dialogLines.outOfMana)
+                            ]
+                        )
+                    end
 
                 --otherwise, deactivate and remove collision.
                 elseif Player.state.protectionActivated then 

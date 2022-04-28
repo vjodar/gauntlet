@@ -4,10 +4,10 @@ function PlayState:load()
     love.graphics.setBackgroundColor(2/15,2/15,2/15)    
     love.graphics.setFont( --set the font
         love.graphics.newImageFont(
-            "assets/font/myFont.png",
+            "assets/fonts/myFont.png",
             " abcdefghijklmnopqrstuvwxyz" ..
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ..
-            "1234567890.,'+"
+            "1234567890.!,'+"
         )
     )
 
@@ -97,9 +97,9 @@ function PlayState:start()
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t1')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t2')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t2')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t2')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
     -- Items:spawn_item(playerStartX,playerStartY,'fish_cooked')

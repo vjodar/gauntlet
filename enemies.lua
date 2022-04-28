@@ -157,8 +157,8 @@ function Enemies:load()
         if _enemy.state.movingHorizontally and _enemy.state.movingVertically then 
             --accomodate for diagonal speed with cheap approximation of
             --normalizing the vector
-            _enemy.xVel=_enemy.xVel*0.905
-            _enemy.yVel=_enemy.yVel*0.905
+            _enemy.xVel=_enemy.xVel*0.95
+            _enemy.yVel=_enemy.yVel*0.95
         end
 
         if _enemy.state.moving then 
