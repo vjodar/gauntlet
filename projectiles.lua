@@ -46,16 +46,16 @@ function Projectiles:load()
     }
 
     self.knockbackValues={
-        bow_t0=30,
-        bow_t1=30,
-        bow_t2=30,
+        bow_t0=10,
+        bow_t1=15,
+        bow_t2=20,
         bow_t3=30,
-        staff_t0=30,
-        staff_t1=30,
-        staff_t2=30,
-        staff_t3=30,
-        demon_t3=30,
-        orc_t3=30,
+        staff_t0=10,
+        staff_t1=15,
+        staff_t2=20,
+        staff_t3=30,        
+        demon_t3=60,
+        orc_t3=60,
         orc_t2=30,
         mage_t2=30,
     }
@@ -69,25 +69,25 @@ function Projectiles:load()
         staff_t1=10,
         staff_t2=20,
         staff_t3=30,
-        demon_t3=1,
-        orc_t3=1,
-        orc_t2=1,
-        mage_t2=1,
+        demon_t3=30,
+        orc_t3=30,
+        orc_t2=15,
+        mage_t2=15,
     }
 
     self.projectileSpeeds={
-        bow_t0=240,
+        bow_t0=200,
         bow_t1=240,
         bow_t2=240,
         bow_t3=240,
-        staff_t0=240,
+        staff_t0=200,
         staff_t1=240,
         staff_t2=240,
         staff_t3=240,
         demon_t3=240,
         orc_t3=240,
         orc_t2=180,
-        mage_t2=240,
+        mage_t2=200,
     }
 
     self.damageTypes={
@@ -107,7 +107,7 @@ function Projectiles:load()
 end 
 
 --Create and launch a new projectile at a given target entity
-function Projectiles:launch(_xPos,_yPos,_type,_target)
+function Projectiles:launch(_xPos,_yPos,_type,_target,_damageBonus)
     local p={}
 
     function p:load()
@@ -126,6 +126,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         self.knockback=Projectiles.knockbackValues[_type]
         self.damage=Projectiles.damageValues[_type]
         self.damageType=Projectiles.damageTypes[_type]
+        self.damageBonus=_damageBonus or 0
 
         --how quickly the sprite will lower to the ground after being launched
         --the closer the distance to the target and the more negative the yOffset,
@@ -147,7 +148,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         --calculate angle toward the target and set velocities such that
         --projectile will home in on target at a constant speed (self.speed)
         self.angle=math.atan2(
-            ((self.target.yPos-self.targetHeight)-self.yPos), --y distance component
+            (self.target.yPos-self.yPos), --y distance component
             (self.target.xPos-self.xPos)  --x distance component
         )
         self.xVel=math.cos(self.angle)*self.speed
@@ -178,7 +179,7 @@ function Projectiles:launch(_xPos,_yPos,_type,_target)
         then
             self.target:takeDamage( --damage and knockback target
                 'projectile',self.damageType,self.knockback,self.angle,
-                math.max((self.damage+love.math.random(-5,5)),1)
+                self.damage+self.damageBonus --add damage bonus
             )
             return false --remove projectile from game
         end

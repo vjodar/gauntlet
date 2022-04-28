@@ -72,16 +72,16 @@ function CraftingMenuState:load()
         },
         armor_head_t2={
             {name='arcane_shards',quantity=6},
-            {name='rock_metal',quantity=1},
-            {name='tree_planks',quantity=1},
-            {name='vine_thread',quantity=1},
+            {name='rock_metal',quantity=2},
+            {name='tree_planks',quantity=2},
+            {name='vine_thread',quantity=2},
             {name='armor_head_t1',quantity=1},
         },
         armor_chest_t2={
             {name='arcane_shards',quantity=6},
-            {name='rock_metal',quantity=2},
-            {name='tree_planks',quantity=2},
-            {name='vine_thread',quantity=2},
+            {name='rock_metal',quantity=1},
+            {name='tree_planks',quantity=1},
+            {name='vine_thread',quantity=1},
             {name='armor_chest_t1',quantity=1},
         },
         armor_legs_t2={

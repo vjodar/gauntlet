@@ -36,7 +36,17 @@ function Enemies:load()
     self.sharedEnemyFunctions.takeDamage=function(
         _enemy,_attackType,_damageType,_knockback,_angle,_val
     ) 
-        _enemy.health.current=math.max(_enemy.health.current-_val,0) --can't be lower than 0
+        local modifiedDamage=_val 
+        --TODO------
+        --reduce damage by the enemy's damage resistance
+        modifiedDamage=love.math.random( --roll between +/-10% of damage
+            math.floor(modifiedDamage*0.9),math.ceil(modifiedDamage*1.1)
+        )
+        modifiedDamage=math.max(modifiedDamage,1) --can't hit lower than 1
+        _enemy.dialog:say(modifiedDamage) --testing----------------
+        --TODO------
+
+        _enemy.health.current=math.max(_enemy.health.current-modifiedDamage,0) --can't be lower than 0
         if _enemy.health.current==0 then _enemy.state.willDie=true end 
 
         --apply knockback
@@ -117,7 +127,8 @@ function Enemies:load()
         --set defalt state values
         _enemy.state.idle=true 
         _enemy.state.moving=false 
-        _enemy.state.movingHorizontally=false 
+        _enemy.state.movingHorizontally=false
+        _enemy.state.movingVertically=false
 
         if _enemy.state.moveTarget.x<_enemy.xPos-_enemy.halfWidth then --target is to the left
             _enemy.xVel=_enemy.xVel-_enemy.state.moveSpeed*dt
@@ -133,22 +144,21 @@ function Enemies:load()
         end
 
         if _enemy.state.moveTarget.y<_enemy.yPos-_enemy.halfHeight then --target is above
-            --accomodate for diagonal speed
-            if _enemy.state.movingHorizontally then 
-                _enemy.yVel=_enemy.yVel-_enemy.state.moveSpeedDiag*dt
-            else            
-                _enemy.yVel=_enemy.yVel-_enemy.state.moveSpeed*dt
-            end 
+            _enemy.yVel=_enemy.yVel-_enemy.state.moveSpeed*dt
             _enemy.state.moving=true
+            _enemy.state.movingVertically=true
         
         elseif _enemy.state.moveTarget.y>_enemy.yPos+_enemy.halfHeight then  --target is below
-            --accomodate for diagonal speed
-            if _enemy.state.movingHorizontally then 
-                _enemy.yVel=_enemy.yVel+_enemy.state.moveSpeedDiag*dt
-            else            
-                _enemy.yVel=_enemy.yVel+_enemy.state.moveSpeed*dt
-            end 
+            _enemy.yVel=_enemy.yVel+_enemy.state.moveSpeed*dt
             _enemy.state.moving=true
+            _enemy.state.movingVertically=true
+        end
+
+        if _enemy.state.movingHorizontally and _enemy.state.movingVertically then 
+            --accomodate for diagonal speed with cheap approximation of
+            --normalizing the vector
+            _enemy.xVel=_enemy.xVel*0.905
+            _enemy.yVel=_enemy.yVel*0.905
         end
 
         if _enemy.state.moving then 
@@ -374,9 +384,9 @@ function Enemies:load()
                 _enemy.state.dealtDamageThisAttack=true
                 --damage player
                 Player:takeDamage(                    
-                    'melee','physical',30, --test knockback
+                    'melee','physical',_enemy.state.knockback,
                     math.atan2((Player.yPos-_enemy.yPos),(Player.xPos-_enemy.xPos)),
-                    1 --test damage
+                    _enemy.state.meleeDamage
                 )
             end
         end
@@ -400,6 +410,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true)
         self.collider:setRestitution(0.1)
+        self.collider:setFriction(0)
         self.collider:setMass(0.06)
         self.collider:setObject(self) --attach collider to this object
 
@@ -427,13 +438,13 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false 
+        self.state.movingHorizontally=false
+        self.state.movingVertically=false
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=400
-        self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -443,6 +454,8 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         --true when enemy has damaged player. This is to prevent the player colliding
         --again after already being hit by the enemy's attack
         self.state.dealtDamageThisAttack=false 
+        self.state.meleeDamage=5
+        self.state.knockback=30
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -463,6 +476,8 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
     end
 
     function enemy:update() 
+        self.dialog:update() --update dialog
+
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()
@@ -540,6 +555,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true) --won't phase through player
         self.collider:setRestitution(0.1)
+        self.collider:setFriction(0)
         self.collider:setMass(0.06)
         self.collider:setObject(self) --attach collider to this object
 
@@ -568,12 +584,12 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
         self.state.movingHorizontally=false 
+        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=400
-        self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -583,6 +599,8 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         --true when enemy has damaged player. This is to prevent the player colliding
         --again after already being hit by the enemy's attack
         self.state.dealtDamageThisAttack=false 
+        self.state.meleeDamage=5
+        self.state.knockback=30
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -602,6 +620,8 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
     end
 
     function enemy:update() 
+        self.dialog:update() --update dialog
+
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()
@@ -679,6 +699,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true) --wont phase through player
         self.collider:setRestitution(0.1)
+        self.collider:setFriction(0)
         self.collider:setMass(0.06)
         self.collider:setObject(self) --attach collider to this object
 
@@ -707,12 +728,12 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
         self.state.movingHorizontally=false 
+        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=400
-        self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -722,6 +743,8 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         --true when enemy has damaged player. This is to prevent the player colliding
         --again after already being hit by the enemy's attack
         self.state.dealtDamageThisAttack=false 
+        self.state.meleeDamage=5
+        self.state.knockback=30
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -742,6 +765,8 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
     end
 
     function enemy:update() 
+        self.dialog:update() --update dialog
+
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()
@@ -815,6 +840,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         self.halfWidth,self.halfHeight=5,3
         self.name='orc_t2'
         self.collider:setLinearDamping(20)
+        self.collider:setFriction(0)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setObject(self) --attach collider to this object
@@ -847,13 +873,13 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
         self.state.movingHorizontally=false 
+        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=600
-        self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -881,6 +907,8 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
     end
 
     function enemy:update() 
+        self.dialog:update() --update dialog
+
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()
@@ -954,6 +982,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.halfWidth,self.halfHeight=5.5,3
         self.name='demon_t2'
         self.collider:setLinearDamping(10)
+        self.collider:setFriction(0)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setBullet(true) --won't phase through player
@@ -986,13 +1015,13 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
         self.state.movingHorizontally=false 
+        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=500
-        self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1002,6 +1031,8 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         --true when enemy has damaged player. This is to prevent the player colliding
         --again after already being hit by the enemy's attack
         self.state.dealtDamageThisAttack=false 
+        self.state.meleeDamage=15
+        self.state.knockback=45
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -1022,6 +1053,8 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
     end
 
     function enemy:update() 
+        self.dialog:update() --update dialog
+
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()
@@ -1095,6 +1128,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         self.halfWidth,self.halfHeight=6,3
         self.name='mage_t2'
         self.collider:setLinearDamping(20)
+        self.collider:setFriction(0)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setObject(self) --attach collider to this object
@@ -1128,13 +1162,13 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
         self.state.movingHorizontally=false 
+        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=500
-        self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1162,6 +1196,8 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
     end
 
     function enemy:update() 
+        self.dialog:update() --update dialog
+
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()
@@ -1236,13 +1272,14 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.halfHeight=4
         self.name='orc_t3'
         self.collider:setLinearDamping(20)
+        self.collider:setFriction(0)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setObject(self) --attach collider to this object
 
         --sprites and animations
         self.spriteSheet=Enemies.spriteSheets.orcT3
-        self.grid=anim8.newGrid(44,32,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
+        self.grid=anim8.newGrid(43,32,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
@@ -1268,13 +1305,13 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
         self.state.movingHorizontally=false 
+        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=400
-        self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1302,6 +1339,8 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
     end
 
     function enemy:update() 
+        self.dialog:update() --update dialog
+
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()
@@ -1334,7 +1373,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
     function enemy:draw()
         self.shadow:draw(self.xPos,self.yPos) --draw shadow
         self.currentAnim:draw(
-            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,16,29
+            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,10,29
         )
     end
 
@@ -1376,6 +1415,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.halfHeight=4
         self.name='demon_t3'
         self.collider:setLinearDamping(20)
+        self.collider:setFriction(0)
         self.collider:setFixedRotation(true) --collider won't spin
         self.collider:setCollisionClass('enemy')
         self.collider:setObject(self) --attach collider to this object
@@ -1408,13 +1448,13 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
         self.state.movingHorizontally=false 
+        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=400
-        self.state.moveSpeedDiag=self.state.moveSpeed*0.3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1442,6 +1482,8 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
     end
 
     function enemy:update() 
+        self.dialog:update() --update dialog
+
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()

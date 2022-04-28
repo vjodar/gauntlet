@@ -9,9 +9,9 @@ function Player:load()
     self.collider:setFixedRotation(true) --collider won't spin/rotate
     self.collider:setCollisionClass('player')
     self.collider:setRestitution(0)
+    self.collider:setFriction(0)
     self.collider:setObject(self) --attach collider to this object
     self.moveSpeed=2400 --40 at 60fps
-    self.moveSpeedDiag=self.moveSpeed*0.3
     self.scaleX=1 --used to flip sprites horizontally
 
     --colliders that will be used for sprites that pop in and out of game (like weapons)
@@ -84,21 +84,17 @@ function Player:load()
             self.grids.bow('1-9',1),0.075,
             --onLoop function
             function()
-                Projectiles:launch( --at the end of animation, launch projectile
-                    self.xPos+(self.scaleX*8),self.yPos,
-                    self.equippedWeapon,self.combatData.currentEnemy
-                )
+                --launch projectile after animation 
+                self:launchProjectile(self.xPos+(self.scaleX*8),self.yPos)
                 self.animations.bow:pauseAtStart() 
             end
         ),        
         staff=anim8.newAnimation(
             self.grids.staff('1-16',1),0.0375,
             --onLoop function
-            function()                  
-                Projectiles:launch( --at the end of animation, launch projectile
-                    self.xPos+(self.scaleX*7),self.yPos,
-                    self.equippedWeapon,self.combatData.currentEnemy
-                )
+            function()
+                --launch projectile after animation          
+                self:launchProjectile(self.xPos+(self.scaleX*7),self.yPos)
                 self.animations.staff:pauseAtStart() 
             end
         )
@@ -198,6 +194,7 @@ function Player:load()
     self.state.facing='right'
     self.state.moving=false
     self.state.movingHorizontally=false 
+    self.state.movingVertically=false 
     self.state.isNearNode=false 
     self.state.protectionActivated=false --true when protection magics activated
 
@@ -208,6 +205,8 @@ function Player:load()
     self.combatData.prevEnemiesLimit=6 
     self.combatData.attackOnCooldown=false --true when awaiting for cooldown between attacks
     self.combatData.attackCooldownTime=1.35 --time in sec between attacks
+    self.combatData.damageBonus=0 --damage bonus given by armor
+    self.combatData.damageResistance=0 --damage resistance given by armor
 
     --health and mana
     self.health={
@@ -230,6 +229,7 @@ function Player:update()
     --default movement states to idle
     self.state.moving=false 
     self.state.movingHorizontally=false 
+    self.state.movingVertically=false 
 
     --default sprite colliders to be sensors (have no collision)
     self.collider.fixtures[self.state.facing]:setSensor(true)
@@ -332,6 +332,10 @@ function Player:draw()
     end
 end
 
+function Player:drawUIelements()
+    self.dialog:draw(self.xPos,self.yPos) --draw dialog
+end
+
 function Player:move()
     if love.keyboard.isDown(controls.dirLeft) then 
         --can't move left and right at the same time
@@ -341,7 +345,7 @@ function Player:move()
             self.state.moving=true
             self.state.movingHorizontally=true
         end
-    end
+    end  
     if love.keyboard.isDown(controls.dirRight) then 
         --can't move left and right at the same time
         if not love.keyboard.isDown(controls.dirLeft) then 
@@ -352,22 +356,25 @@ function Player:move()
         end
     end
     if love.keyboard.isDown(controls.dirUp) then 
-        --accomodate for diagonal speed
-        if self.state.movingHorizontally then 
-            self.yVel=self.yVel-self.moveSpeedDiag*dt
-        else            
+        if not love.keyboard.isDown(controls.dirDown) then
             self.yVel=self.yVel-self.moveSpeed*dt
-        end 
-        self.state.moving=true
+            self.state.moving=true
+            self.state.movingVertically=true
+        end
     end
     if love.keyboard.isDown(controls.dirDown) then 
-        --accomodate for diagonal speed
-        if self.state.movingHorizontally then 
-            self.yVel=self.yVel+self.moveSpeedDiag*dt
-        else            
+        if not love.keyboard.isDown(controls.dirUp) then
             self.yVel=self.yVel+self.moveSpeed*dt
-        end 
-        self.state.moving=true
+            self.state.moving=true
+            self.state.movingVertically=true
+        end
+    end
+
+    if self.state.movingHorizontally and self.state.movingVertically then 
+        --accomodate for diagonal speed with cheap approximation of
+        --normalizing the vector
+        self.xVel=self.xVel*0.905
+        self.yVel=self.yVel*0.905
     end
 
     --apply updated velocities to collider
@@ -449,28 +456,77 @@ function Player:removeFromInventory(_item,_amount)
     end
 end
 
---update currently equipped weapons and armor to be the highest tier gear the player owns
+--update currently equipped weapons and armor to be the highest tier gear the player owns,
+--also update armor based damage bonuses, resistance, and mass (knockback resistance)
 function Player:updateCurrentGear()
-    --update head armor
-    if self.inventory['armor_head_t3']>0 then self.currentGear.armor.head='head_t3'
-    elseif self.inventory['armor_head_t2']>0 then self.currentGear.armor.head='head_t2'
-    elseif self.inventory['armor_head_t1']>0 then self.currentGear.armor.head='head_t1'
-    else self.currentGear.armor.head='head_t0'
+    local headBonus,chestBonus,legsBonus=0,0,0
+    local headResist,chestResist,legsResist=0,0,0
+    local headMass,chestMass,legsMass=0,0,0    
+
+    --update head armor, damage bonus, and player's mass
+    if self.inventory['armor_head_t3']>0 then
+        self.currentGear.armor.head='head_t3'
+        headBonus=4
+        headResist=30
+        headMass=0.15
+    elseif self.inventory['armor_head_t2']>0 then 
+        self.currentGear.armor.head='head_t2'
+        headBonus=2
+        headResist=20
+        headMass=0.1
+    elseif self.inventory['armor_head_t1']>0 then 
+        self.currentGear.armor.head='head_t1'
+        headBonus=1
+        headResist=10
+        headMass=0.05
+    else 
+        self.currentGear.armor.head='head_t0'
     end
 
-    --update chest armor
-    if self.inventory['armor_chest_t3']>0 then self.currentGear.armor.chest='chest_t3'
-    elseif self.inventory['armor_chest_t2']>0 then self.currentGear.armor.chest='chest_t2'
-    elseif self.inventory['armor_chest_t1']>0 then self.currentGear.armor.chest='chest_t1'
-    else self.currentGear.armor.chest='chest_t0'
+    --update chest armor, damage bonus, and player's mass
+    if self.inventory['armor_chest_t3']>0 then 
+        self.currentGear.armor.chest='chest_t3'
+        chestBonus=2
+        chestResist=15
+        chestMass=0.075
+    elseif self.inventory['armor_chest_t2']>0 then 
+        self.currentGear.armor.chest='chest_t2'
+        chestBonus=1
+        chestResist=10
+        chestMass=0.05
+    elseif self.inventory['armor_chest_t1']>0 then 
+        self.currentGear.armor.chest='chest_t1'
+        chestBonus=0.5
+        chestResist=5
+        chestMass=0.025
+    else 
+        self.currentGear.armor.chest='chest_t0'
     end
 
-    --update legs armor
-    if self.inventory['armor_legs_t3']>0 then self.currentGear.armor.legs='legs_t3'
-    elseif self.inventory['armor_legs_t2']>0 then self.currentGear.armor.legs='legs_t2'
-    elseif self.inventory['armor_legs_t1']>0 then self.currentGear.armor.legs='legs_t1'
-    else self.currentGear.armor.legs='legs_t0' 
+    --update legs armor, damage bonus, and player's mass
+    if self.inventory['armor_legs_t3']>0 then 
+        self.currentGear.armor.legs='legs_t3'
+        legsBonus=2
+        legsResist=15
+        legsMass=0.075
+    elseif self.inventory['armor_legs_t2']>0 then 
+        self.currentGear.armor.legs='legs_t2'
+        legsBonus=1
+        legsResist=10
+        legsMass=0.05
+    elseif self.inventory['armor_legs_t1']>0 then 
+        self.currentGear.armor.legs='legs_t1'
+        legsBonus=0.5
+        legsResist=5
+        legsMass=0.025
+    else 
+        self.currentGear.armor.legs='legs_t0' 
     end
+
+    --update total armor based damage bonus, damage resistance, and mass
+    self.combatData.damageBonus=headBonus+chestBonus+legsBonus
+    self.combatData.damageResistance=headResist+chestResist+legsResist
+    self.collider:setMass(0.1+headMass+chestMass+legsMass)
 
     --update bow weapon
     if self.inventory['weapon_bow_t3']>0 then self.currentGear.weapons.bow='bow_t3'
@@ -488,6 +544,14 @@ function Player:updateCurrentGear()
 
     --update equipped weapon
     self.equippedWeapon=self.currentGear.weapons[ActionButtons.weapons.state.currentWeapon]
+end
+
+--launches the projectile of the current weapon toward the current enemy target
+function Player:launchProjectile(_xPos,_yPos)
+    Projectiles:launch(
+        _xPos,_yPos,self.equippedWeapon,
+        self.combatData.currentEnemy,self.combatData.damageBonus
+    )
 end
 
 --fight the currently targeted enemy
@@ -606,25 +670,28 @@ function Player:updateHealthOrMana(_which,_val)
     Meters:updateMeterValues() --update the HUD
 end
 
-function Player:drawUIelements()
-    self.dialog:draw(self.xPos,self.yPos) --draw dialog
-end
-
 --player takes some damage depending on the attackType(melee or projectile),
 --damageType(physical or magical), knockback, and angle of the hit.
 function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
     if self.state.protectionActivated 
     and ActionButtons.protectionMagics.state.currentSpell==_damageType 
     then 
-        if _attackType=='projectile' then --greatly reduce knockback from ranged attacks
-            self.collider:applyLinearImpulse( --apply knockback
-                math.cos(_angle)*_knockback*0.1,math.sin(_angle)*_knockback*0.1
+        if _attackType=='projectile' then
+            self.collider:applyLinearImpulse( --apply reduced knockback
+                math.cos(_angle)*_knockback*0.2,math.sin(_angle)*_knockback*0.2
             )  
         end
-        print('protected')
 
     else 
-        self:updateHealthOrMana('health',-_val)
+        local modifiedDamage=_val 
+        --reduce damage by player's armor/damage resistance
+        modifiedDamage=modifiedDamage*(1-(self.combatData.damageResistance*0.01))
+        modifiedDamage=love.math.random( --roll between +/-10% of damage
+            math.floor(modifiedDamage*0.9),math.ceil(modifiedDamage*1.1)
+        ) 
+        modifiedDamage=math.max(modifiedDamage,1) --can't hit lower than 1
+        self.dialog:say(modifiedDamage) --testing---------------
+        self:updateHealthOrMana('health',-modifiedDamage)
         self.collider:applyLinearImpulse( --apply knockback
             math.cos(_angle)*_knockback,math.sin(_angle)*_knockback
         )   
