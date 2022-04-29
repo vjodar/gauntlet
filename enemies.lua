@@ -37,14 +37,27 @@ function Enemies:load()
         _enemy,_attackType,_damageType,_knockback,_angle,_val
     ) 
         local modifiedDamage=_val 
-        --TODO------
-        --reduce damage by the enemy's damage resistance
+        --reduce damage by the enemy's damage resistance. Orcs resist physical
+        --damage while demons resist magical damage (though not tier 1 enemies).
+        if _damageType=='magical' then 
+            if _enemy.name=='demon_t2' then 
+                modifiedDamage=modifiedDamage-5
+            elseif _enemy.name=='demon_t3' then 
+                modifiedDamage=modifiedDamage-10
+            end
+        elseif _damageType=='physical' then 
+            if _enemy.name=='orc_t2' then 
+                modifiedDamage=modifiedDamage-5
+            elseif _enemy.name=='orc_t3' then 
+                modifiedDamage=modifiedDamage-10
+            end
+        end
+
         modifiedDamage=love.math.random( --roll between +/-10% of damage
             math.floor(modifiedDamage*0.9),math.ceil(modifiedDamage*1.1)
         )
         modifiedDamage=math.max(modifiedDamage,1) --can't hit lower than 1
         _enemy.dialog:say(modifiedDamage) --testing----------------
-        --TODO------
 
         _enemy.health.current=math.max(_enemy.health.current-modifiedDamage,0) --can't be lower than 0
         if _enemy.health.current==0 then _enemy.state.willDie=true end 
@@ -127,38 +140,25 @@ function Enemies:load()
         --set defalt state values
         _enemy.state.idle=true 
         _enemy.state.moving=false 
-        _enemy.state.movingHorizontally=false
-        _enemy.state.movingVertically=false
 
-        if _enemy.state.moveTarget.x<_enemy.xPos-_enemy.halfWidth then --target is to the left
-            _enemy.xVel=_enemy.xVel-_enemy.state.moveSpeed*dt
-            _enemy.state.facing='left'
-            _enemy.state.moving=true
-            _enemy.state.movingHorizontally=true
-        
-        elseif _enemy.state.moveTarget.x>_enemy.xPos+_enemy.halfWidth then --target is to the right
-            _enemy.xVel=_enemy.xVel+_enemy.state.moveSpeed*dt 
-            _enemy.state.facing='right'
-            _enemy.state.moving=true
-            _enemy.state.movingHorizontally=true
-        end
+        if _enemy.state.moveTarget.x<_enemy.xPos-_enemy.halfWidth --target is to the left 
+        or _enemy.state.moveTarget.x>_enemy.xPos+_enemy.halfWidth --target is to the right
+        or _enemy.state.moveTarget.y<_enemy.yPos-_enemy.halfHeight --target is above
+        or _enemy.state.moveTarget.y>_enemy.yPos+_enemy.halfHeight --target is below
+        then 
+            local angle=math.atan2( --calculate angle to target
+                (_enemy.state.moveTarget.y-_enemy.yPos),
+                (_enemy.state.moveTarget.x-_enemy.xPos)
+            )
 
-        if _enemy.state.moveTarget.y<_enemy.yPos-_enemy.halfHeight then --target is above
-            _enemy.yVel=_enemy.yVel-_enemy.state.moveSpeed*dt
-            _enemy.state.moving=true
-            _enemy.state.movingVertically=true
-        
-        elseif _enemy.state.moveTarget.y>_enemy.yPos+_enemy.halfHeight then  --target is below
-            _enemy.yVel=_enemy.yVel+_enemy.state.moveSpeed*dt
-            _enemy.state.moving=true
-            _enemy.state.movingVertically=true
-        end
+            if _enemy.state.moveTarget.x>_enemy.xPos then --update where they're facing
+                _enemy.state.facing='right'
+            else _enemy.state.facing='left' end
 
-        if _enemy.state.movingHorizontally and _enemy.state.movingVertically then 
-            --accomodate for diagonal speed with cheap approximation of
-            --normalizing the vector
-            _enemy.xVel=_enemy.xVel*0.95
-            _enemy.yVel=_enemy.yVel*0.95
+            --calculate velocity components using angle (vectors are normalized)
+            _enemy.xVel=math.cos(angle)*_enemy.state.moveSpeed
+            _enemy.yVel=math.sin(angle)*_enemy.state.moveSpeed
+            _enemy.state.moving=true
         end
 
         if _enemy.state.moving then 
@@ -182,7 +182,7 @@ function Enemies:load()
 
     self.sharedEnemyFunctions.approachTarget=function(_enemy)
         _enemy.state.moveTarget.x=Player.xPos 
-        _enemy.state.moveTarget.y=Player.yPos 
+        _enemy.state.moveTarget.y=Player.yPos
         _enemy:move()
     end
 
@@ -310,7 +310,7 @@ function Enemies:load()
                 and math.abs(_enemy.yPos-Player.yPos)<_enemy.state.aggroRange.y)
             then
                 --player is out of attack range, but within aggression range, 
-                --or is already being attacked by the player, approach
+                --or enemy is already being attacked by the player, approach
                 _enemy.state.approachingTarget=true 
                 _enemy:approachTarget()
             end
@@ -361,8 +361,8 @@ function Enemies:load()
                 (Player.xPos-_enemy.xPos)  --x distance component
             )
             _enemy.collider:applyLinearImpulse( --lunge toward player
-                math.cos(angle)*_enemy.state.moveSpeed*0.067,
-                math.sin(angle)*_enemy.state.moveSpeed*0.067
+                math.cos(angle)*_enemy.state.moveSpeed*0.5,
+                math.sin(angle)*_enemy.state.moveSpeed*0.5
             )
 
             --put attack on cooldown for 1.35s
@@ -438,13 +438,11 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false
-        self.state.movingVertically=false
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=400
+        self.state.moveSpeed=160/3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -583,13 +581,11 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false 
-        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=400
+        self.state.moveSpeed=160/3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -727,13 +723,11 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false 
-        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=400
+        self.state.moveSpeed=160/3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -872,14 +866,12 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false 
-        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=600
+        self.state.moveSpeed=80
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1014,14 +1006,12 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false 
-        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=500
+        self.state.moveSpeed=200/3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1161,14 +1151,12 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false 
-        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=500
+        self.state.moveSpeed=200/3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1304,14 +1292,12 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false 
-        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=400
+        self.state.moveSpeed=160/3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1447,14 +1433,12 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
-        self.state.movingHorizontally=false 
-        self.state.movingVertically=false 
         self.state.idle=true 
         self.state.inCombat=false 
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=400
+        self.state.moveSpeed=160/3
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target

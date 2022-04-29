@@ -86,7 +86,7 @@ function Projectiles:load()
         staff_t3=240,
         demon_t3=240,
         orc_t3=240,
-        orc_t2=180,
+        orc_t2=120,
         mage_t2=200,
     }
 
