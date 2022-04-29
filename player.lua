@@ -11,7 +11,7 @@ function Player:load()
     self.collider:setRestitution(0)
     self.collider:setFriction(0)
     self.collider:setObject(self) --attach collider to this object
-    self.moveSpeed=160 --40 at 60fps
+    self.moveSpeed=320 --40 at 60fps
     self.scaleX=1 --used to flip sprites horizontally
 
     --colliders that will be used for sprites that pop in and out of game (like weapons)
@@ -197,8 +197,6 @@ function Player:load()
     self.state={}
     self.state.facing='right'
     self.state.moving=false
-    self.state.movingHorizontally=false 
-    self.state.movingVertically=false 
     self.state.isNearNode=false 
     self.state.protectionActivated=false --true when protection magics activated
 
@@ -373,57 +371,15 @@ function Player:move()
         target.y=target.y+1
         self.state.moving=true 
     end
-    
-    if target.x~=self.xPos or target.y~=self.yPos then 
+
+    if self.state.moving then 
         local angle=math.atan2((target.y-self.yPos),(target.x-self.xPos))
-        self.xVel=(math.cos(angle)*self.moveSpeed)
-        self.yVel=(math.sin(angle)*self.moveSpeed)
+        if target.x~=self.xPos then self.xVel=(math.cos(angle)*self.moveSpeed) end 
+        if target.y~=self.yPos then self.yVel=(math.sin(angle)*self.moveSpeed) end
     end
-    
-    -- if love.keyboard.isDown(controls.dirLeft) then 
-    --     --can't move left and right at the same time
-    --     if not love.keyboard.isDown(controls.dirRight) then 
-    --         self.xVel=self.xVel-self.moveSpeed*dt
-    --         self.state.facing='left'
-    --         self.state.moving=true
-    --         self.state.movingHorizontally=true
-    --     end
-    -- end  
-    -- if love.keyboard.isDown(controls.dirRight) then 
-    --     --can't move left and right at the same time
-    --     if not love.keyboard.isDown(controls.dirLeft) then 
-    --         self.xVel=self.xVel+self.moveSpeed*dt 
-    --         self.state.facing='right'
-    --         self.state.moving=true
-    --         self.state.movingHorizontally=true
-    --     end
-    -- end
-    -- if love.keyboard.isDown(controls.dirUp) then 
-    --     if not love.keyboard.isDown(controls.dirDown) then
-    --         self.yVel=self.yVel-self.moveSpeed*dt
-    --         self.state.moving=true
-    --         self.state.movingVertically=true
-    --     end
-    -- end
-    -- if love.keyboard.isDown(controls.dirDown) then 
-    --     if not love.keyboard.isDown(controls.dirUp) then
-    --         self.yVel=self.yVel+self.moveSpeed*dt
-    --         self.state.moving=true
-    --         self.state.movingVertically=true
-    --     end
-    -- end
 
-    -- if self.state.movingHorizontally and self.state.movingVertically then 
-    --     --accomodate for diagonal speed with cheap approximation of
-    --     --normalizing the vector
-    --     -- self.xVel=self.xVel*0.905
-    --     -- self.yVel=self.yVel*0.905
-    --     self.xVel=self.xVel*0.905
-    --     self.yVel=self.yVel*0.905
-    -- end
-
-    --apply updated velocities to collider
-    self.collider:setLinearVelocity(self.xVel,self.yVel)
+    --apply movement force to collider
+    self.collider:applyForce(self.xVel,self.yVel)
 end
 
 --Query the world for any nearby resource nodes. If there is one nearby,
@@ -584,6 +540,7 @@ function Player:updateCurrentGear()
     self.combatData.damageResistance=headResist+chestResist+legsResist
     self.combatData.magicBonus=headMagic+chestMagic+legsMagic
     self.collider:setMass(0.1+headMass+chestMass+legsMass)
+    self.moveSpeed=320*(self.collider:getMass()/0.1) --accomodate for increased mass
 
     --update bow weapon
     if self.inventory['weapon_bow_t3']>0 then self.currentGear.weapons.bow='bow_t3'

@@ -63,16 +63,13 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        world:draw() --draws all physics colliders
+        -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features 
         UI:draw() --draw ui elements
     cam:detach()
     
     Hud:draw() --draw hud 
-    local xv,yv=Player.collider:getLinearVelocity()
-    love.graphics.print(xv,0,0,nil,3)
-    love.graphics.print(yv,0,20,nil,3)
 end
 
 --start the playstate
@@ -92,7 +89,7 @@ function PlayState:start()
     -- Enemies.enemySpawner.t1[1](playerStartX,playerStartY)
     -- Enemies.enemySpawner.t1[2](playerStartX,playerStartY)
     -- Enemies.enemySpawner.t1[3](playerStartX,playerStartY)
-    Enemies.enemySpawner.t2[1](playerStartX,playerStartY)
+    -- Enemies.enemySpawner.t2[1](playerStartX,playerStartY)
     -- Enemies.enemySpawner.t2[2](playerStartX,playerStartY)
     -- Enemies.enemySpawner.t2[3](playerStartX,playerStartY)
     -- Enemies.enemySpawner.t3[1](playerStartX,playerStartY)
@@ -100,9 +97,9 @@ function PlayState:start()
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t2')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t2')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t1')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t1')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t1')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
     -- Items:spawn_item(playerStartX,playerStartY,'fish_cooked')

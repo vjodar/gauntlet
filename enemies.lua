@@ -176,8 +176,8 @@ function Enemies:load()
             _enemy.state.movingTimer=0
         end
     
-        --apply updated velocities to collider
-        _enemy.collider:setLinearVelocity(_enemy.xVel,_enemy.yVel)
+        --apply movement forces to collider
+        _enemy.collider:applyForce(_enemy.xVel,_enemy.yVel)
     end    
 
     self.sharedEnemyFunctions.approachTarget=function(_enemy)
@@ -361,8 +361,8 @@ function Enemies:load()
                 (Player.xPos-_enemy.xPos)  --x distance component
             )
             _enemy.collider:applyLinearImpulse( --lunge toward player
-                math.cos(angle)*_enemy.state.moveSpeed*0.5,
-                math.sin(angle)*_enemy.state.moveSpeed*0.5
+                math.cos(angle)*_enemy.state.moveSpeed,
+                math.sin(angle)*_enemy.state.moveSpeed
             )
 
             --put attack on cooldown for 1.35s
@@ -442,7 +442,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=160/3
+        self.state.moveSpeed=30
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -585,7 +585,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=160/3
+        self.state.moveSpeed=30
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -727,7 +727,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.state.inCombat=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=160/3
+        self.state.moveSpeed=30
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -871,7 +871,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=80
+        self.state.moveSpeed=60
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1011,7 +1011,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=200/3
+        self.state.moveSpeed=40
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1156,7 +1156,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=200/3
+        self.state.moveSpeed=50
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1297,7 +1297,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.state.approachingTarget=false
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=160/3
+        self.state.moveSpeed=100
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1438,7 +1438,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=160/3
+        self.state.moveSpeed=100
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
