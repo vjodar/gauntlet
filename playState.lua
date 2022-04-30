@@ -70,6 +70,11 @@ function PlayState:draw()
     cam:detach()
     
     Hud:draw() --draw hud 
+    --testing----------------------------------------
+    -- local xy,yv=Player.collider:getLinearVelocity()
+    -- love.graphics.print(xy,0,0,nil,3)
+    -- love.graphics.print(yv,0,30,nil,3)
+    --testing----------------------------------------
 end
 
 --start the playstate

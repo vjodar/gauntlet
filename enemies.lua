@@ -1011,7 +1011,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=40
+        self.state.moveSpeed=35
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target

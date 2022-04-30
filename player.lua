@@ -11,7 +11,7 @@ function Player:load()
     self.collider:setRestitution(0)
     self.collider:setFriction(0)
     self.collider:setObject(self) --attach collider to this object
-    self.moveSpeed=320 --40 at 60fps
+    self.moveSpeed=240
     self.scaleX=1 --used to flip sprites horizontally
 
     --colliders that will be used for sprites that pop in and out of game (like weapons)
@@ -273,7 +273,7 @@ function Player:update()
         self.combatData.manaDrainTimer=self.combatData.manaDrainTimer+dt 
         if self.combatData.manaDrainTimer>=0.5 then --drain every 0.5s
             self.combatData.manaDrainTimer=0
-            self:updateMana(-5+self.combatData.magicBonus)
+            self:updateMana(self.combatData.magicBonus-4)
         end
     end
 
@@ -540,7 +540,7 @@ function Player:updateCurrentGear()
     self.combatData.damageResistance=headResist+chestResist+legsResist
     self.combatData.magicBonus=headMagic+chestMagic+legsMagic
     self.collider:setMass(0.1+headMass+chestMass+legsMass)
-    self.moveSpeed=320*(self.collider:getMass()/0.1) --accomodate for increased mass
+    self.moveSpeed=240*(self.collider:getMass()/0.1) --accomodate for increased mass
 
     --update bow weapon
     if self.inventory['weapon_bow_t3']>0 then self.currentGear.weapons.bow='bow_t3'
@@ -651,7 +651,7 @@ function Player:consumeSupply(_supply)
             TimerState:after(0.2,function() self.particleSystems.health:emit(1) end)
             TimerState:after(0.3,function() self.particleSystems.health:emit(2) end)
         elseif _supply=='potion' then 
-            self:updateMana(20)
+            self:updateMana(30)
             self.particleSystems.mana:emit(2)
             TimerState:after(0.1,function() self.particleSystems.mana:emit(2) end)
             TimerState:after(0.2,function() self.particleSystems.mana:emit(2) end)

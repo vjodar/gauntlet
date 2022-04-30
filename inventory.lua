@@ -165,13 +165,13 @@ function Inventory:draw()
                 if icon.count>99 then 
                     love.graphics.printf(
                         '99+',
-                        icon.xPos_current,self.inv_yPos+48,
+                        icon.xPos_current,self.inv_yPos+16*WINDOWSCALE_Y,
                         18,'right',nil,WINDOWSCALE_X,WINDOWSCALE_Y
                     ) 
                 else
                     love.graphics.printf(
                         icon.count,
-                        icon.xPos_current,self.inv_yPos+48,
+                        icon.xPos_current,self.inv_yPos+16*WINDOWSCALE_Y,
                         18,'right',nil,WINDOWSCALE_X,WINDOWSCALE_Y
                     ) 
                 end

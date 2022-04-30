@@ -101,9 +101,9 @@ function ActionButtons:addActionButtonWeapons()
         --draw blank button        
         love.graphics.draw(
             self.blankSprite[1+button.state.pressedFlag], --draw blankSprite[2] when pressed
-            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y
         )
 
@@ -113,9 +113,9 @@ function ActionButtons:addActionButtonWeapons()
         end
         button.currentAnim:draw( --draw bow half
             button.spriteSheet.bow,
-            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -125,9 +125,9 @@ function ActionButtons:addActionButtonWeapons()
         end
         button.currentAnim:draw( --draw staff half
             button.spriteSheet.staff,
-            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-70*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -169,8 +169,6 @@ function ActionButtons:addActionButtonSupplies()
     button.state={} --state metatable
     button.state.buttonDuration=0 --used to differentiate between button taps and holds
     button.state.acceptInput=true --used to prevent player from pressing before animation ends.
-    button.state.hasFish=true --player has a bow
-    button.state.hasPotion=true --player has a staff
     button.state.currentSupply='fish_cooked' --either 'fish' or 'potion'
     button.state.pressedFlag=0 --1/0 boolean
     button.state.consumeOnCooldown=false --consume at the same rate as attacking enemies
@@ -250,13 +248,12 @@ function ActionButtons:addActionButtonSupplies()
     end
 
     function button:draw()
-        --draw blank button
-        
+        --draw blank button        
         love.graphics.draw( --left button
             self.blankSprite[1+button.state.pressedFlag], --draw blankSprite[2] when pressed
-            love.graphics.getWidth()-80*WINDOWSCALE_X,
+            WINDOW_WIDTH-80*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         if Player.suppliesPouch.fish_cooked==0 then --reduce alpha when out of fish
@@ -264,9 +261,9 @@ function ActionButtons:addActionButtonSupplies()
         end
         button.currentAnim:draw( --draw fish half
             button.spriteSheet.fish,
-            love.graphics.getWidth()-80*WINDOWSCALE_X,
+            WINDOW_WIDTH-80*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -276,12 +273,35 @@ function ActionButtons:addActionButtonSupplies()
         end
         button.currentAnim:draw( --draw potion half
             button.spriteSheet.potion,
-            love.graphics.getWidth()-80*WINDOWSCALE_X,
+            WINDOW_WIDTH-80*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
+        
+        --display the amount of fish/potion the player has (unless it's 0)
+        if button.state.acceptInput then --only draw number when animation is done
+            if Player.suppliesPouch[button.state.currentSupply]>0 then 
+                if Player.suppliesPouch[button.state.currentSupply]>99 then 
+                love.graphics.printf(
+                    '99+',
+                    WINDOW_WIDTH-80*WINDOWSCALE_X,
+                    WINDOW_HEIGHT-50*WINDOWSCALE_Y,
+                    25*WINDOWSCALE_X,'left',
+                    nil,WINDOWSCALE_X,WINDOWSCALE_Y
+                )
+                else
+                love.graphics.printf(
+                    Player.suppliesPouch[button.state.currentSupply],
+                    WINDOW_WIDTH-80*WINDOWSCALE_X,
+                    WINDOW_HEIGHT-50*WINDOWSCALE_Y,
+                    25*WINDOWSCALE_X,'left',
+                    nil,WINDOWSCALE_X,WINDOWSCALE_Y
+                )
+                end
+            end
+        end
     end
 
     return button 
@@ -405,27 +425,27 @@ function ActionButtons:addActionButtonProtectionMagics()
     function button:draw()
         love.graphics.draw( --draw blank button
             self.blankSprite[1+button.state.pressedFlag], --draw blankSprite[2] when pressed
-            love.graphics.getWidth()-40*WINDOWSCALE_X,
+            WINDOW_WIDTH-40*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
-        --TODO-------------------------------
         --set reduced alpha when player is all out of mana
-        --love.graphics.setColor(1,1,1,0.7)
-        --TODO-------------------------------
+        if Player.mana.current==0 then 
+            love.graphics.setColor(1,1,1,0.7)
+        end
         button.currentAnim:draw( --draw physical half
             button.spriteSheet.physical,
-            love.graphics.getWidth()-40*WINDOWSCALE_X,
+            WINDOW_WIDTH-40*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         button.currentAnim:draw( --draw magical half
             button.spriteSheet.magical,
-            love.graphics.getWidth()-40*WINDOWSCALE_X,
+            WINDOW_WIDTH-40*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
@@ -553,16 +573,16 @@ function ActionButtons:addActionButtonCombatInteract()
     function button:draw()
         love.graphics.draw( --draw blank button
             self.blankSprite[1+button.state.pressedFlag], --draw blankSprite[2] when pressed
-            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-30*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-30*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         button.currentAnim:draw(
             button.spriteSheet,
-            love.graphics.getWidth()-60*WINDOWSCALE_X,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,
             --draw 1px (scaled) lower when button is currently pressed
-            love.graphics.getHeight()-30*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
+            WINDOW_HEIGHT-30*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
     end

@@ -26,8 +26,10 @@ function love.load()
     camera=require 'libraries/camera'
 
     dt=0 --delta time global
-    WINDOWSCALE_X=love.graphics.getWidth()/400 --1x scale per 400px width
-    WINDOWSCALE_Y=love.graphics.getHeight()/300 --1x scale per 300px width
+    WINDOW_WIDTH=love.graphics.getWidth()
+    WINDOW_HEIGHT=love.graphics.getHeight()
+    WINDOWSCALE_X=WINDOW_WIDTH/400 --1x scale per 400px width
+    WINDOWSCALE_Y=WINDOW_HEIGHT/300 --1x scale per 300px width
     gameStates={} --state stack
     acceptInput=false --flag to restrict inputs to one state at a time
 
