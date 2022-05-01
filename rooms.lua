@@ -876,12 +876,12 @@ function Rooms:spawnEnemies(_room)
     --outer ring, can spawn T1, T2,or T3 enemies
     elseif room.coordinates[1]==1 or room.coordinates[2]==1 
         or room.coordinates[1]==7 or room.coordinates[2]==7 then
-        local spawnDemiBoss=(love.math.random(3)==1) --33% chance to spawn T3 enemy
+        local spawnDemiBoss=(love.math.random(10)<=4) --40% chance to spawn T3 enemy
         if spawnDemiBoss then 
             Enemies:fillRoomT3(spawnZoneT3)
         else
-            local enemyTierSelection=love.math.random(2) --choose between T1 and T2 enemies
-            if enemyTierSelection==1 then --fill with T1 enemies
+            --spawn either T1 or T2 enemies
+            if love.math.random(2)==1 then --fill with T1 enemies
                 Enemies:fillRoomT1(spawnZone)
             else --fill with T2 enemies
                 Enemies:fillRoomT2(spawnZone)
@@ -889,10 +889,9 @@ function Rooms:spawnEnemies(_room)
         end
 
     else --middle ring, can spawn T1 or T2 enemies
-        local enemyTierSelection=love.math.random(2) --choose what enemy tier to spawn
-        if enemyTierSelection==1 then --fill with T1 enemies
+        if love.math.random(10)<=4 then --40% chance to fill with T1 enemies
             Enemies:fillRoomT1(spawnZone)
-        else --fill with T2 enemies
+        else --60% chance to fill with T2 enemies
             Enemies:fillRoomT2(spawnZone)
         end
     end

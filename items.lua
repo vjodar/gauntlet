@@ -2,37 +2,71 @@ Items={}
 
 function Items:load()
     --load item sprites
-    self.sprites={}
-    self.sprites['tree_wood']=love.graphics.newImage('assets/items/tree_wood.png')
-    self.sprites['tree_planks']=love.graphics.newImage('assets/items/tree_planks.png')
-    self.sprites['rock_ore']=love.graphics.newImage('assets/items/rock_ore.png')
-    self.sprites['rock_metal']=love.graphics.newImage('assets/items/rock_metal.png')
-    self.sprites['vine_fiber']=love.graphics.newImage('assets/items/vine_fiber.png')
-    self.sprites['vine_thread']=love.graphics.newImage('assets/items/vine_thread.png')
-    self.sprites['fungi_mushroom']=love.graphics.newImage('assets/items/fungi_mushroom.png')
-    self.sprites['fish_raw']=love.graphics.newImage('assets/items/fish_raw.png')
-    self.sprites['fish_cooked']=love.graphics.newImage('assets/items/fish_cooked.png')
-    self.sprites['arcane_bowstring']=love.graphics.newImage('assets/items/arcane_bowstring.png')
-    self.sprites['arcane_orb']=love.graphics.newImage('assets/items/arcane_orb.png')
-    self.sprites['arcane_shards']=love.graphics.newImage('assets/items/arcane_shards.png')
-    self.sprites['broken_bow']=love.graphics.newImage('assets/items/broken_bow.png')
-    self.sprites['broken_staff']=love.graphics.newImage('assets/items/broken_staff.png')
-    self.sprites['potion']=love.graphics.newImage('assets/items/potion.png')
-    self.sprites['weapon_bow_t1']=love.graphics.newImage('assets/items/weapon_bow_t1_item.png')
-    self.sprites['weapon_bow_t2']=love.graphics.newImage('assets/items/weapon_bow_t2_item.png')
-    self.sprites['weapon_bow_t3']=love.graphics.newImage('assets/items/weapon_bow_t3_item.png')
-    self.sprites['weapon_staff_t1']=love.graphics.newImage('assets/items/weapon_staff_t1_item.png')
-    self.sprites['weapon_staff_t2']=love.graphics.newImage('assets/items/weapon_staff_t2_item.png')
-    self.sprites['weapon_staff_t3']=love.graphics.newImage('assets/items/weapon_staff_t3_item.png')
-    self.sprites['armor_head_t1']=love.graphics.newImage('assets/items/armor_head_t1_item.png')
-    self.sprites['armor_head_t2']=love.graphics.newImage('assets/items/armor_head_t2_item.png')
-    self.sprites['armor_head_t3']=love.graphics.newImage('assets/items/armor_head_t3_item.png')
-    self.sprites['armor_chest_t1']=love.graphics.newImage('assets/items/armor_chest_t1_item.png')
-    self.sprites['armor_chest_t2']=love.graphics.newImage('assets/items/armor_chest_t2_item.png')
-    self.sprites['armor_chest_t3']=love.graphics.newImage('assets/items/armor_chest_t3_item.png')
-    self.sprites['armor_legs_t1']=love.graphics.newImage('assets/items/armor_legs_t1_item.png')
-    self.sprites['armor_legs_t2']=love.graphics.newImage('assets/items/armor_legs_t2_item.png')
-    self.sprites['armor_legs_t3']=love.graphics.newImage('assets/items/armor_legs_t3_item.png')
+    self.sprites={
+        tree_wood=love.graphics.newImage('assets/items/tree_wood.png'),
+        tree_planks=love.graphics.newImage('assets/items/tree_planks.png'),
+        rock_ore=love.graphics.newImage('assets/items/rock_ore.png'),
+        rock_metal=love.graphics.newImage('assets/items/rock_metal.png'),
+        vine_fiber=love.graphics.newImage('assets/items/vine_fiber.png'),
+        vine_thread=love.graphics.newImage('assets/items/vine_thread.png'),
+        fungi_mushroom=love.graphics.newImage('assets/items/fungi_mushroom.png'),
+        fish_raw=love.graphics.newImage('assets/items/fish_raw.png'),
+        fish_cooked=love.graphics.newImage('assets/items/fish_cooked.png'),
+        arcane_bowstring=love.graphics.newImage('assets/items/arcane_bowstring.png'),
+        arcane_orb=love.graphics.newImage('assets/items/arcane_orb.png'),
+        arcane_shards=love.graphics.newImage('assets/items/arcane_shards.png'),
+        broken_bow=love.graphics.newImage('assets/items/broken_bow.png'),
+        broken_staff=love.graphics.newImage('assets/items/broken_staff.png'),
+        potion=love.graphics.newImage('assets/items/potion.png'),
+        weapon_bow_t1=love.graphics.newImage('assets/items/weapon_bow_t1_item.png'),
+        weapon_bow_t2=love.graphics.newImage('assets/items/weapon_bow_t2_item.png'),
+        weapon_bow_t3=love.graphics.newImage('assets/items/weapon_bow_t3_item.png'),
+        weapon_staff_t1=love.graphics.newImage('assets/items/weapon_staff_t1_item.png'),
+        weapon_staff_t2=love.graphics.newImage('assets/items/weapon_staff_t2_item.png'),
+        weapon_staff_t3=love.graphics.newImage('assets/items/weapon_staff_t3_item.png'),
+        armor_head_t1=love.graphics.newImage('assets/items/armor_head_t1_item.png'),
+        armor_head_t2=love.graphics.newImage('assets/items/armor_head_t2_item.png'),
+        armor_head_t3=love.graphics.newImage('assets/items/armor_head_t3_item.png'),
+        armor_chest_t1=love.graphics.newImage('assets/items/armor_chest_t1_item.png'),
+        armor_chest_t2=love.graphics.newImage('assets/items/armor_chest_t2_item.png'),
+        armor_chest_t3=love.graphics.newImage('assets/items/armor_chest_t3_item.png'),
+        armor_legs_t1=love.graphics.newImage('assets/items/armor_legs_t1_item.png'),
+        armor_legs_t2=love.graphics.newImage('assets/items/armor_legs_t2_item.png'),
+        armor_legs_t3=love.graphics.newImage('assets/items/armor_legs_t3_item.png'),
+    }
+
+    self.sizes={
+        tree_wood=7,
+        tree_planks=7,
+        rock_ore=6,
+        rock_metal=6,
+        vine_fiber=6,
+        vine_thread=5,
+        fungi_mushroom=5,
+        fish_raw=4,
+        fish_cooked=4,
+        arcane_bowstring=5,
+        arcane_orb=4,
+        arcane_shards=5,
+        broken_bow=5,
+        broken_staff=5,
+        potion=4,
+        weapon_bow_t1=4,
+        weapon_bow_t2=4,
+        weapon_bow_t3=4,
+        weapon_staff_t1=4,
+        weapon_staff_t2=4,
+        weapon_staff_t3=4,
+        armor_head_t1=5,
+        armor_head_t2=5,
+        armor_head_t3=5,
+        armor_chest_t1=4,
+        armor_chest_t2=4,
+        armor_chest_t3=4,
+        armor_legs_t1=4,
+        armor_legs_t2=4,
+        armor_legs_t3=4,
+    }    
 end
 
 function Items:spawn_item(_x,_y,_name) 
@@ -41,13 +75,7 @@ function Items:spawn_item(_x,_y,_name)
     function item:load() 
         self.name=_name
         self.sprite=Items.sprites[self.name] --Select appropriate sprite for item
-        
-        --select size of item's collider
-        if self.name=='tree_wood' or self.name=='rock_ore' or self.name=='vine_fiber' then
-            self.size=6
-        elseif self.name=='fungi_mushroom' then self.size=5 
-        else self.size=4
-        end
+        self.size=Items.sizes[self.name]
         
         --collider
         self.collider=world:newCircleCollider(_x,_y,self.size)
@@ -117,7 +145,7 @@ function Items:spawn_item(_x,_y,_name)
             end
         end
 
-        if math.abs(self.xPos-Player.xPos)<10 and math.abs(self.yPos-Player.yPos)<10 then 
+        if math.abs(self.xPos-Player.xPos)<15 and math.abs(self.yPos-Player.yPos)<10 then 
             --remove item from entities table
             self.removeEntity=true
             --add item to player's inventory

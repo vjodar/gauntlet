@@ -287,7 +287,7 @@ function ActionButtons:addActionButtonSupplies()
                 love.graphics.printf(
                     '99+',
                     WINDOW_WIDTH-80*WINDOWSCALE_X,
-                    WINDOW_HEIGHT-50*WINDOWSCALE_Y,
+                    WINDOW_HEIGHT-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
                     25*WINDOWSCALE_X,'left',
                     nil,WINDOWSCALE_X,WINDOWSCALE_Y
                 )
@@ -295,7 +295,7 @@ function ActionButtons:addActionButtonSupplies()
                 love.graphics.printf(
                     Player.suppliesPouch[button.state.currentSupply],
                     WINDOW_WIDTH-80*WINDOWSCALE_X,
-                    WINDOW_HEIGHT-50*WINDOWSCALE_Y,
+                    WINDOW_HEIGHT-50*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
                     25*WINDOWSCALE_X,'left',
                     nil,WINDOWSCALE_X,WINDOWSCALE_Y
                 )
