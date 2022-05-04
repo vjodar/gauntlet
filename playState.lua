@@ -36,6 +36,7 @@ function PlayState:load()
     ProtectionMagics:load() --initialize protectionMagics
     Player:load() --initialize player character
     Enemies:load() --initialize enemies
+    SpecialAttacks:load() --initialize demiboss' special attacks
     ResourceNodes:load() --initialize resource nodes
     CraftingNodes:load() --initialize crafting nodes
     Dungeon:load() --initialize dungeon
@@ -63,7 +64,7 @@ end
 function PlayState:draw()
     cam:attach()
         Dungeon:draw() --draw the dungeon's rooms
-        world:draw() --draws all physics colliders
+        -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features 
         UI:draw() --draw ui elements
@@ -100,11 +101,13 @@ function PlayState:start()
     -- Enemies.enemySpawner.t3[1](playerStartX,playerStartY)
     -- Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
 
+    -- SpecialAttacks:spawnTornado(playerStartX+50,playerStartY,0.785)
+
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t1')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t1')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t1')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
     -- Items:spawn_item(playerStartX,playerStartY,'broken_staff')
@@ -116,12 +119,6 @@ function PlayState:start()
     -- Items:spawn_item(playerStartX,playerStartY,'rock_metal')
     -- Items:spawn_item(playerStartX,playerStartY,'vine_thread')
     -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'arcane_shards') end
-
-    ResourceNodes.nodeSpawnFunctions[2](playerStartX,playerStartY)
-    ResourceNodes.nodeSpawnFunctions[2](playerStartX-15,playerStartY)
-    ResourceNodes.nodeSpawnFunctions[2](playerStartX-10,playerStartY)
-    ResourceNodes.nodeSpawnFunctions[2](playerStartX,playerStartY)
-    ResourceNodes.nodeSpawnFunctions[2](playerStartX-15,playerStartY)
-    ResourceNodes.nodeSpawnFunctions[2](playerStartX-10,playerStartY)
+    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'potion') end
     --testing----------------------------------
 end

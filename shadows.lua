@@ -62,6 +62,9 @@ function Shadows:load()
     self.projectile_orc_t3=self.projectile_bow_t1
     self.projectile_orc_t2=love.graphics.newImage('assets/shadows/shadow_orc_t2_projectile.png')
     self.projectile_mage_t2=self.projectile_staff_t2
+
+    --special attacs shadows
+    self.tornado=self.medium --using player's shadow currently
 end
 
 function Shadows:newShadow(_type)

@@ -1280,6 +1280,10 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
                 self.animations.combat:pauseAtStart()
                 self.currentAnim=self.animations.idle --return to idle between attacks
                 self.state.inCombat=false
+                self.state.basicAttackCounter=self.state.basicAttackCounter+1
+                if self.state.basicAttackCounter%3==0 then 
+                    self:specialAttack()
+                end
             end
         )
         self.currentAnim=self.animations.idle 
@@ -1305,6 +1309,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.state.attackOnCooldown=false 
         self.state.attackRange={x=300,y=200}
         self.state.aggroRange={x=300,y=200}
+        self.state.basicAttackCounter=0 --used to trigger a special attack
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -1374,6 +1379,16 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
             love.graphics.setColor(1,1,1)
         end
         self.dialog:draw(self.xPos,self.yPos)
+    end
+
+    function enemy:specialAttack() --performs special attack (tornado)
+        local angleToPlayer=math.atan2((Player.yPos-self.yPos),(Player.xPos-self.xPos))
+        local perpendicular1=angleToPlayer+0.5*math.pi
+        local perpendicular2=angleToPlayer-0.5*math.pi
+        SpecialAttacks:spawnTornado(self.xPos,self.yPos,perpendicular1)
+        TimerState:after(0.4,function() --spawn 2nd tornado after 0.4s
+            SpecialAttacks:spawnTornado(self.xPos,self.yPos,perpendicular2)
+        end)
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
