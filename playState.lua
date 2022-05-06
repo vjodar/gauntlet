@@ -30,6 +30,9 @@ function PlayState:load()
     world:addCollisionClass('ladder')
     world:addCollisionClass('innerWall') --small walls within rooms
     world:addCollisionClass('outerWall') --big walls that create the rooms
+    world:addCollisionClass('tornado',
+        {ignores={'tornado','player','enemy','resourceNode','depletedNode'}}
+    )
 
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
@@ -63,7 +66,8 @@ end
 --Draw state associated with playState
 function PlayState:draw()
     cam:attach()
-        Dungeon:draw() --draw the dungeon's rooms
+        Dungeon:drawFloorObjects() --draw objects on floor, beneath entities
+        Dungeon:drawRooms() --draw the dungeon's rooms
         -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features 
@@ -71,11 +75,6 @@ function PlayState:draw()
     cam:detach()
     
     Hud:draw() --draw hud 
-    --testing----------------------------------------
-    -- local xy,yv=Player.collider:getLinearVelocity()
-    -- love.graphics.print(xy,0,0,nil,3)
-    -- love.graphics.print(yv,0,30,nil,3)
-    --testing----------------------------------------
 end
 
 --start the playstate
@@ -100,8 +99,6 @@ function PlayState:start()
     -- Enemies.enemySpawner.t2[3](playerStartX,playerStartY)
     -- Enemies.enemySpawner.t3[1](playerStartX,playerStartY)
     -- Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
-
-    -- SpecialAttacks:spawnTornado(playerStartX+50,playerStartY,0.785)
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')

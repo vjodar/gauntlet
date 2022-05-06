@@ -7,6 +7,8 @@ function Rooms:load()
     self.ROOMHEIGHT=320
     self.ROOMWIDTH=384
     self.roomSprites={}
+    --floor
+    self.roomSprites.floor=love.graphics.newImage('assets/maps/room_floor.png')
     --middle
     self.roomSprites.middle=love.graphics.newImage('assets/maps/room_middle.png')
     self.roomSprites.middleForeground=love.graphics.newImage('assets/maps/room_middle_foreground.png')
@@ -86,6 +88,8 @@ function Rooms:newRoom(_coordinates)
 
     --invisible doorway barriers
     room.doorBarriers={top={},bottom={},left={},right={}}
+
+    room.floorSprite=self.roomSprites.floor
 
     --create and emtpy room complete with collision boxes that fit the room layout
     if _coordinates[1]==1 then 
@@ -251,7 +255,11 @@ function Rooms:newRoom(_coordinates)
         end        
     end
 
-    function room:draw() 
+    function room:drawFloor() --draw the floor
+        love.graphics.draw(self.floorSprite,self.xPos,self.yPos)
+    end
+
+    function room:draw()
         love.graphics.draw(self.backgroundSprite,self.xPos,self.yPos)
         for i,button in pairs(self.doorButtons) do button:draw() end 
         --draw room lights

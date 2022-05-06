@@ -101,6 +101,11 @@ function Enemies:load()
         for i=love.math.random(5),10 do --drop 5 to 10 shards
             Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_shards')
         end
+        if _enemy.name=='mage_t2' then --additional role for mages
+            for i=love.math.random(5),10 do
+                Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_shards')
+            end
+        end
         if love.math.random(2)==1 then --1/2 chance to spawn a broken bow or staff
             if Dungeon.nextBrokenItem==1 then 
                 Items:spawn_item(_enemy.xPos,_enemy.yPos,'broken_bow') 
@@ -378,7 +383,7 @@ function Enemies:load()
             _enemy.state.inCombat=false 
             _enemy.state.approachingTarget=true
         end
-        if _enemy.collider:enter('player') or _enemy.collider:exit('player') then 
+        if _enemy.collider:isTouching(Player.collider:getBody()) then 
             --if player hasn't already been hit this attack cycle
             if _enemy.state.dealtDamageThisAttack==false then 
                 _enemy.state.dealtDamageThisAttack=true
@@ -1224,11 +1229,11 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
 
     function enemy:drawUIelements() --called by UI
         if self.state.isTargetted then --draw health when targetted
-            love.graphics.draw(self.health.sprite,self.xPos-13,self.yPos-22)
+            love.graphics.draw(self.health.sprite,self.xPos-13,self.yPos-26)
             --draw remaining health
             love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
             love.graphics.rectangle(
-                'fill',self.xPos-12,self.yPos-21,
+                'fill',self.xPos-12,self.yPos-25,
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
@@ -1267,7 +1272,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
 
         --sprites and animations
         self.spriteSheet=Enemies.spriteSheets.orcT3
-        self.grid=anim8.newGrid(43,32,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
+        self.grid=anim8.newGrid(44,32,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-4',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('5-8',1), 0.1)
@@ -1364,7 +1369,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
     function enemy:draw()
         self.shadow:draw(self.xPos,self.yPos) --draw shadow
         self.currentAnim:draw(
-            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,10,29
+            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,11,29
         )
     end
 

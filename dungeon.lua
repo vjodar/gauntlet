@@ -7,6 +7,8 @@ function Dungeon:load()
 
     self.roomsTable={} --holds all rooms in a dungeon
 
+    self.floorObjects={} --holds all objects that on the floor, beneath entities
+
     --will store the just the crafting table, as we need its reference in order
     --to emit particles from it from within the Crafting Menu code
     self.craftingTable={} 
@@ -39,9 +41,16 @@ end
 
 function Dungeon:update()
     for i,room in pairs(self.roomsTable) do room:update() end 
+    for i,obj in pairs(self.floorObjects) do obj:update() end
 end
 
-function Dungeon:draw()
+--draw floors and objects on the floor, beneath all entities
+function Dungeon:drawFloorObjects()
+    for i,room in pairs(self.roomsTable) do room:drawFloor() end
+    for i,obj in pairs(self.floorObjects) do obj:draw() end 
+end
+
+function Dungeon:drawRooms() 
     for i,room in pairs(self.roomsTable) do room:draw() end 
 end
 

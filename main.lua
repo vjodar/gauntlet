@@ -83,6 +83,9 @@ function love.update(_dt)
     
     if releasedKey=='escape' then love.event.quit() end --easy close for devs.
     if releasedKey=='backspace' then love.load() end --easy restart for devs.
+    if releasedKey=='p' then 
+        SpecialAttacks:spawnFireCircle(Player.xPos,Player.yPos)
+    end
     
     --For testing----------------------
 end

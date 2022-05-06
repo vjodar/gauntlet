@@ -10,6 +10,8 @@ function SpecialAttacks:load()
         tornado_segment_6=love.graphics.newImage('assets/specials/tornado_segment_6.png'),
         tornado_segment_7=love.graphics.newImage('assets/specials/tornado_segment_7.png'),
         tornado_segment_8=love.graphics.newImage('assets/specials/tornado_segment_8.png'),
+
+        fireInsignia=love.graphics.newImage('assets/specials/fire_insignia.png'),
     }
 
     self.grids={
@@ -114,6 +116,7 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
         self.collider:setRestitution(0)
         self.collider:setLinearDamping(20)
         self.collider:setMass(0.1)
+        self.collider:setCollisionClass('tornado')
         self.collider:setObject(self)
         self.xPos,self.yPos=self.collider:getPosition()
         self.moveSpeed=100
@@ -206,4 +209,48 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
     end
 
     tornado:load()
+end
+
+--spawns a circle of damaging flames after revealing an insignia on the floor,
+--showing where the flames will spawn.
+function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
+    local insignia={}
+
+    function insignia:load()
+        self.xPos,self.yPos=_xPos,_yPos
+        self.sprite=SpecialAttacks.spriteSheets.fireInsignia
+        self.alpha=0   
+
+        table.insert(Dungeon.floorObjects,self) --add to dungeon's floor effects
+    end
+
+    function insignia:update()
+        --reveal by increasing alpha, capped at 0.7
+        if self.alpha<0.7 then self.alpha=self.alpha+dt*0.5 end
+    end
+
+    function insignia:draw()
+        love.graphics.setColor(1,1,1,self.alpha)
+        love.graphics.draw(self.sprite,self.xPos-23.5,self.yPos-16)
+        love.graphics.setColor(1,1,1,1)
+    end
+
+    insignia:load()
+
+    -- local flames={}
+
+    -- function flames:load()
+
+    --     table.insert(Entities.entitiesTable,self)
+    -- end
+
+    -- function flames:update()
+
+    -- end
+
+    -- function flames:draw()
+
+    -- end
+
+    -- flames:load()
 end
