@@ -79,15 +79,12 @@ function love.update(_dt)
         if not state:update()==true then table.remove(gameStates,i) end 
     end
 
-    --For testing----------------------
+    --testing----------------------
     
     if releasedKey=='escape' then love.event.quit() end --easy close for devs.
     if releasedKey=='backspace' then love.load() end --easy restart for devs.
-    if releasedKey=='p' then 
-        SpecialAttacks:spawnFireCircle(Player.xPos,Player.yPos)
-    end
     
-    --For testing----------------------
+    --testing----------------------
 end
 
 function love.draw()

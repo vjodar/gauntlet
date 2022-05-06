@@ -12,6 +12,7 @@ function SpecialAttacks:load()
         tornado_segment_8=love.graphics.newImage('assets/specials/tornado_segment_8.png'),
 
         fireInsignia=love.graphics.newImage('assets/specials/fire_insignia.png'),
+        flame=love.graphics.newImage('assets/specials/flame_particle.png')
     }
 
     self.grids={
@@ -59,6 +60,22 @@ function SpecialAttacks:load()
         tornado_segment_7=anim8.newAnimation(self.grids.tornado_segment_7('1-8',1), 0.04),
         tornado_segment_8=anim8.newAnimation(self.grids.tornado_segment_8('1-14',1), 0.04),
     }
+
+    self.particleSystems={}
+    self.particleSystems.flames=love.graphics.newParticleSystem(self.spriteSheets.flame,200)
+    self.particleSystems.flames:setParticleLifetime(0.5,1)
+    self.particleSystems.flames:setEmissionArea('normal',3,2)
+    self.particleSystems.flames:setLinearAcceleration(-30,0,30,-130)    
+    self.particleSystems.flames:setRotation(0,0.5*math.pi)
+    self.particleSystems.flames:setSizes(1,2,1,2,1,0.1)
+    self.particleSystems.flames:setColors(
+        1,1,1,0.5,
+        (250/255),(203/255),(62/255),0.5,
+        (238/255),(142/255),(46/255),0.6,
+        (218/255),(78/255),(56/255),0.6,
+        (218/255),(78/255),(56/255),0.7,
+        (34/255),(34/255),(34/255),1
+    ) 
 end 
 
 --spawns a tornado at a given set of coordinates and an initial travel angle
@@ -219,14 +236,23 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
     function insignia:load()
         self.xPos,self.yPos=_xPos,_yPos
         self.sprite=SpecialAttacks.spriteSheets.fireInsignia
-        self.alpha=0   
+        self.alpha=0
+        self.lifespan=love.math.random(5,10)
+
+        TimerState:after(1,function() self:spawnFlames() end) --spawn flames after 1s
 
         table.insert(Dungeon.floorObjects,self) --add to dungeon's floor effects
     end
 
     function insignia:update()
-        --reveal by increasing alpha, capped at 0.7
-        if self.alpha<0.7 then self.alpha=self.alpha+dt*0.5 end
+        --reveal by increasing alpha
+        if self.alpha<1 then self.alpha=self.alpha+dt end
+        self.lifespan=self.lifespan-dt
+        if self.lifespan<=0 then 
+            for i,obj in pairs(Dungeon.floorObjects) do 
+                if obj==self then table.remove(Dungeon.floorObjects,i) end 
+            end
+        end
     end
 
     function insignia:draw()
@@ -235,22 +261,80 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
         love.graphics.setColor(1,1,1,1)
     end
 
-    insignia:load()
+    function insignia:spawnFlames()
+        local flamesTable={} --holds all individual flames
+        local function loadFlame()
+            local flame={} --an individual flame collider/particle system
+        
+            function flame:load()
+                self.xPos,self.yPos=_xPos,_yPos
+                self.lifespan=insignia.lifespan
+                self.attackOnCooldown=false 
 
-    -- local flames={}
+                self.collider=world:newBSGRectangleCollider(
+                    self.xPos-4.5,self.yPos-4,
+                    9,8,4
+                )
+                self.collider:setFixedRotation(true)
+                self.collider:setCollisionClass('flame')
+                self.collider:setLinearDamping(1)
 
-    -- function flames:load()
+                self.particles=SpecialAttacks.particleSystems.flames:clone()
+                self.particles:start()
+                self.particleEmissionRate=love.math.random(10,20)
 
-    --     table.insert(Entities.entitiesTable,self)
-    -- end
+                self.particles:emit(10)
+        
+                table.insert(Entities.entitiesTable,self)
+                table.insert(flamesTable,self)
+            end
+        
+            function flame:update()
+                self.xPos,self.yPos=self.collider:getPosition()
+                self.particles:update(dt)
+                self.particles:emit(3)
 
-    -- function flames:update()
+                if not self.attackOnCooldown 
+                and self.lifespan>0
+                and self.collider:isTouching(Player.collider:getBody()) 
+                then 
+                    local angle=2*math.pi*love.math.random()-math.pi
+                    Player:takeDamage('melee','pure',5,angle,3)
 
-    -- end
+                    self.attackOnCooldown=true 
+                    TimerState:after(0.5,function() self.attackOnCooldown=false end)
+                end
 
-    -- function flames:draw()
+                self.lifespan=self.lifespan-dt 
+                if self.lifespan<=0 then
+                    --once lifespan is 0, stop particle system.
+                    --when no particles remain, destory collider and delete flame
+                    self.particles:stop(0) 
+                    if self.particles:getCount()==0 then 
+                        self.collider:destroy()
+                        return false 
+                    end
+                end 
+            end
+        
+            function flame:draw()
+                love.graphics.draw(self.particles,self.xPos,self.yPos)
+            end
 
-    -- end
+            flame:load()
+        end
 
-    -- flames:load()
+        for i=1,17 do loadFlame() end --spawn in 10 flames
+        for i=1,#flamesTable-1 do --spread out flames in a circle to cover insignia
+            local angle=(i-1)*0.25*math.pi
+            local force=1.2
+            if i>8 then force=0.6 end
+            flamesTable[i].collider:applyLinearImpulse(
+                --x impulse is greater than y impulse to match ellipse of insignia
+                math.cos(angle)*force*1.4,math.sin(angle)*force*0.9
+            )
+        end
+    end    
+
+    insignia:load() 
 end

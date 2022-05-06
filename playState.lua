@@ -33,6 +33,9 @@ function PlayState:load()
     world:addCollisionClass('tornado',
         {ignores={'tornado','player','enemy','resourceNode','depletedNode'}}
     )
+    world:addCollisionClass(
+        'flame',{ignores={'flame','tornado','player','enemy','item'}}
+    )
 
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities

@@ -1441,6 +1441,10 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
                 self.animations.combat:pauseAtStart()
                 self.currentAnim=self.animations.idle --return to idle between attacks
                 self.state.inCombat=false
+                self.state.basicAttackCounter=self.state.basicAttackCounter+1
+                if self.state.basicAttackCounter%3==0 then 
+                    self:specialAttack()
+                end
             end
         )
         self.currentAnim=self.animations.idle 
@@ -1466,6 +1470,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.state.attackOnCooldown=false 
         self.state.attackRange={x=300,y=200}
         self.state.aggroRange={x=300,y=200}
+        self.state.basicAttackCounter=0 --used to trigger special attacks
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -1535,6 +1540,19 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
             love.graphics.setColor(1,1,1)
         end
         self.dialog:draw(self.xPos,self.yPos)
+    end
+
+    --spawns a fire insignia on the ground beneath the demon, then twice beneath
+    --the player. Once the insignia fades in, flames spawn to engulf the area above
+    --the insignia which rapidly damage and knockback the player.
+    function enemy:specialAttack()
+        SpecialAttacks:spawnFireCircle(self.xPos,self.yPos)
+        TimerState:after(0.75,function() 
+            SpecialAttacks:spawnFireCircle(Player.xPos,Player.yPos)
+        end)
+        TimerState:after(1.5,function() 
+            SpecialAttacks:spawnFireCircle(Player.xPos,Player.yPos)
+        end)
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
