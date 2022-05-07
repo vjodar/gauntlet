@@ -4,20 +4,34 @@ Dialog={}
 function Dialog:newDialogSystem()
     local sys={}
 
-    sys.lines={} --holds all text lines  
+    sys.lines={} --holds all text lines
+    sys.damages={}
+    sys.damageTypes={
+        physical=fonts.gray,        
+        magical=fonts.blue,        
+        pure=fonts.red    
+    }
 
     function sys:update()
-        for i,line in pairs(self.lines) do 
+        for i,line in pairs(self.lines) do --update text lines
             line.duration=line.duration-dt --reduce duration
             line.alpha=line.alpha-dt --fade out
-            if line.duration<0.017 then --remove after duration expires
+            if line.duration<=0 then --remove after duration expires
                 table.remove(self.lines,i)
             end
+        end
+
+        for i,dmg in pairs(self.damages) do --update damage values
+            dmg.xPos=dmg.xPos+dmg.xVel*dt
+            dmg.yPos=dmg.yPos+dmg.yVel*dt
+            dmg.yVel=dmg.yVel+dt*500 --apply gravity
+            if dmg.yPos>10 then table.remove(self.damages,i) end 
         end
     end
 
     function sys:draw(_xPos,_yPos)
-        for i,line in pairs(self.lines) do 
+        love.graphics.setFont(fonts.yellow)
+        for i,line in pairs(self.lines) do --draw text lines
             love.graphics.setColor(1,1,1,line.alpha)
             --print line, new lines spawn at the lowest position,
             --pushing older lines to the top
@@ -28,6 +42,13 @@ function Dialog:newDialogSystem()
             )
         end
         love.graphics.setColor(1,1,1,1)
+
+        for i,dmg in pairs(self.damages) do --draw damage numbers
+            love.graphics.setFont(self.damageTypes[dmg.type])
+            love.graphics.print(
+                dmg.value,_xPos+dmg.xPos,_yPos-10+dmg.yPos
+            )
+        end
     end
 
     --adds a text line to the dialog system
@@ -42,6 +63,20 @@ function Dialog:newDialogSystem()
 
         --can only have up to 5 lines at a time. If more lines are added, delete oldest
         if #self.lines>5 then table.remove(self.lines,#self.lines) end
+    end
+
+    --adds damage values to dialog system
+    --these will fly up and out of entity
+    function sys:damage(_val,_type)
+        local dmg={
+            value=_val,
+            type=_type,
+            xPos=0,yPos=0,
+            xVel=2*30*love.math.random()-30,
+            yVel=-120-40*love.math.random()
+        }
+
+        table.insert(self.damages,1,dmg) --insert into start of damages table
     end
 
     return sys

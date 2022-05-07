@@ -1,15 +1,19 @@
 PlayState={}
 
 function PlayState:load()
-    love.graphics.setBackgroundColor(2/15,2/15,2/15)    
-    love.graphics.setFont( --set the font
-        love.graphics.newImageFont(
-            "assets/fonts/myFont.png",
-            " abcdefghijklmnopqrstuvwxyz" ..
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ..
-            "1234567890.!,'+"
-        )
+    love.graphics.setBackgroundColor(2/15,2/15,2/15)
+    local glyphs=( --used for fonts
+        " abcdefghijklmnopqrstuvwxyz" ..
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ..
+        "1234567890.!,'+"
     )
+    fonts={
+        yellow=love.graphics.newImageFont("assets/fonts/font_yellow.png",glyphs), --default/dialog
+        gray=love.graphics.newImageFont("assets/fonts/font_gray.png",glyphs), --physical damage
+        blue=love.graphics.newImageFont("assets/fonts/font_blue.png",glyphs), --magical damage
+        red=love.graphics.newImageFont("assets/fonts/font_red.png",glyphs), --pure damage
+    }
+    love.graphics.setFont(fonts.yellow)
 
     cam=camera()
     camSmoother=cam.smooth.damped(10)
@@ -119,6 +123,6 @@ function PlayState:start()
     -- Items:spawn_item(playerStartX,playerStartY,'rock_metal')
     -- Items:spawn_item(playerStartX,playerStartY,'vine_thread')
     -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'arcane_shards') end
-    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'potion') end
+    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'fish_cooked') end
     --testing----------------------------------
 end

@@ -57,7 +57,7 @@ function Enemies:load()
             math.floor(modifiedDamage*0.9),math.ceil(modifiedDamage*1.1)
         )
         modifiedDamage=math.max(modifiedDamage,1) --can't hit lower than 1
-        _enemy.dialog:say(modifiedDamage) --testing----------------
+        _enemy.dialog:damage(modifiedDamage,_damageType)
 
         _enemy.health.current=math.max(_enemy.health.current-modifiedDamage,0) --can't be lower than 0
         if _enemy.health.current==0 then _enemy.state.willDie=true end 
@@ -92,8 +92,12 @@ function Enemies:load()
                 Dungeon.nextBrokenItem=1
             end
         end
-        if love.math.random(3)==1 then --1/3 chance to spawn a fish
-            Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw')
+        if love.math.random(3)==1 then --1/3 chance to spawn a fish or mushroom
+            if love.math.random(2)==1 then 
+                Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw')
+            else
+                Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom')
+            end
         end
     end
 
@@ -115,8 +119,12 @@ function Enemies:load()
                 Dungeon.nextBrokenItem=1
             end
         end
-        if love.math.random(3)==1 then --1/3 chance to spawn 2 fish
-            for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end            
+        if love.math.random(3)==1 then --1/3 chance to spawn 2 fish or mushroom
+            if love.math.random(2)==1 then 
+                for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end
+            else         
+                for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom') end  
+            end      
         end
     end
 
@@ -136,8 +144,12 @@ function Enemies:load()
         elseif _enemy.name=='orc_t3' then 
             Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_bowstring')
         end
-        if love.math.random(2)==1 then --1/2 chance to spawn 3 fish
-            for i=1,3 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end         
+        if love.math.random(2)==1 then --1/2 chance to spawn 3 fish or mushrooms
+            if love.math.random(2)==1 then 
+                for i=1,3 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end
+            else
+                for i=1,3 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom') end
+            end
         end
     end
 
@@ -527,7 +539,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
-        self.dialog:draw(self.xPos,self.yPos)
+        self.dialog:draw(self.xPos-4,self.yPos-8)
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
@@ -669,7 +681,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
-        self.dialog:draw(self.xPos,self.yPos)
+        self.dialog:draw(self.xPos-4,self.yPos-8)
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
@@ -812,7 +824,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
-        self.dialog:draw(self.xPos,self.yPos)
+        self.dialog:draw(self.xPos-4,self.yPos-8)
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
@@ -952,7 +964,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
-        self.dialog:draw(self.xPos,self.yPos)
+        self.dialog:draw(self.xPos-4,self.yPos-8)
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
@@ -1096,7 +1108,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
-        self.dialog:draw(self.xPos,self.yPos)
+        self.dialog:draw(self.xPos-4,self.yPos-12)
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
@@ -1237,7 +1249,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
-        self.dialog:draw(self.xPos,self.yPos)
+        self.dialog:draw(self.xPos-4,self.yPos-12)
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
@@ -1383,7 +1395,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
-        self.dialog:draw(self.xPos,self.yPos)
+        self.dialog:draw(self.xPos-4,self.yPos-16)
     end
 
     function enemy:specialAttack() --performs special attack (tornado)
@@ -1539,7 +1551,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
                 self.health.currentShown*0.5,2)
             love.graphics.setColor(1,1,1)
         end
-        self.dialog:draw(self.xPos,self.yPos)
+        self.dialog:draw(self.xPos-4,self.yPos-16)
     end
 
     --spawns a fire insignia on the ground beneath the demon, then twice beneath

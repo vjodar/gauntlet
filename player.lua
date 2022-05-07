@@ -699,7 +699,7 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
                 math.cos(_angle)*_knockback*0.2,math.sin(_angle)*_knockback*0.2
             )  
         end
-
+        self.dialog:damage(0,_damageType)
     else 
         local modifiedDamage=_val 
         --reduce damage by player's armor/damage resistance
@@ -708,7 +708,7 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
             math.floor(modifiedDamage*0.9),math.ceil(modifiedDamage*1.1)
         ) 
         modifiedDamage=math.max(modifiedDamage,1) --can't hit lower than 1
-        self.dialog:say(modifiedDamage) --testing---------------
+        self.dialog:damage(modifiedDamage,_damageType)
         self:updateHealth(-modifiedDamage)
         self.collider:applyLinearImpulse( --apply knockback
             math.cos(_angle)*_knockback,math.sin(_angle)*_knockback

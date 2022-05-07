@@ -238,8 +238,16 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
         self.sprite=SpecialAttacks.spriteSheets.fireInsignia
         self.alpha=0
         self.lifespan=love.math.random(5,10)
+        self.collider=world:newBSGRectangleCollider(
+            self.xPos-23.5,self.yPos-16,47,32,10
+        )
+        self.collider:setSensor(true)
+        self.attackOnCooldown=true
 
-        TimerState:after(1,function() self:spawnFlames() end) --spawn flames after 1s
+        TimerState:after(1,function() --spawn flames after 1s
+            self:spawnFlames()
+            self.attackOnCooldown=false 
+        end) 
 
         table.insert(Dungeon.floorObjects,self) --add to dungeon's floor effects
     end
@@ -247,11 +255,22 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
     function insignia:update()
         --reveal by increasing alpha
         if self.alpha<1 then self.alpha=self.alpha+dt end
+
+        if not self.attackOnCooldown
+        and self.collider:isTouching(Player.collider:getBody())
+        then 
+            local angle=2*math.pi*love.math.random()-math.pi ---pi to +pi range
+            Player:takeDamage('melee','pure',10,angle,5)
+            self.attackOnCooldown=true
+            TimerState:after(0.1,function() self.attackOnCooldown=false end)
+        end
+
         self.lifespan=self.lifespan-dt
         if self.lifespan<=0 then 
             for i,obj in pairs(Dungeon.floorObjects) do 
                 if obj==self then table.remove(Dungeon.floorObjects,i) end 
             end
+            self.collider:destroy()
         end
     end
 
@@ -269,7 +288,6 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
             function flame:load()
                 self.xPos,self.yPos=_xPos,_yPos
                 self.lifespan=insignia.lifespan
-                self.attackOnCooldown=false 
 
                 self.collider=world:newBSGRectangleCollider(
                     self.xPos-4.5,self.yPos-4,
@@ -293,17 +311,6 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
                 self.xPos,self.yPos=self.collider:getPosition()
                 self.particles:update(dt)
                 self.particles:emit(3)
-
-                if not self.attackOnCooldown 
-                and self.lifespan>0
-                and self.collider:isTouching(Player.collider:getBody()) 
-                then 
-                    local angle=2*math.pi*love.math.random()-math.pi
-                    Player:takeDamage('melee','pure',5,angle,3)
-
-                    self.attackOnCooldown=true 
-                    TimerState:after(0.5,function() self.attackOnCooldown=false end)
-                end
 
                 self.lifespan=self.lifespan-dt 
                 if self.lifespan<=0 then
