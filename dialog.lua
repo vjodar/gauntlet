@@ -30,7 +30,6 @@ function Dialog:newDialogSystem()
     end
 
     function sys:draw(_xPos,_yPos)
-        love.graphics.setFont(fonts.yellow)
         for i,line in pairs(self.lines) do --draw text lines
             love.graphics.setColor(1,1,1,line.alpha)
             --print line, new lines spawn at the lowest position,
@@ -49,6 +48,7 @@ function Dialog:newDialogSystem()
                 dmg.value,_xPos+dmg.xPos,_yPos-10+dmg.yPos
             )
         end
+        love.graphics.setFont(fonts.yellow) --reset to default yellow font
     end
 
     --adds a text line to the dialog system
