@@ -16,6 +16,7 @@ require 'hud'
 require 'dialog'
 require 'protectionMagics'
 require 'ui'
+require 'bossRoom'
 
 function love.load()
     --set pixelated look

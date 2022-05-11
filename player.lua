@@ -571,7 +571,9 @@ end
 --fight the currently targeted enemy
 function Player:fightEnemy()
     --if enemy died, disengage combat
-    if self.combatData.currentEnemy==nil then 
+    if self.combatData.currentEnemy==nil 
+    or self.combatData.currentEnemy.health.current==0
+    then 
         self.combatData.inCombat=false
         self.animations.bow:pauseAtStart()
         self.animations.staff:pauseAtStart()

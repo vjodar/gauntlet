@@ -45,7 +45,7 @@ function Dialog:newDialogSystem()
         for i,dmg in pairs(self.damages) do --draw damage numbers
             love.graphics.setFont(self.damageTypes[dmg.type])
             love.graphics.print(
-                dmg.value,_xPos+dmg.xPos,_yPos-10+dmg.yPos
+                dmg.value,_xPos+dmg.xPos+dmg.xOffset,_yPos-10+dmg.yPos+dmg.yOffset
             )
         end
         love.graphics.setFont(fonts.yellow) --reset to default yellow font
@@ -72,6 +72,8 @@ function Dialog:newDialogSystem()
             value=_val,
             type=_type,
             xPos=0,yPos=0,
+            xOffset=8*love.math.random()-4,
+            yOffset=10*love.math.random()-5,
             xVel=2*30*love.math.random()-30,
             yVel=-120-40*love.math.random()
         }

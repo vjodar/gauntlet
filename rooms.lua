@@ -434,6 +434,7 @@ function Rooms:addWallCollider(_x,_y,_w,_h)
     local w=world:newBSGRectangleCollider(_x,_y,_w,_h,1)
     w:setType('static')
     w:setCollisionClass('outerWall')
+    table.insert(Dungeon.colliders,w)
 end
 
 --takes a room's doorButtons table, its position, and its type/layout, 
@@ -712,6 +713,7 @@ function Rooms:generateDoorBarriers(_room)
         _room.doorBarriers.top=world:newRectangleCollider(_room.xPos+165,_room.yPos,54,32)
         _room.doorBarriers.top:setType('static')
         _room.doorBarriers.top:setCollisionClass('doorBarrier')
+        table.insert(Dungeon.colliders,_room.doorBarriers.top)
     end
     if not _room.isLit.bottom and 
     not (_room.type=='sideBottom' or _room.type=='cornerBottomLeft' or _room.type=='cornerBottomRight')
@@ -719,6 +721,7 @@ function Rooms:generateDoorBarriers(_room)
         _room.doorBarriers.bottom=world:newRectangleCollider(_room.xPos+165,_room.yPos+298,54,22) 
         _room.doorBarriers.bottom:setType('static')
         _room.doorBarriers.bottom:setCollisionClass('doorBarrier')
+        table.insert(Dungeon.colliders,_room.doorBarriers.bottom)
     end
     if not _room.isLit.left and 
     not (_room.type=='sideLeft' or _room.type=='cornerBottomLeft' or _room.type=='cornerTopLeft')
@@ -726,6 +729,7 @@ function Rooms:generateDoorBarriers(_room)
         _room.doorBarriers.left=world:newRectangleCollider(_room.xPos,_room.yPos+144,16,60) 
         _room.doorBarriers.left:setType('static')
         _room.doorBarriers.left:setCollisionClass('doorBarrier')
+        table.insert(Dungeon.colliders,_room.doorBarriers.left)
     end
     if not _room.isLit.right and 
     not (_room.type=='sideRight' or _room.type=='cornerBottomRight' or _room.type=='cornerTopRight')
@@ -733,6 +737,7 @@ function Rooms:generateDoorBarriers(_room)
         _room.doorBarriers.right=world:newRectangleCollider(_room.xPos+368,_room.yPos+144,16,60) 
         _room.doorBarriers.right:setType('static')
         _room.doorBarriers.right:setCollisionClass('doorBarrier')
+        table.insert(Dungeon.colliders,_room.doorBarriers.right)
     end
 end
 
@@ -937,11 +942,14 @@ function Rooms:spawnLadder(_room)
 
     function ladder:nodeInteract()
         --TODO---------------------------
-        --go to boss room        
-        if self.dialogBoolean then 
-            Player.dialog:say("I wonder what's down there...") 
-            self.dialogBoolean=false
+        -- if self.dialogBoolean then 
+        --     Player.dialog:say("I wonder what's down there...") 
+        --     self.dialogBoolean=false
+        -- end
+        if Player.state.protectionActivated then
+            Player.protectionMagics:deactivate()
         end
+        PlayState:startBossBattle()
         --TODO---------------------------
     end
 

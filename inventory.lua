@@ -18,8 +18,8 @@ function Inventory:load()
     self.inventorySegments.endRight={} --right endpiece segment
     self.inventorySegments.endRight.sprite=love.graphics.newImage('assets/hud/inventory/hud_inv_endright.png')
     self.inventorySegments.endRight.xPos_open=274*WINDOWSCALE_X
-    self.inventorySegments.endRight.xPos_current=26*WINDOWSCALE_X
-    self.inventorySegments.endRight.xPos_closed=26*WINDOWSCALE_X
+    self.inventorySegments.endRight.xPos_current=27*WINDOWSCALE_X
+    self.inventorySegments.endRight.xPos_closed=27*WINDOWSCALE_X
     self.inventorySegments.endRight.yPos=self.inv_yPos-WINDOWSCALE_X
 
     for i=0,13 do --add 14 inventory middle segments

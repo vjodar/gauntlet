@@ -299,7 +299,8 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
 
                 self.particles=SpecialAttacks.particleSystems.flames:clone()
                 self.particles:start()
-                self.particleEmissionRate=love.math.random(10,20)
+                self.particleEmissionRate=1/60 --will emit every 1/60s
+                self.particleEmissionTimer=0
 
                 self.particles:emit(10)
         
@@ -310,7 +311,11 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
             function flame:update()
                 self.xPos,self.yPos=self.collider:getPosition()
                 self.particles:update(dt)
-                self.particles:emit(3)
+                self.particleEmissionTimer=self.particleEmissionTimer+dt
+                if self.particleEmissionTimer>=self.particleEmissionRate then 
+                    self.particleEmissionTimer=0
+                    self.particles:emit(2) --emit every ~1/60s
+                end
 
                 self.lifespan=self.lifespan-dt 
                 if self.lifespan<=0 then

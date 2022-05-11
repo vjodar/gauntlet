@@ -9,6 +9,8 @@ function Dungeon:load()
 
     self.floorObjects={} --holds all objects that on the floor, beneath entities
 
+    self.colliders={} --holds colliders of all outerWalls, doorButtons, and doorBarriers
+
     --will store the just the crafting table, as we need its reference in order
     --to emit particles from it from within the Crafting Menu code
     self.craftingTable={} 
@@ -57,4 +59,17 @@ end
 function Dungeon:drawForeground()
     --Draw the rooms' foreground features which will appear in front of entities
     for i,room in pairs(self.roomsTable) do room:drawForeground() end 
+end
+
+--removes all entities and colliders that were made and used in the dungeon
+function Dungeon:closeDungeon()
+    Entities:removeAll() --clears entities table (except for player)
+    --destroy outerWall and doorBarrier colliders
+    for i,collider in pairs(self.colliders) do collider:destroy() end    
+    for i,room in pairs(self.roomsTable) do 
+        --must destory doorButton colliders using their room. Doesn't work when
+        --their collider is added to self.colliders for some reason.
+        for j,button in pairs(room.doorButtons) do button.collider:destroy() end 
+    end
+    for i,floorObj in pairs(self.floorObjects) do floorObj.collider:destroy() end 
 end

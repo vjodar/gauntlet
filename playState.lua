@@ -53,12 +53,22 @@ function PlayState:load()
     Items:load() --initialize items
     Projectiles:load() --initialize projectiles
     Hud:load() --initialize Heads Up Display
+    BossRoom:load() --initialize boss room
 
-    self:start()
+    self:startDungeonPhase()
 end
 
-function PlayState:update()
+--update and draw functions. They will be changed depending on which part of
+--the game the player is currently on (starting room, dungeon, and boss battle)
+function PlayState:update() return self:_update() end
+function PlayState:draw() 
+    self:_draw() 
+    --testing-----------------------
+    love.graphics.print(#Entities.entitiesTable,0,30,nil,3,3)
+    --testing-----------------------
+end
 
+function PlayState:updateDungeonPhase() --update function of gathering/crafting phase
     world:update(dt) --update physics colliders
     Dungeon:update() --update dungeon
     Entities:update() --update all entities
@@ -70,12 +80,11 @@ function PlayState:update()
     return true --IMPORTANT! return true to remain on statestack
 end
 
---Draw state associated with playState
-function PlayState:draw()
+function PlayState:drawDungeonPhase() --draw funtion of the gathering/crafting phase
     cam:attach()
         Dungeon:drawFloorObjects() --draw objects on floor, beneath entities
         Dungeon:drawRooms() --draw the dungeon's rooms
-        -- world:draw() --draws all physics colliders
+        world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features 
         UI:draw() --draw ui elements
@@ -84,8 +93,34 @@ function PlayState:draw()
     Hud:draw() --draw hud 
 end
 
---start the playstate
-function PlayState:start()
+function PlayState:updateBossBattle()
+    world:update(dt) --update physics
+    --TODO: update boss room
+    Entities:update() --update all entities
+    cam:lockPosition(camTarget.xPos,camTarget.yPos,camSmoother) --update camera
+    Hud:update() --update HUD
+    
+    return true --return true to remain on state stack
+end
+
+function PlayState:drawBossBattle()
+    cam:attach()
+        BossRoom:draw() 
+        --TODO: draw boss room floor where environmental hazards will be
+        --TODO: draw anything else associated with the room (perhaps fog?)
+        world:draw() --draws colliders
+        Entities:draw() --draw all entities, sorted by yPos
+        --TODO: draw any foreground boss room things (probably won't have any though)
+        UI:draw() --draw ui elements (dialog,healthbars,etc.)
+    cam:detach()
+    Hud:draw() --draw HUD outside camera
+end
+
+function PlayState:startDungeonPhase()
+    --set associated update and draw functions
+    self._update=self.updateDungeonPhase
+    self._draw=self.drawDungeonPhase
+
     --move the player to the starting room
     local playerStartX=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256)
     local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
@@ -97,15 +132,18 @@ function PlayState:start()
 
     --testing----------------------------------
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
-    print('spawning enemy')
-    -- Enemies.enemySpawner.t1[1](playerStartX,playerStartY)
-    -- Enemies.enemySpawner.t1[2](playerStartX,playerStartY)
-    -- Enemies.enemySpawner.t1[3](playerStartX,playerStartY)
-    -- Enemies.enemySpawner.t2[1](playerStartX,playerStartY)
-    -- Enemies.enemySpawner.t2[2](playerStartX,playerStartY)
-    -- Enemies.enemySpawner.t2[3](playerStartX,playerStartY)
-    -- Enemies.enemySpawner.t3[1](playerStartX,playerStartY)
-    -- Enemies.enemySpawner.t3[2](playerStartX,playerStartY)
+    local function randomPoints()
+        return Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256),
+        Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
+    end
+    -- Enemies.enemySpawner.t1[1](randomPoints())
+    -- Enemies.enemySpawner.t1[2](randomPoints())
+    -- Enemies.enemySpawner.t1[3](randomPoints())
+    -- Enemies.enemySpawner.t2[1](randomPoints())
+    -- Enemies.enemySpawner.t2[2](randomPoints())
+    -- Enemies.enemySpawner.t2[3](randomPoints())
+    -- Enemies.enemySpawner.t3[1](randomPoints())
+    -- Enemies.enemySpawner.t3[2](randomPoints())
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
@@ -125,4 +163,15 @@ function PlayState:start()
     -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'arcane_shards') end
     -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'fish_cooked') end
     --testing----------------------------------
+end
+
+function PlayState:startBossBattle()
+    --set associated update and draw function
+    self._update=self.updateBossBattle
+    self._draw=self.drawBossBattle
+
+    Dungeon:closeDungeon() --delete dungeon rooms and entities
+
+    Player.collider:setPosition(0,0)
+    cam:lookAt(Player.collider:getPosition())
 end
