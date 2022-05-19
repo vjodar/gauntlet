@@ -102,13 +102,15 @@ function PlayState:drawBossBattle()
     cam:attach()
         BossRoom:draw() 
         --TODO: draw boss room floor where environmental hazards will be
-        --TODO: draw anything else associated with the room (perhaps fog?)
         -- world:draw() --draws colliders
         Entities:draw() --draw all entities, sorted by yPos
-        --TODO: draw any foreground boss room things (probably won't have any though)
         UI:draw() --draw ui elements (dialog,healthbars,etc.)
     cam:detach()
     Hud:draw() --draw HUD outside camera
+
+    -- --testing--------------------------
+    -- love.graphics.print(love.timer:getFPS(),0,0,nil,6)
+    -- --testing--------------------------
 end
 
 function PlayState:startDungeonPhase()
@@ -131,9 +133,8 @@ function PlayState:startDungeonPhase()
         return Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256),
         Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     end
-    --testing------------------------------------
+
     TimerState:after(1,function() self:startBossBattle() end)
-    --testing------------------------------------
 
     -- SpecialAttacks:spawnFissure(randomPoints(),Player)
     -- Enemies.enemySpawner.t1[1](randomPoints())
@@ -180,10 +181,10 @@ function PlayState:startBossBattle()
     --testing----------------------------
     TimerState:after(1,function() 
         Enemies.enemySpawner.t4[1](216,168) 
-        Items:spawn_item(216,168,'weapon_staff_t3')
+        -- Items:spawn_item(216,168,'weapon_staff_t3')
     end)    
     --testing----------------------------
 
-    Player.collider:setPosition(0,0)
+    Player.collider:setPosition(200,200)
     cam:lookAt(Player.collider:getPosition())
 end

@@ -412,7 +412,7 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
         self.willDie=false 
         self.hitTarget=false --true when fissure reached and hit its target
 
-        self:spawnCrater(self.xPos,self.yPos) --create crater in initial impact area
+        self:spawnCrater1(self.xPos,self.yPos) --create crater in initial impact area
 
         table.insert(Entities.entitiesTable,self)
     end
@@ -444,9 +444,12 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
         if not self.hitTarget 
         and self.collider:isTouching(self.target.collider:getBody())
         then 
-            self:spawnCrater(self.xPos,self.yPos)
-            self.target:takeDamage(
-                'melee','physical',self.knockback,self.angle,self.damage
+            self:spawnCrater2(self.xPos,self.yPos,self.angle)
+            self.target:takeDamage( --deal physical damage
+                'projectile','physical',self.knockback,self.angle,self.damage
+            )
+            self.target:takeDamage( --deal reduced pure damage (with no knockback)
+                'projectile','pure',0,self.angle,self.damage*0.25
             )
             self.hitTarget=true
             self.collider:setActive(false)
@@ -508,16 +511,26 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
         trail:load()
     end
 
-    function fissure:spawnCrater(_xPos,_yPos) --creates impact area crater using trail pieces
-        self:spawnTrail(_xPos-10,_yPos)
+    --creates a crater of trail peices at initial area (where boss slams)
+    function fissure:spawnCrater1(_xPos,_yPos) 
+        self:spawnTrail(_xPos-12,_yPos+1)
         self:spawnTrail(_xPos-8,_yPos-4)
         self:spawnTrail(_xPos,_yPos-6)
         self:spawnTrail(_xPos+8,_yPos-4)
-        self:spawnTrail(_xPos+10,_yPos)
+        self:spawnTrail(_xPos+12,_yPos+1)
         self:spawnTrail(_xPos-8,_yPos+4)
         self:spawnTrail(_xPos,_yPos+6)
         self:spawnTrail(_xPos+8,_yPos+4)
         self:spawnTrail(_xPos,_yPos)
+    end
+
+    --creates a crater of trail peices at impact area (where player is hit)
+    function fissure:spawnCrater2(_xPos,_yPos,_angle)
+        self:spawnTrail(_xPos+10*math.cos(_angle),_yPos+8*math.sin(_angle))
+        self:spawnTrail(_xPos+8*math.cos(_angle+0.25*math.pi),_yPos+6*math.sin(_angle+0.25*math.pi))
+        self:spawnTrail(_xPos+8*math.cos(_angle-0.25*math.pi),_yPos+6*math.sin(_angle-0.25*math.pi))
+        self:spawnTrail(_xPos+8*math.cos(_angle+0.5*math.pi),_yPos+6*math.sin(_angle+0.5*math.pi))
+        self:spawnTrail(_xPos+8*math.cos(_angle-0.5*math.pi),_yPos+6*math.sin(_angle-0.5*math.pi))
     end
 
     fissure:load()

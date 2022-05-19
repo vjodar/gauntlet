@@ -1609,20 +1609,21 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.animations.idle=anim8.newAnimation(self.grid('1-6',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('7-12',1), 0.1)
         self.animations.combatPhysical=anim8.newAnimation(
-            self.grid('13-15',1), 0.1,
-            function() --onLoop function
-                SpecialAttacks:spawnFissure(self.xPos+(22*self.state.scaleX),self.yPos,Player)
-                self.animations.combat:pauseAtStart()
+            self.grid('13-20',1), 0.125,
+            function() --onLoop function                
                 self.state.attackOnCooldown=true
-                TimerState:after(2,function() self.state.attackOnCooldown=false end)
+                TimerState:after(self.state.attackCooldownTime,function() 
+                    self.state.attackOnCooldown=false 
+                    self.state.hasAttacked=false 
+                end)
+                self.animations.combat:pauseAtStart()
                 self.currentAnim=self.animations.idle --return to idle between attacks
-                -- self.state.basicAttackCounter=self.state.basicAttackCounter+1
+                self.state.basicAttackCounter=self.state.basicAttackCounter+1
                 -- if self.state.basicAttackCounter%3==0 then 
                 --     self:specialAttack()
                 -- end
             end
         )
-        self.animations.combatPhysical:pauseAtStart()
         self.animations.combat=self.animations.combatPhysical
         self.currentAnim=self.animations.idle 
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
@@ -1631,11 +1632,13 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --enemy's current state metatable
         self.state={}
-        self.state.facing='left'
+        self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
         self.state.idle=true 
+        self.state.hasAttacked=false --used to perform a single attack at a time
         self.state.isTargetted=false --true when player is targeting this enemy
+        self.state.attackCooldownTime=1.35 --1.35s between attacks
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=500
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
@@ -1683,9 +1686,20 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         if Player.health.current==0 then self:wanderingAI() return end
 
-        if self.state.attackOnCooldown==false  then 
+        if self.state.attackOnCooldown==false then 
             self.currentAnim=self.animations.combat             
             self.currentAnim:resume()
+
+            if self.currentAnim.position==5 --spawn fissure on appropriate frame
+            and not self.state.hasAttacked 
+            then
+                self.state.hasAttacked=true 
+                if self.state.scaleX==1 then 
+                    SpecialAttacks:spawnFissure(self.xPos+25,self.yPos,Player)
+                else 
+                    SpecialAttacks:spawnFissure(self.xPos-35,self.yPos,Player)
+                end
+            end
         elseif self.state.attackOnCooldown then 
             self:approachTarget()
         elseif Player.health.current>0 then
