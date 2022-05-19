@@ -205,6 +205,8 @@ function Player:load()
     self.combatData.currentEnemy=nil --current combat target
     self.combatData.prevEnemies={} --holds previously targeted enemies
     self.combatData.prevEnemiesLimit=6 
+    self.combatData.queryCombatRange={x=400,y=300} --area around player to query for enemies
+    self.combatData.aggroRange={x=300,y=200} --max distance from enemy before disengaging combat    
     self.combatData.attackOnCooldown=false --true when awaiting for cooldown between attacks
     self.combatData.attackCooldownTime=1.35 --time in sec between attacks
     self.combatData.damageBonus=0 --damage bonus given by armor
@@ -588,8 +590,8 @@ function Player:fightEnemy()
     }
 
     --if enemy is too far, disengage combat
-    if math.abs(self.xPos-self.combatData.currentEnemy.xPos)>300
-        or math.abs(self.yPos-self.combatData.currentEnemy.yPos)>200
+    if math.abs(self.xPos-self.combatData.currentEnemy.xPos)>self.combatData.aggroRange.x
+    or math.abs(self.yPos-self.combatData.currentEnemy.yPos)>self.combatData.aggroRange.y
     then 
         self.combatData.inCombat=false
         Player.combatData.prevEnemies={} --clear prevEnemies table

@@ -12,7 +12,14 @@ function SpecialAttacks:load()
         tornado_segment_8=love.graphics.newImage('assets/specials/tornado_segment_8.png'),
 
         fireInsignia=love.graphics.newImage('assets/specials/fire_insignia.png'),
-        flame=love.graphics.newImage('assets/specials/flame_particle.png')
+        flame=love.graphics.newImage('assets/specials/flame_particle.png'),
+
+        fissure_trail_1=love.graphics.newImage('assets/specials/fissure_trail_1.png'),
+        fissure_trail_2=love.graphics.newImage('assets/specials/fissure_trail_2.png'),
+        fissure_trail_3=love.graphics.newImage('assets/specials/fissure_trail_3.png'),
+        fissure_trail_4=love.graphics.newImage('assets/specials/fissure_trail_4.png'),
+        fissure_trail_5=love.graphics.newImage('assets/specials/fissure_trail_5.png'),
+        fissure_trail_6=love.graphics.newImage('assets/specials/fissure_trail_6.png'),
     }
 
     self.grids={
@@ -48,6 +55,30 @@ function SpecialAttacks:load()
             29,14,self.spriteSheets.tornado_segment_8:getWidth(),
             self.spriteSheets.tornado_segment_8:getHeight()
         ),
+        fissure_trail_1=anim8.newGrid(
+            7,8,self.spriteSheets.fissure_trail_1:getWidth(),
+            self.spriteSheets.fissure_trail_1:getHeight()
+        ),
+        fissure_trail_2=anim8.newGrid(
+            7,8,self.spriteSheets.fissure_trail_2:getWidth(),
+            self.spriteSheets.fissure_trail_2:getHeight()
+        ),
+        fissure_trail_3=anim8.newGrid(
+            10,9,self.spriteSheets.fissure_trail_3:getWidth(),
+            self.spriteSheets.fissure_trail_3:getHeight()
+        ),
+        fissure_trail_4=anim8.newGrid(
+            10,9,self.spriteSheets.fissure_trail_4:getWidth(),
+            self.spriteSheets.fissure_trail_4:getHeight()
+        ),
+        fissure_trail_5=anim8.newGrid(
+            11,10,self.spriteSheets.fissure_trail_5:getWidth(),
+            self.spriteSheets.fissure_trail_5:getHeight()
+        ),
+        fissure_trail_6=anim8.newGrid(
+            11,10,self.spriteSheets.fissure_trail_6:getWidth(),
+            self.spriteSheets.fissure_trail_6:getHeight()
+        ),
     }
 
     self.animations={
@@ -67,7 +98,7 @@ function SpecialAttacks:load()
     self.particleSystems.flames:setEmissionArea('normal',3,2)
     self.particleSystems.flames:setLinearAcceleration(-30,0,30,-130)    
     self.particleSystems.flames:setRotation(0,0.5*math.pi)
-    self.particleSystems.flames:setSizes(1,2,1,2,1,0.1)
+    self.particleSystems.flames:setSizes(0.5,2,0.5,2,0.5,0.1)
     self.particleSystems.flames:setColors(
         1,1,1,0.5,
         (250/255),(203/255),(62/255),0.5,
@@ -349,4 +380,145 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
     end    
 
     insignia:load() 
+end
+
+--boss's basic physical attack; too different and complex compared to a regular
+--projectile, so it's lumped together with special attacks.
+--spawns a collider that travels to a _target, spawning fissure trail pieces while 
+--it traveles, creating a fissure. Upon touching target, damage and spawn a fissue end
+function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
+    local fissure={}
+
+    function fissure:load()
+        self.sprites={
+            fissure_trail_1=SpecialAttacks.spriteSheets.fissure_trail_1,
+            fissure_trail_2=SpecialAttacks.spriteSheets.fissure_trail_2,
+            fissure_trail_3=SpecialAttacks.spriteSheets.fissure_trail_3,
+            fissure_trail_4=SpecialAttacks.spriteSheets.fissure_trail_4,
+            fissure_trail_5=SpecialAttacks.spriteSheets.fissure_trail_5,
+            fissure_trail_6=SpecialAttacks.spriteSheets.fissure_trail_6,
+        }
+        self.collider=world:newBSGRectangleCollider(_xPos,_yPos,9,8,4)
+        self.xPos,self.yPos=self.collider:getPosition()
+        self.collider:setLinearDamping(20)
+        self.collider:setMass(0.1)
+        self.collider:setSensor(true)
+        self.target=_target 
+        self.damage=30
+        self.knockback=60
+        self.speed=480
+        self.timer=-0.075
+        self.angle=0
+        self.willDie=false 
+        self.hitTarget=false --true when fissure reached and hit its target
+
+        self:spawnCrater(self.xPos,self.yPos) --create crater in initial impact area
+
+        table.insert(Entities.entitiesTable,self)
+    end
+
+    function fissure:update()
+        self.xPos,self.yPos=self.collider:getPosition()
+        self.timer=self.timer+dt 
+        if self.timer>0.025 and not self.hitTarget then --spawn trail every 0.025s
+            --spawn two trail pieces along the line of travel but somewhat 
+            --staggered (1/4pi and 3/4pi along angle) to create a zigzag trail
+            self:spawnTrail(
+                self.xPos+3*math.cos(self.angle+0.25*math.pi),
+                self.yPos+3*math.sin(self.angle+0.25*math.pi)
+            )
+            self:spawnTrail(
+                self.xPos+3*math.cos(self.angle-0.75*math.pi),
+                self.yPos+3*math.sin(self.angle-0.75*math.pi)
+            )
+            self.timer=0
+        end 
+
+        --travel toward target
+        self.angle=math.atan2((self.target.yPos-self.yPos),(self.target.xPos-self.xPos))
+        self.collider:applyForce(
+            math.cos(self.angle)*self.speed, math.sin(self.angle)*self.speed            
+        )
+        
+        --when contacting target, damage and set collider to not active, then die
+        if not self.hitTarget 
+        and self.collider:isTouching(self.target.collider:getBody())
+        then 
+            self:spawnCrater(self.xPos,self.yPos)
+            self.target:takeDamage(
+                'melee','physical',self.knockback,self.angle,self.damage
+            )
+            self.hitTarget=true
+            self.collider:setActive(false)
+            TimerState:after(2,function() self.willDie=true end)
+        end
+
+        if self.willDie then 
+            self.collider:destroy()
+            return false 
+        end
+    end
+
+    function fissure:draw() end
+
+    --spawns a random fissure trail piece and adds to entitiesTable
+    function fissure:spawnTrail(_xPos,_yPos) 
+        local trail={}
+
+        function trail:load()
+            self.xPos,self.yPos=_xPos,_yPos
+            --choose a random fissure trail sprite/animation
+            local trail='fissure_trail_'..love.math.random(1,6)
+            self.sprite=fissure.sprites[trail]
+            self.animationForward=anim8.newAnimation(
+                SpecialAttacks.grids[trail]('1-4',1),0.02,
+                function() self.animationForward:pauseAtEnd() end
+            )
+            self.animationBackward=anim8.newAnimation(
+                SpecialAttacks.grids[trail]('4-1',1),0.02,
+                function() self.willDie=true end
+            )
+            self.currentAnim=self.animationForward
+            self.lifespan=1.5 --lasts for 1.5s  
+            self.willDie=false          
+
+            -- offset sprite to center base
+            local w,h=self.currentAnim:getDimensions()
+            self.xOffset=-w*0.5
+            self.yOffset=-h*0.75
+
+            table.insert(Entities.entitiesTable,self)
+        end
+
+        function trail:update()
+            self.currentAnim:update(dt)
+            self.lifespan=self.lifespan-dt 
+            if self.lifespan<=0 then self.currentAnim=self.animationBackward end
+            if self.willDie then return false end
+        end
+
+        function trail:draw()
+            self.currentAnim:draw(
+                self.sprite,
+                self.xPos+self.xOffset,
+                self.yPos+self.yOffset
+            )
+        end
+
+        trail:load()
+    end
+
+    function fissure:spawnCrater(_xPos,_yPos) --creates impact area crater using trail pieces
+        self:spawnTrail(_xPos-10,_yPos)
+        self:spawnTrail(_xPos-8,_yPos-4)
+        self:spawnTrail(_xPos,_yPos-6)
+        self:spawnTrail(_xPos+8,_yPos-4)
+        self:spawnTrail(_xPos+10,_yPos)
+        self:spawnTrail(_xPos-8,_yPos+4)
+        self:spawnTrail(_xPos,_yPos+6)
+        self:spawnTrail(_xPos+8,_yPos+4)
+        self:spawnTrail(_xPos,_yPos)
+    end
+
+    fissure:load()
 end

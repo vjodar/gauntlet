@@ -10,12 +10,13 @@ function Enemies:load()
     self.spriteSheets.mageT2=love.graphics.newImage('assets/enemies/mage_t2.png')
     self.spriteSheets.orcT3=love.graphics.newImage('assets/enemies/orc_t3.png')
     self.spriteSheets.demonT3=love.graphics.newImage('assets/enemies/demon_t3.png')
+    self.spriteSheets.boss=love.graphics.newImage('assets/enemies/boss.png')
 
-    self.sprites={} --stores all other sprites used by enemies
-    self.sprites.healthbars={
+    self.healthbars={
         t1=love.graphics.newImage('assets/enemies/healthbar_t1.png'),
         t2=love.graphics.newImage('assets/enemies/healthbar_t2.png'),
         t3=love.graphics.newImage('assets/enemies/healthbar_t3.png'),
+        t4=love.graphics.newImage('assets/enemies/healthbar_t4.png'),
     }
 
     self.healthRGB={red=218/255,green=78/255,blue=56/255} --for drawing remaining health of enemy
@@ -29,6 +30,8 @@ function Enemies:load()
                 _enemy.health.currentShown=_enemy.health.currentShown-1
                 _enemy.health.timer=0
             end
+            --once healthbar is depleted visually, enemy will die
+            if _enemy.health.currentShown==0 then _enemy.state.willDie=true end 
         end
     end
 
@@ -60,7 +63,6 @@ function Enemies:load()
         _enemy.dialog:damage(modifiedDamage,_damageType)
 
         _enemy.health.current=math.max(_enemy.health.current-modifiedDamage,0) --can't be lower than 0
-        if _enemy.health.current==0 then _enemy.state.willDie=true end 
 
         --apply knockback
         _enemy.collider:applyLinearImpulse(
@@ -168,13 +170,16 @@ function Enemies:load()
                 (_enemy.state.moveTarget.x-_enemy.xPos)
             )
 
-            if _enemy.state.moveTarget.x>_enemy.xPos then --update where they're facing
-                _enemy.state.facing='right'
+            --update where they're facing
+            if _enemy.state.moveTarget.x>_enemy.xPos then _enemy.state.facing='right'                
             else _enemy.state.facing='left' end
 
             --calculate velocity components using angle (vectors are normalized)
             _enemy.xVel=math.cos(angle)*_enemy.state.moveSpeed
             _enemy.yVel=math.sin(angle)*_enemy.state.moveSpeed
+
+            --update their state
+            _enemy.state.idle=false 
             _enemy.state.moving=true
         end
 
@@ -182,7 +187,7 @@ function Enemies:load()
             _enemy.currentAnim=_enemy.animations.moving
             _enemy.state.movingTimer=_enemy.state.movingTimer+dt 
         elseif _enemy.state.idle then 
-            _enemy.currentAnim=_enemy.animations.idle 
+            _enemy.currentAnim=_enemy.animations.idle
             _enemy.state.reachedMoveTarget=true
             _enemy.state.movingTimer=0 --reset movingTimer
         end 
@@ -411,7 +416,7 @@ function Enemies:load()
 end
 
 --holds spawn functions for each tier of enemy
-Enemies.enemySpawner={t1={}, t2={}, t3={}}
+Enemies.enemySpawner={t1={}, t2={}, t3={}, t4={}}
 
 Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
     local enemy={} --create enemy instance
@@ -477,7 +482,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         TimerState:after(1,function() self.state.moveTarget={x=self.xPos,y=self.yPos} end)
 
         self.health={
-            sprite=Enemies.sprites.healthbars.t1,
+            sprite=Enemies.healthbars.t1,
             max=20,
             current=20, --actual current health
             RGB=Enemies.healthRGB,
@@ -619,7 +624,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         --colliders it may have spawned in
         TimerState:after(1,function() self.state.moveTarget={x=self.xPos,y=self.yPos} end)
         self.health={
-            sprite=Enemies.sprites.healthbars.t1,
+            sprite=Enemies.healthbars.t1,
             max=20,
             current=20, --actual current health
             RGB=Enemies.healthRGB,
@@ -762,7 +767,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         TimerState:after(1,function() self.state.moveTarget={x=self.xPos,y=self.yPos} end)
 
         self.health={
-            sprite=Enemies.sprites.healthbars.t1,
+            sprite=Enemies.healthbars.t1,
             max=20,
             current=20, --actual current health
             RGB=Enemies.healthRGB,
@@ -902,7 +907,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         TimerState:after(1,function() self.state.moveTarget={x=self.xPos,y=self.yPos} end)
 
         self.health={
-            sprite=Enemies.sprites.healthbars.t2,
+            sprite=Enemies.healthbars.t2,
             max=50,
             current=50, --actual current health
             RGB=Enemies.healthRGB,
@@ -1046,7 +1051,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         TimerState:after(1,function() self.state.moveTarget={x=self.xPos,y=self.yPos} end)
 
         self.health={
-            sprite=Enemies.sprites.healthbars.t2,
+            sprite=Enemies.healthbars.t2,
             max=50,
             current=50, --actual current health
             RGB=Enemies.healthRGB,
@@ -1187,7 +1192,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         TimerState:after(1,function() self.state.moveTarget={x=self.xPos,y=self.yPos} end)
 
         self.health={
-            sprite=Enemies.sprites.healthbars.t2,
+            sprite=Enemies.healthbars.t2,
             max=50,
             current=50, --actual current health
             RGB=Enemies.healthRGB,
@@ -1318,7 +1323,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.state.approachingTarget=false
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=100
+        self.state.moveSpeed=150
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1333,7 +1338,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         TimerState:after(1,function() self.state.moveTarget={x=self.xPos,y=self.yPos} end)
 
         self.health={
-            sprite=Enemies.sprites.healthbars.t3,
+            sprite=Enemies.healthbars.t3,
             max=100,
             current=100, --actual current health
             RGB=Enemies.healthRGB,
@@ -1474,7 +1479,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.state.approachingTarget=false 
         self.state.isTargetted=false --true when player is targeting this enemy
         self.state.willDie=false --true when enemy should die
-        self.state.moveSpeed=100
+        self.state.moveSpeed=150
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
         self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
@@ -1489,7 +1494,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         TimerState:after(1,function() self.state.moveTarget={x=self.xPos,y=self.yPos} end)
 
         self.health={
-            sprite=Enemies.sprites.healthbars.t3,
+            sprite=Enemies.healthbars.t3,
             max=100,
             current=100, --actual current health
             RGB=Enemies.healthRGB,
@@ -1537,7 +1542,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
     function enemy:draw()
         self.shadow:draw(self.xPos,self.yPos) --draw shadow
         self.currentAnim:draw(
-            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,16,29
+            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,16,55
         )
     end
 
@@ -1577,6 +1582,145 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
     enemy.enterCombatRanged=Enemies.sharedEnemyFunctions.enterCombatRanged
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
+
+    enemy:load() --initialize enemy
+end
+
+Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
+    local enemy={} --create enemy instance
+    function enemy:load() 
+        --setup physics collider
+        self.collider=world:newBSGRectangleCollider(_x,_y,37,10,5)
+        self.xPos, self.yPos = _x, _y
+        self.xVel, self.yVel = 0,0
+        self.halfWidth=18.5
+        self.halfHeight=5
+        self.name='boss'
+        self.collider:setLinearDamping(20)
+        self.collider:setFriction(0)
+        self.collider:setFixedRotation(true) --collider won't spin
+        self.collider:setCollisionClass('enemy')
+        self.collider:setObject(self) --attach collider to this object
+
+        --sprites and animations
+        self.spriteSheet=Enemies.spriteSheets.boss
+        self.grid=anim8.newGrid(70,55,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
+        self.animations={} --animations table
+        self.animations.idle=anim8.newAnimation(self.grid('1-6',1), 0.1)
+        self.animations.moving=anim8.newAnimation(self.grid('7-12',1), 0.1)
+        self.animations.combatPhysical=anim8.newAnimation(
+            self.grid('13-15',1), 0.1,
+            function() --onLoop function
+                SpecialAttacks:spawnFissure(self.xPos+(22*self.state.scaleX),self.yPos,Player)
+                self.animations.combat:pauseAtStart()
+                self.state.attackOnCooldown=true
+                TimerState:after(2,function() self.state.attackOnCooldown=false end)
+                self.currentAnim=self.animations.idle --return to idle between attacks
+                -- self.state.basicAttackCounter=self.state.basicAttackCounter+1
+                -- if self.state.basicAttackCounter%3==0 then 
+                --     self:specialAttack()
+                -- end
+            end
+        )
+        self.animations.combatPhysical:pauseAtStart()
+        self.animations.combat=self.animations.combatPhysical
+        self.currentAnim=self.animations.idle 
+        self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
+        self.shadow=Shadows:newShadow('boss') --shadow
+        self.dialog=Dialog:newDialogSystem() --dialog system
+
+        --enemy's current state metatable
+        self.state={}
+        self.state.facing='left'
+        self.state.scaleX=1 --used to flip horizontally
+        self.state.moving=false
+        self.state.idle=true 
+        self.state.isTargetted=false --true when player is targeting this enemy
+        self.state.willDie=false --true when enemy should die
+        self.state.moveSpeed=500
+        self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
+        self.state.nextMoveTargetTimer=1+love.math.random()*2 --sec until new target
+        self.state.reachedMoveTarget=false --true as soon as enemy reaches target
+        self.state.movingTimer=0 --tracks how long enemy has been moving toward target
+        self.state.attackOnCooldown=true 
+        self.state.basicAttackCounter=0
+
+        self.health={
+            sprite=Enemies.healthbars.t4,
+            max=200,
+            current=200, --actual current health
+            RGB=Enemies.healthRGB,
+            currentShown=200, --what will actually be drawn
+            timer=0, --used to smoothly tween shown health
+            moveRate=0.005, --how frequent health will decrease
+        }
+
+        --testing-----------------------
+        TimerState:after(0.5,function() self.state.attackOnCooldown=false end)
+        --testing-------------------------
+
+        --insert enemy into entitiesTable
+        table.insert(Entities.entitiesTable,self) 
+    end
+
+    function enemy:update() 
+        self.dialog:update() --update dialog
+
+        --update vectors
+        self.xPos, self.yPos=self.collider:getPosition()
+        self.xVel, self.yVel=self.collider:getLinearVelocity()
+
+        --update animation
+        self.currentAnim:update(dt)
+
+        if self.state.facing=='right' then 
+            self.state.scaleX=1 else self.state.scaleX=-1
+        end
+
+        self:updateHealth() --update healthbar
+
+        if self.state.willDie then return self:die() end
+
+        if Player.health.current==0 then self:wanderingAI() return end
+
+        if self.state.attackOnCooldown==false  then 
+            self.currentAnim=self.animations.combat             
+            self.currentAnim:resume()
+        elseif self.state.attackOnCooldown then 
+            self:approachTarget()
+        elseif Player.health.current>0 then
+            self:wanderingAI()
+        end
+    end
+
+    function enemy:draw()
+        self.shadow:draw(self.xPos,self.yPos) --draw shadow
+        self.currentAnim:draw(
+            self.spriteSheet,self.xPos,self.yPos,
+            nil,self.state.scaleX,1,33,54
+        )
+    end
+
+    function enemy:drawUIelements() --called by UI
+        if self.state.isTargetted then --draw health when targetted
+            love.graphics.draw(self.health.sprite,self.xPos-48,self.yPos-56)
+            --draw remaining health
+            love.graphics.setColor(self.health.RGB.red,self.health.RGB.green,self.health.RGB.blue)
+            love.graphics.rectangle(
+                'fill',self.xPos-47,self.yPos-55,
+                self.health.currentShown*0.5,3)
+            love.graphics.setColor(1,1,1)
+        end
+        self.dialog:draw(self.xPos-4,self.yPos-16)
+    end
+
+    enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
+    enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage    
+    enemy.die=Enemies.sharedEnemyFunctions.die 
+    enemy.move=Enemies.sharedEnemyFunctions.move
+    enemy.setNewMoveTarget=Enemies.sharedEnemyFunctions.setNewMoveTarget
+    enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI
+    enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
 
     enemy:load() --initialize enemy
 end

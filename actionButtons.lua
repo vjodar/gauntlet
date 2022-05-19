@@ -596,8 +596,19 @@ function ActionButtons:addActionButtonCombatInteract()
     function button:getCombatTarget()
         if self.state.currentAction=='combat' then
             local nearbyColliders=world:queryRectangleArea( --query for enemies
-                Player.xPos-200,Player.yPos-150,400,300,{'enemy'}
+                Player.xPos-200,Player.yPos-150,
+                Player.combatData.queryCombatRange.x,
+                Player.combatData.queryCombatRange.y,
+                {'enemy'}
             )
+
+            --remove any enemy with health.current==0
+            for i,collider in pairs(nearbyColliders) do 
+                if collider:getObject().health.current==0 then 
+                    table.remove(nearbyColliders,i)
+                end
+            end
+
             if #nearbyColliders>0 then 
                 --sort by distance to player
                 table.sort(nearbyColliders,self.sortFn)

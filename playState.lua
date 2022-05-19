@@ -61,12 +61,7 @@ end
 --update and draw functions. They will be changed depending on which part of
 --the game the player is currently on (starting room, dungeon, and boss battle)
 function PlayState:update() return self:_update() end
-function PlayState:draw() 
-    self:_draw() 
-    --testing-----------------------
-    love.graphics.print(#Entities.entitiesTable,0,30,nil,3,3)
-    --testing-----------------------
-end
+function PlayState:draw() self:_draw() end
 
 function PlayState:updateDungeonPhase() --update function of gathering/crafting phase
     world:update(dt) --update physics colliders
@@ -84,7 +79,7 @@ function PlayState:drawDungeonPhase() --draw funtion of the gathering/crafting p
     cam:attach()
         Dungeon:drawFloorObjects() --draw objects on floor, beneath entities
         Dungeon:drawRooms() --draw the dungeon's rooms
-        world:draw() --draws all physics colliders
+        -- world:draw() --draws all physics colliders
         Entities:draw() --draw all entities in order of their yPos value
         Dungeon:drawForeground() --draw room's foreground features 
         UI:draw() --draw ui elements
@@ -108,7 +103,7 @@ function PlayState:drawBossBattle()
         BossRoom:draw() 
         --TODO: draw boss room floor where environmental hazards will be
         --TODO: draw anything else associated with the room (perhaps fog?)
-        world:draw() --draws colliders
+        -- world:draw() --draws colliders
         Entities:draw() --draw all entities, sorted by yPos
         --TODO: draw any foreground boss room things (probably won't have any though)
         UI:draw() --draw ui elements (dialog,healthbars,etc.)
@@ -136,6 +131,11 @@ function PlayState:startDungeonPhase()
         return Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256),
         Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     end
+    --testing------------------------------------
+    TimerState:after(1,function() self:startBossBattle() end)
+    --testing------------------------------------
+
+    -- SpecialAttacks:spawnFissure(randomPoints(),Player)
     -- Enemies.enemySpawner.t1[1](randomPoints())
     -- Enemies.enemySpawner.t1[2](randomPoints())
     -- Enemies.enemySpawner.t1[3](randomPoints())
@@ -171,6 +171,18 @@ function PlayState:startBossBattle()
     self._draw=self.drawBossBattle
 
     Dungeon:closeDungeon() --delete dungeon rooms and entities
+
+    --increase the range the player can query for enemies (to accomodate larger boss room)
+    Player.combatData.queryCombatRange={x=800,y=600}
+    --increase the distance the player can be from enemy before disengaging combat
+    Player.combatData.aggroRange={x=600,y=400} 
+
+    --testing----------------------------
+    TimerState:after(1,function() 
+        Enemies.enemySpawner.t4[1](216,168) 
+        Items:spawn_item(216,168,'weapon_staff_t3')
+    end)    
+    --testing----------------------------
 
     Player.collider:setPosition(0,0)
     cam:lookAt(Player.collider:getPosition())

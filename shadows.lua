@@ -5,6 +5,7 @@ function Shadows:load()
     self.small=love.graphics.newImage('assets/shadows/shadow_small.png') --12,6
     self.medium=love.graphics.newImage('assets/shadows/shadow_medium.png') --14,6
     self.large=love.graphics.newImage('assets/shadows/shadow_large.png') --22,8
+    self.boss=love.graphics.newImage('assets/shadows/shadow_boss.png') --37,11
 
     self.tree=love.graphics.newImage('assets/shadows/shadow_tree.png') --14,8
     self.tree_wood=love.graphics.newImage('assets/shadows/shadow_medium.png') --14,6
