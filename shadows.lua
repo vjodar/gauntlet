@@ -66,6 +66,7 @@ function Shadows:load()
 
     --special attacs shadows
     self.tornado=self.medium --using player's shadow currently
+    self.fireball=love.graphics.newImage('assets/shadows/shadow_fireball.png') --14,8 (not black)
 end
 
 function Shadows:newShadow(_type)

@@ -56,27 +56,33 @@ function SpecialAttacks:load()
             self.spriteSheets.tornado_segment_8:getHeight()
         ),
         fissure_trail_1=anim8.newGrid(
-            7,8,self.spriteSheets.fissure_trail_1:getWidth(),
+            7,self.spriteSheets.fissure_trail_1:getHeight(),
+            self.spriteSheets.fissure_trail_1:getWidth(),
             self.spriteSheets.fissure_trail_1:getHeight()
         ),
         fissure_trail_2=anim8.newGrid(
-            7,8,self.spriteSheets.fissure_trail_2:getWidth(),
+            7,self.spriteSheets.fissure_trail_2:getHeight(),
+            self.spriteSheets.fissure_trail_2:getWidth(),
             self.spriteSheets.fissure_trail_2:getHeight()
         ),
         fissure_trail_3=anim8.newGrid(
-            10,9,self.spriteSheets.fissure_trail_3:getWidth(),
+            10,self.spriteSheets.fissure_trail_3:getHeight(),
+            self.spriteSheets.fissure_trail_3:getWidth(),
             self.spriteSheets.fissure_trail_3:getHeight()
         ),
         fissure_trail_4=anim8.newGrid(
-            10,9,self.spriteSheets.fissure_trail_4:getWidth(),
+            10,self.spriteSheets.fissure_trail_4:getHeight(),
+            self.spriteSheets.fissure_trail_4:getWidth(),
             self.spriteSheets.fissure_trail_4:getHeight()
         ),
         fissure_trail_5=anim8.newGrid(
-            11,10,self.spriteSheets.fissure_trail_5:getWidth(),
+            11,self.spriteSheets.fissure_trail_5:getHeight(),
+            self.spriteSheets.fissure_trail_5:getWidth(),
             self.spriteSheets.fissure_trail_5:getHeight()
         ),
         fissure_trail_6=anim8.newGrid(
-            11,10,self.spriteSheets.fissure_trail_6:getWidth(),
+            11,self.spriteSheets.fissure_trail_6:getHeight(),
+            self.spriteSheets.fissure_trail_6:getWidth(),
             self.spriteSheets.fissure_trail_6:getHeight()
         ),
     }
@@ -93,6 +99,7 @@ function SpecialAttacks:load()
     }
 
     self.particleSystems={}
+    --particle system for FireCircle
     self.particleSystems.flames=love.graphics.newParticleSystem(self.spriteSheets.flame,200)
     self.particleSystems.flames:setParticleLifetime(0.5,1)
     self.particleSystems.flames:setEmissionArea('normal',3,2)
@@ -107,6 +114,21 @@ function SpecialAttacks:load()
         (218/255),(78/255),(56/255),0.7,
         (34/255),(34/255),(34/255),1
     ) 
+    --particle system for Fireball
+    self.particleSystems.fireball=love.graphics.newParticleSystem(self.spriteSheets.flame,1000)
+    self.particleSystems.fireball:setParticleLifetime(0.1,0.4)
+    self.particleSystems.fireball:setSpeed(10,20)
+    self.particleSystems.fireball:setEmissionArea('ellipse',5,5,0,true)
+    self.particleSystems.fireball:setRelativeRotation(true)
+    self.particleSystems.fireball:setRotation(0,0.5*math.pi)
+    self.particleSystems.fireball:setColors(
+        1,1,1,1,
+        (250/255),(203/255),(62/255),1,
+        (238/255),(142/255),(46/255),1,
+        (218/255),(78/255),(56/255),1,
+        (218/255),(78/255),(56/255),1,
+        (34/255),(34/255),(34/255),1
+    )
 end 
 
 --spawns a tornado at a given set of coordinates and an initial travel angle
@@ -382,8 +404,7 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
     insignia:load() 
 end
 
---boss's basic physical attack; too different and complex compared to a regular
---projectile, so it's lumped together with special attacks.
+--boss' basic physical attack
 --spawns a collider that travels to a _target, spawning fissure trail pieces while 
 --it traveles, creating a fissure. Upon touching target, damage and spawn a fissue end
 function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
@@ -534,4 +555,84 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
     end
 
     fissure:load()
+end
+
+--boss' basic magical attack. 
+--Launches a fireball that acts as a projectile, but uses particle systems to
+--make it look much more detailed and deadlier
+function SpecialAttacks:launchFireball(_xPos,_yPos,_target)
+    local fireball={}
+
+    function fireball:load()
+        self.collider=world:newBSGRectangleCollider(_xPos,_yPos,9,8,4)
+        self.xPos,self.yPos=self.collider:getPosition()
+        self.collider:setLinearDamping(20)
+        self.collider:setMass(0.1)
+        self.collider:setSensor(true)
+        self.target=_target 
+        self.damage=30
+        self.knockback=60
+        self.speed=480
+        self.timer=0
+        self.angle=0
+        self.willDie=false 
+        self.hitTarget=false --true when fissure reached and hit its target
+        self.particles=SpecialAttacks.particleSystems.fireball:clone()
+        self.emissionRate=1/60
+        self.yOffset=-20
+        self.shadow=Shadows:newShadow('fireball')
+
+        table.insert(Entities.entitiesTable,self)
+    end
+
+    function fireball:update()
+        self.particles:update(dt)
+        if self.willDie then --must wait for particle system to be empty before dying
+            if self.particles:getCount()==0 then 
+                self.collider:destroy()
+                return false 
+            else return end
+        end
+
+        self.xPos,self.yPos=self.collider:getPosition()
+        self.timer=self.timer+dt
+
+        --travel toward target
+        self.angle=math.atan2((self.target.yPos-self.yPos),(self.target.xPos-self.xPos))
+        self.collider:applyForce(
+            math.cos(self.angle)*self.speed, math.sin(self.angle)*self.speed            
+        )
+
+        --every ~1/60s, emit particles
+        if self.timer>=self.emissionRate then 
+            self.timer=0
+            --set particles to accelerate away from angle of travel
+            self.particles:setLinearAcceleration(
+                500*math.cos(self.angle+math.pi),500*math.sin(self.angle+math.pi),
+                1000*math.cos(self.angle+math.pi),1000*math.sin(self.angle+math.pi)
+            )
+            self.particles:emit(40)
+        end
+        
+        --when contacting target, damage and explode particles
+        if self.collider:isTouching(self.target.collider:getBody()) then 
+            self.target:takeDamage( --deal magical damage
+                'projectile','magical',self.knockback,self.angle,self.damage
+            )
+            self.target:takeDamage( --deal reduced pure damage (with no knockback)
+                'projectile','pure',0,self.angle,self.damage*0.25
+            )
+            self.particles:setLinearAcceleration(0,0)
+            self.particles:setSpeed(20,80)
+            self.particles:emit(200)
+            self.willDie=true --fireball will die once particle system is empty
+        end
+    end
+
+    function fireball:draw()
+        if not self.willDie then self.shadow:draw(self.xPos,self.yPos) end
+        love.graphics.draw(self.particles,self.xPos,self.yPos+self.yOffset)
+    end
+
+    fireball:load()
 end

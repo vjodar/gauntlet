@@ -1608,23 +1608,43 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-6',1), 0.1)
         self.animations.moving=anim8.newAnimation(self.grid('7-12',1), 0.1)
-        self.animations.combatPhysical=anim8.newAnimation(
+        self.animations.combat={current=nil,physical=nil,magical=nil}
+        self.animations.combat.physical=anim8.newAnimation(
             self.grid('13-20',1), 0.125,
             function() --onLoop function                
                 self.state.attackOnCooldown=true
-                TimerState:after(self.state.attackCooldownTime,function() 
+                TimerState:after(self.state.physicalCooldownTime,function() 
                     self.state.attackOnCooldown=false 
                     self.state.hasAttacked=false 
                 end)
-                self.animations.combat:pauseAtStart()
+                self.animations.combat.current:pauseAtStart()
                 self.currentAnim=self.animations.idle --return to idle between attacks
                 self.state.basicAttackCounter=self.state.basicAttackCounter+1
-                -- if self.state.basicAttackCounter%3==0 then 
-                --     self:specialAttack()
-                -- end
+                if self.state.basicAttackCounter==4 then --switch attacks
+                    self.state.basicAttackCounter=0
+                    self.state.currentAttack='magical'
+                    self.animations.combat.current=self.animations.combat.magical
+                end
             end
         )
-        self.animations.combat=self.animations.combatPhysical
+        self.animations.combat.magical=anim8.newAnimation(
+            self.grid('21-36',1), 0.1,
+            function() --onLoop function                
+                self.state.attackOnCooldown=true
+                TimerState:after(self.state.magicalCooldownTime,function() 
+                    self.state.attackOnCooldown=false 
+                    self.state.hasAttacked=false 
+                end)
+                self.animations.combat.current:pauseAtStart()
+                self.currentAnim=self.animations.idle --return to idle between attacks
+                self.state.basicAttackCounter=self.state.basicAttackCounter+1
+                if self.state.basicAttackCounter==4 then --switch attacks
+                    self.state.basicAttackCounter=0
+                    self.state.currentAttack='physical'
+                    self.animations.combat.current=self.animations.combat.physical
+                end
+            end
+        )
         self.currentAnim=self.animations.idle 
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('boss') --shadow
@@ -1638,7 +1658,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.state.idle=true 
         self.state.hasAttacked=false --used to perform a single attack at a time
         self.state.isTargetted=false --true when player is targeting this enemy
-        self.state.attackCooldownTime=1.35 --1.35s between attacks
+        self.state.physicalCooldownTime=1.35 --1.35s between physical attacks
+        self.state.magicalCooldownTime=0.75 --0.755s between magical attacks
         self.state.willDie=false --true when enemy should die
         self.state.moveSpeed=500
         self.state.moveTarget={x=self.xPos,y=self.yPos} --where to move to
@@ -1647,6 +1668,17 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
         self.state.attackOnCooldown=true 
         self.state.basicAttackCounter=0
+
+        self.particleSystems={} --all particle systems
+        --fireball (used for initial explosion from mouth)
+        self.particleSystems.fireball=SpecialAttacks.particleSystems.fireball:clone()
+        self.particleSystems.fireball:setSpeed(20,60)
+
+        --select a random initial attack style
+        local attackStyles={'physical','magical'}
+        local chooseAtk=attackStyles[2]
+        self.state.currentAttack=chooseAtk
+        self.animations.combat.current=self.animations.combat[chooseAtk]
 
         self.health={
             sprite=Enemies.healthbars.t4,
@@ -1668,6 +1700,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        --update particle systems
+        for i,p in pairs(self.particleSystems) do p:update(dt) end 
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -1687,19 +1721,13 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         if Player.health.current==0 then self:wanderingAI() return end
 
         if self.state.attackOnCooldown==false then 
-            self.currentAnim=self.animations.combat             
+            self.currentAnim=self.animations.combat.current         
             self.currentAnim:resume()
 
-            if self.currentAnim.position==5 --spawn fissure on appropriate frame
-            and not self.state.hasAttacked 
-            then
-                self.state.hasAttacked=true 
-                if self.state.scaleX==1 then 
-                    SpecialAttacks:spawnFissure(self.xPos+25,self.yPos,Player)
-                else 
-                    SpecialAttacks:spawnFissure(self.xPos-35,self.yPos,Player)
-                end
+            if self.state.currentAttack=='physical' then self:attackPhysical() 
+            elseif self.state.currentAttack=='magical' then self:attackMagical()
             end
+            
         elseif self.state.attackOnCooldown then 
             self:approachTarget()
         elseif Player.health.current>0 then
@@ -1712,6 +1740,10 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.currentAnim:draw(
             self.spriteSheet,self.xPos,self.yPos,
             nil,self.state.scaleX,1,33,54
+        )
+        love.graphics.draw( --draw fireball explosion particles
+            self.particleSystems.fireball,
+            self.xPos+5*self.state.scaleX,self.yPos-23
         )
     end
 
@@ -1726,6 +1758,34 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             love.graphics.setColor(1,1,1)
         end
         self.dialog:draw(self.xPos-4,self.yPos-16)
+    end
+
+    function enemy:attackPhysical()
+        if self.currentAnim.position>=5 and not self.state.hasAttacked then
+            self.state.hasAttacked=true 
+            if self.state.scaleX==1 then 
+                SpecialAttacks:spawnFissure(self.xPos+25,self.yPos,Player)
+            else 
+                SpecialAttacks:spawnFissure(self.xPos-35,self.yPos,Player)
+            end
+        end
+    end
+
+    function enemy:attackMagical()
+        if self.currentAnim.position>=13 and not self.state.hasAttacked then
+            self.state.hasAttacked=true 
+            SpecialAttacks:launchFireball(
+                self.xPos+5*self.state.scaleX,
+                self.yPos-3,Player
+            )
+            self.particleSystems.fireball:emit(100) --initial explosion
+            --apply some recoil to boss
+            self.collider:applyLinearImpulse(-60*self.state.scaleX,0)
+        else --continue facing player until fireball is launched
+            if Player.xPos>self.xPos then 
+                self.state.facing='right' else self.state.facing='left'
+            end
+        end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
