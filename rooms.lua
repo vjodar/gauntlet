@@ -946,9 +946,6 @@ function Rooms:spawnLadder(_room)
         --     Player.dialog:say("I wonder what's down there...") 
         --     self.dialogBoolean=false
         -- end
-        if Player.state.protectionActivated then
-            Player.protectionMagics:deactivate()
-        end
         PlayState:startBossBattle()
         --TODO---------------------------
     end

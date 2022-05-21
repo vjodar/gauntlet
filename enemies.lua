@@ -1668,15 +1668,25 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
         self.state.attackOnCooldown=true 
         self.state.basicAttackCounter=0
+        self.state.attacksTaken=0 --how many attacks has the boss taken
+        self.state.protectionActivated=true --currently using protection magics
+        self.state.currentProtectionMagic='' --currently protected against
 
         self.particleSystems={} --all particle systems
         --fireball (used for initial explosion from mouth)
         self.particleSystems.fireball=SpecialAttacks.particleSystems.fireball:clone()
         self.particleSystems.fireball:setSpeed(20,60)
 
-        --select a random initial attack style
+        --used to select initial attack and protection type
         local attackStyles={'physical','magical'}
-        local chooseAtk=attackStyles[2]
+        local oppositeStyle={physical='magical',magical='physical'}
+
+        self.protectionMagics=ProtectionMagics:newProtectionMagicSystem(self)
+        self.state.currentProtectionMagic=attackStyles[love.math.random(1,2)]
+        self.protectionMagics:activate(self.state.currentProtectionMagic)
+
+        --select attack style opposite of current protection magic
+        local chooseAtk=oppositeStyle[self.state.currentProtectionMagic]
         self.state.currentAttack=chooseAtk
         self.animations.combat.current=self.animations.combat[chooseAtk]
 
@@ -1788,9 +1798,58 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         end
     end
 
+    function enemy:takeDamage(_attackType,_damageType,_knockback,_angle,_val) 
+        local modifiedDamage=_val 
+        
+        --if successfully protected, damage is 0, return 
+        --don't count the attack as a hit for the attacksTaken counter
+        if self.state.currentProtectionMagic==_damageType then 
+            self.dialog:damage(0,_damageType)
+            return
+        end
+
+        modifiedDamage=love.math.random( --roll between +/-10% of damage
+            math.floor(modifiedDamage*0.9),math.ceil(modifiedDamage*1.1)
+        )
+        modifiedDamage=math.max(modifiedDamage,1) --can't hit lower than 1
+        self.dialog:damage(modifiedDamage,_damageType)
+
+        --apply reduced damage to effectively increase total health
+        modifiedDamage=modifiedDamage/2 --half damage to double health (to 400hp)
+        self.health.current=math.max(self.health.current-modifiedDamage,0)
+
+        --apply knockback
+        self.collider:applyLinearImpulse(
+            math.cos(_angle)*_knockback,math.sin(_angle)*_knockback
+        )
+
+        --change protection magics after taking 5 hits
+        self.state.attacksTaken=self.state.attacksTaken+1
+        if self.state.attacksTaken==5 then 
+            self.state.attacksTaken=0
+            self.protectionMagics:deactivate()
+            local opposite={physical='magical',magical='physical'}
+            self.state.currentProtectionMagic=opposite[self.state.currentProtectionMagic]
+            self.protectionMagics:activate(self.state.currentProtectionMagic)
+        end
+    end
+
+    function enemy:die()
+        --if player is still targeting enemy at this point, stop targeting it
+        if Player.combatData.currentEnemy==self then 
+            Player.combatData.currentEnemy=nil 
+        end 
+        self.protectionMagics:deactivate() 
+        self.collider:destroy()
+
+        --TODO-------------
+        --end the game I guess
+        --TODO-------------
+
+        return false --return false to remove entity from game
+    end
+
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
-    enemy.takeDamage=Enemies.sharedEnemyFunctions.takeDamage    
-    enemy.die=Enemies.sharedEnemyFunctions.die 
     enemy.move=Enemies.sharedEnemyFunctions.move
     enemy.setNewMoveTarget=Enemies.sharedEnemyFunctions.setNewMoveTarget
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI

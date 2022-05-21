@@ -162,7 +162,7 @@ function Player:load()
     }
 
     --system that manages the floating symbols when using protection magics
-    self.protectionMagics=ProtectionMagics:newProtectionMagicSystem()
+    self.protectionMagics=ProtectionMagics:newProtectionMagicSystem(self)
 
     self.suppliesData={ --data related to consuming supplies
         consuming={ --true when currently consuming fish/potion

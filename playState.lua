@@ -134,7 +134,7 @@ function PlayState:startDungeonPhase()
         Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     end
 
-    TimerState:after(1,function() self:startBossBattle() end)
+    TimerState:after(2,function() self:startBossBattle() end)
 
     -- SpecialAttacks:spawnFissure(randomPoints(),Player)
     -- Enemies.enemySpawner.t1[1](randomPoints())
@@ -173,6 +173,12 @@ function PlayState:startBossBattle()
 
     Dungeon:closeDungeon() --delete dungeon rooms and entities
 
+    --if player has active protection magics, deactivate
+    if Player.state.protectionActivated then
+        Player.protectionMagics:deactivate()
+        Player.collider.fixtures['magic']:setSensor(true)
+    end
+
     --increase the range the player can query for enemies (to accomodate larger boss room)
     Player.combatData.queryCombatRange={x=800,y=600}
     --increase the distance the player can be from enemy before disengaging combat
@@ -181,7 +187,7 @@ function PlayState:startBossBattle()
     --testing----------------------------
     TimerState:after(1,function() 
         Enemies.enemySpawner.t4[1](216,168) 
-        -- Items:spawn_item(216,168,'weapon_staff_t3')
+        Items:spawn_item(216,168,'weapon_staff_t3')
     end)    
     --testing----------------------------
 
