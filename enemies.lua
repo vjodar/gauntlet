@@ -265,14 +265,14 @@ function Enemies:load()
                 target.sideA.x1,target.sideA.y1,target.sideA.x2,target.sideA.y2,
                 {
                     'outerWall','innerWall','doorBarrier','craftingNode',
-                    'resourceNode','depletedNode','doorButton','ladder'
+                    'resourceNode','depletedNode','doorButton','lava'
                 }
             )==0 
             and #world:queryLine(
                 target.sideB.x1,target.sideB.y1,target.sideB.x2,target.sideB.y2,
                 {
                     'outerWall','innerWall','doorBarrier','craftingNode',
-                    'resourceNode','depletedNode','doorButton','ladder'
+                    'resourceNode','depletedNode','doorButton','lava'
                 }
             )==0 
             then --no obstructions, add target's center line to validTargets
@@ -1607,10 +1607,10 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.grid=anim8.newGrid(70,55,self.spriteSheet:getWidth(),self.spriteSheet:getHeight())
         self.animations={} --animations table
         self.animations.idle=anim8.newAnimation(self.grid('1-6',1), 0.1)
-        self.animations.moving=anim8.newAnimation(self.grid('7-12',1), 0.1)
+        self.animations.moving=anim8.newAnimation(self.grid('1-6',2), 0.1)
         self.animations.combat={current=nil,physical=nil,magical=nil}
         self.animations.combat.physical=anim8.newAnimation(
-            self.grid('13-20',1), 0.125,
+            self.grid('1-8',3), 0.125,
             function() --onLoop function                
                 self.state.attackOnCooldown=true
                 TimerState:after(self.state.physicalCooldownTime,function() 
@@ -1628,7 +1628,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             end
         )
         self.animations.combat.magical=anim8.newAnimation(
-            self.grid('21-36',1), 0.1,
+            self.grid('1-16',4), 0.1,
             function() --onLoop function                
                 self.state.attackOnCooldown=true
                 TimerState:after(self.state.magicalCooldownTime,function() 
@@ -1679,16 +1679,16 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --used to select initial attack and protection type
         local attackStyles={'physical','magical'}
-        local oppositeStyle={physical='magical',magical='physical'}
+        local chooseStyle=attackStyles[love.math.random(1,2)]
 
+        --create protection magics
         self.protectionMagics=ProtectionMagics:newProtectionMagicSystem(self)
-        self.state.currentProtectionMagic=attackStyles[love.math.random(1,2)]
+        self.state.currentProtectionMagic=chooseStyle
         self.protectionMagics:activate(self.state.currentProtectionMagic)
 
         --select attack style opposite of current protection magic
-        local chooseAtk=oppositeStyle[self.state.currentProtectionMagic]
-        self.state.currentAttack=chooseAtk
-        self.animations.combat.current=self.animations.combat[chooseAtk]
+        self.state.currentAttack=chooseStyle
+        self.animations.combat.current=self.animations.combat[chooseStyle]
 
         self.health={
             sprite=Enemies.healthbars.t4,
@@ -1706,6 +1706,9 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        --also pass boss to BossRoom
+        BossRoom.boss=self 
     end
 
     function enemy:update() 
@@ -1814,8 +1817,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         modifiedDamage=math.max(modifiedDamage,1) --can't hit lower than 1
         self.dialog:damage(modifiedDamage,_damageType)
 
-        --apply reduced damage to effectively increase total health
-        modifiedDamage=modifiedDamage/2 --half damage to double health (to 400hp)
+        --apply reduced damage to effectively increase total health (to 1000hp)
+        modifiedDamage=modifiedDamage/5
         self.health.current=math.max(self.health.current-modifiedDamage,0)
 
         --apply knockback

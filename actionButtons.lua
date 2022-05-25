@@ -596,7 +596,8 @@ function ActionButtons:addActionButtonCombatInteract()
     function button:getCombatTarget()
         if self.state.currentAction=='combat' then
             local nearbyColliders=world:queryRectangleArea( --query for enemies
-                Player.xPos-200,Player.yPos-150,
+                Player.xPos-Player.combatData.queryCombatRange.x*0.5,
+                Player.yPos-Player.combatData.queryCombatRange.y*0.5,
                 Player.combatData.queryCombatRange.x,
                 Player.combatData.queryCombatRange.y,
                 {'enemy'}

@@ -40,6 +40,7 @@ function PlayState:load()
     world:addCollisionClass(
         'flame',{ignores={'flame','tornado','player','enemy','item'}}
     )
+    world:addCollisionClass('lava') --boss room lava
 
     Shadows:load() --initialize shadows
     Entities:load() --initialize table of entities
@@ -86,11 +87,15 @@ function PlayState:drawDungeonPhase() --draw funtion of the gathering/crafting p
     cam:detach()
     
     Hud:draw() --draw hud 
+
+    --testing--------------------------
+    love.graphics.print(#TimerState.timers,0,30,nil,3)
+    --testing--------------------------
 end
 
 function PlayState:updateBossBattle()
     world:update(dt) --update physics
-    --TODO: update boss room
+    BossRoom:update() --update boss room
     Entities:update() --update all entities
     cam:lockPosition(camTarget.xPos,camTarget.yPos,camSmoother) --update camera
     Hud:update() --update HUD
@@ -134,9 +139,12 @@ function PlayState:startDungeonPhase()
         Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     end
 
-    TimerState:after(2,function() self:startBossBattle() end)
+    TimerState:after(3,function() self:startBossBattle() end)
 
-    -- SpecialAttacks:spawnFissure(randomPoints(),Player)
+    -- SpecialAttacks:spawnFissure(randomPoints(),randomPoints(),Player)
+    -- SpecialAttacks:spawnFireCircle(randomPoints())
+    -- SpecialAttacks:launchFireball(randomPoints(),randomPoints(),Player)
+    -- SpecialAttacks:spawnFlameTornado(playerStartX,playerStartY,love.math.random()*2*math.pi-math.pi)
     -- Enemies.enemySpawner.t1[1](randomPoints())
     -- Enemies.enemySpawner.t1[2](randomPoints())
     -- Enemies.enemySpawner.t1[3](randomPoints())
@@ -146,8 +154,8 @@ function PlayState:startDungeonPhase()
     -- Enemies.enemySpawner.t3[1](randomPoints())
     -- Enemies.enemySpawner.t3[2](randomPoints())
 
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t2')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t2')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
@@ -161,7 +169,7 @@ function PlayState:startDungeonPhase()
     -- Items:spawn_item(playerStartX,playerStartY,'tree_wood')
     -- Items:spawn_item(playerStartX,playerStartY,'rock_metal')
     -- Items:spawn_item(playerStartX,playerStartY,'vine_thread')
-    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'arcane_shards') end
+    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'potion') end
     -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'fish_cooked') end
     --testing----------------------------------
 end
@@ -182,15 +190,14 @@ function PlayState:startBossBattle()
     --increase the range the player can query for enemies (to accomodate larger boss room)
     Player.combatData.queryCombatRange={x=800,y=600}
     --increase the distance the player can be from enemy before disengaging combat
-    Player.combatData.aggroRange={x=600,y=400} 
+    Player.combatData.aggroRange={x=800,y=600} 
 
-    --testing----------------------------
+    -- testing----------------------------
     TimerState:after(1,function() 
-        Enemies.enemySpawner.t4[1](216,168) 
-        Items:spawn_item(216,168,'weapon_staff_t3')
-    end)    
-    --testing----------------------------
+        Enemies.enemySpawner.t4[1](424,350) 
+    end)
+    -- testing----------------------------
 
-    Player.collider:setPosition(200,200)
+    Player.collider:setPosition(424,388)
     cam:lookAt(Player.collider:getPosition())
 end

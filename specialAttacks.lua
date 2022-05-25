@@ -10,6 +10,14 @@ function SpecialAttacks:load()
         tornado_segment_6=love.graphics.newImage('assets/specials/tornado_segment_6.png'),
         tornado_segment_7=love.graphics.newImage('assets/specials/tornado_segment_7.png'),
         tornado_segment_8=love.graphics.newImage('assets/specials/tornado_segment_8.png'),
+        flame_tornado_segment_1=love.graphics.newImage('assets/specials/flame_tornado_segment_1.png'),
+        flame_tornado_segment_2=love.graphics.newImage('assets/specials/flame_tornado_segment_2.png'),
+        flame_tornado_segment_3=love.graphics.newImage('assets/specials/flame_tornado_segment_3.png'),
+        flame_tornado_segment_4=love.graphics.newImage('assets/specials/flame_tornado_segment_4.png'),
+        flame_tornado_segment_5=love.graphics.newImage('assets/specials/flame_tornado_segment_5.png'),
+        flame_tornado_segment_6=love.graphics.newImage('assets/specials/flame_tornado_segment_6.png'),
+        flame_tornado_segment_7=love.graphics.newImage('assets/specials/flame_tornado_segment_7.png'),
+        flame_tornado_segment_8=love.graphics.newImage('assets/specials/flame_tornado_segment_8.png'),
 
         fireInsignia=love.graphics.newImage('assets/specials/fire_insignia.png'),
         flame=love.graphics.newImage('assets/specials/flame_particle.png'),
@@ -200,7 +208,10 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
         --after some time from spawning, destroy tornado
         TimerState:after(
             love.math.random(10,20), --lifespan is 10-20s
-            function() self.willDie=true end
+            function() 
+                self:removeSegments()
+                self.willDie=true 
+            end
         )
 
         self.shadow=Shadows:newShadow('tornado')
@@ -227,35 +238,7 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
             math.sin(self.angle)*self.moveSpeed
         )
 
-        if not self.willDie then 
-            --update angle to player after initial travel time
-            if self.moveToPlayer then 
-                self.angle=math.atan2(
-                    (Player.yPos-self.yPos),(Player.xPos-self.xPos)
-                )
-            end
-
-            --damage and knockback player
-            if not self.attackOnCooldown 
-                --manually check for 'stay' collision, since collider:stay() doesn't work
-                and self.collider:isTouching(Player.collider:getBody())
-            then
-                local angleToPlayer=math.atan2(
-                    (Player.yPos-self.yPos),(Player.xPos-self.xPos)
-                )
-                self.attackOnCooldown=true 
-                TimerState:after(0.5,function() self.attackOnCooldown=false end)
-                Player:takeDamage('melee','pure',self.moveSpeed*0.5,angleToPlayer,20)
-            end
-
-            if Player.health.current==0 then self.willDie=true end
-        end
-
         if self.willDie then 
-            --use timers to remove each segment gradually from bottom to top
-            for i=1,8 do 
-                TimerState:after(i*0.2,function() self.animations['s'..i]=nil end)
-            end
             --slow down speed over time
             self.moveSpeed=self.moveSpeed-45*dt
 
@@ -264,6 +247,32 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
                 self.collider:destroy()
                 return false 
             end
+            return
+        end
+
+        --update angle to player after initial travel time
+        if self.moveToPlayer then 
+            self.angle=math.atan2(
+                (Player.yPos-self.yPos),(Player.xPos-self.xPos)
+            )
+        end
+
+        --damage and knockback player
+        if not self.attackOnCooldown 
+            --manually check for 'stay' collision, since collider:stay() doesn't work
+            and self.collider:isTouching(Player.collider:getBody())
+        then
+            local angleToPlayer=math.atan2(
+                (Player.yPos-self.yPos),(Player.xPos-self.xPos)
+            )
+            self.attackOnCooldown=true 
+            TimerState:after(0.5,function() self.attackOnCooldown=false end)
+            Player:takeDamage('melee','pure',self.moveSpeed*0.5,angleToPlayer,20)
+        end
+
+        if Player.health.current==0 then 
+            self:removeSegments()
+            self.willDie=true 
         end
     end
 
@@ -275,6 +284,12 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
                 self.xPos+self.offsets[i].x+3*math.cos(self.oscillations[i]),
                 self.yPos+self.offsets[i].y+2*math.sin(self.oscillations[i])
             )
+        end
+    end
+
+    function tornado:removeSegments() 
+        for i=1,8 do --use timers to remove each segment gradually from bottom to top
+            TimerState:after(i*0.2,function() self.animations['s'..i]=nil end)
         end
     end
 
@@ -312,7 +327,7 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
         if not self.attackOnCooldown
         and self.collider:isTouching(Player.collider:getBody())
         then 
-            local angle=2*math.pi*love.math.random()-math.pi ---pi to +pi range
+            local angle=2*math.pi*love.math.random()-math.pi -- -pi to +pi range
             Player:takeDamage('melee','pure',10,angle,5)
             self.attackOnCooldown=true
             TimerState:after(0.1,function() self.attackOnCooldown=false end)
@@ -564,7 +579,7 @@ function SpecialAttacks:launchFireball(_xPos,_yPos,_target)
     local fireball={}
 
     function fireball:load()
-        self.collider=world:newBSGRectangleCollider(_xPos,_yPos,9,8,4)
+        self.collider=world:newBSGRectangleCollider(_xPos,_yPos,14,10,4)
         self.xPos,self.yPos=self.collider:getPosition()
         self.collider:setLinearDamping(20)
         self.collider:setMass(0.1)
@@ -636,3 +651,161 @@ function SpecialAttacks:launchFireball(_xPos,_yPos,_target)
 
     fireball:load()
 end
+
+--spawns a tornado at a given set of coordinates and an initial travel angle
+function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
+    local tornado={}
+
+    function tornado:load()
+        self.spriteSheets={
+            s1=SpecialAttacks.spriteSheets.flame_tornado_segment_1,
+            s2=SpecialAttacks.spriteSheets.flame_tornado_segment_2,
+            s3=SpecialAttacks.spriteSheets.flame_tornado_segment_3,
+            s4=SpecialAttacks.spriteSheets.flame_tornado_segment_4,
+            s5=SpecialAttacks.spriteSheets.flame_tornado_segment_5,
+            s6=SpecialAttacks.spriteSheets.flame_tornado_segment_6,
+            s7=SpecialAttacks.spriteSheets.flame_tornado_segment_7,
+            s8=SpecialAttacks.spriteSheets.flame_tornado_segment_8,
+        }
+
+        self.animations={
+            s1=SpecialAttacks.animations.tornado_segment_1:clone(),
+            s2=SpecialAttacks.animations.tornado_segment_2:clone(),
+            s3=SpecialAttacks.animations.tornado_segment_3:clone(),
+            s4=SpecialAttacks.animations.tornado_segment_4:clone(),
+            s5=SpecialAttacks.animations.tornado_segment_5:clone(),
+            s6=SpecialAttacks.animations.tornado_segment_6:clone(),
+            s7=SpecialAttacks.animations.tornado_segment_7:clone(),
+            s8=SpecialAttacks.animations.tornado_segment_8:clone(),
+        }
+
+        self.offsets={
+            s1={x=-3,y=-4},
+            s2={x=-3,y=-8},
+            s3={x=-4,y=-12},
+            s4={x=-5,y=-17},
+            s5={x=-6,y=-22},
+            s6={x=-7,y=-28},
+            s7={x=-9,y=-32},
+            s8={x=-12,y=-38},
+        }
+
+        self.oscillations={
+            s1=0.25*8,
+            s2=0.25*7,
+            s3=0.25*6,
+            s4=0.25*5,
+            s5=0.25*4,
+            s6=0.25*3,
+            s7=0.25*2,
+            s8=0.25*1,
+        }
+
+        self.collider=world:newBSGRectangleCollider(_xPos,_yPos,12,5,3)
+        self.collider:setFixedRotation(true)
+        self.collider:setFriction(0)
+        self.collider:setRestitution(0)
+        self.collider:setLinearDamping(20)
+        self.collider:setMass(0.1)
+        self.collider:setSensor(true)
+        self.collider:setObject(self)
+        self.xPos,self.yPos=self.collider:getPosition()
+        self.moveSpeed=140
+        self.angle=_angle
+        self.attackOnCooldown=false
+        self.willDie=false
+        
+        self.moveToPlayer=false --travel along initial angle, after 2s, move to player
+        TimerState:after(2,function() self.moveToPlayer=true end)
+
+        --after some time from spawning, destroy tornado
+        TimerState:after(
+            love.math.random(10,15), --lifespan is 10-20s
+            function() 
+                self:removeSegments()
+                self.willDie=true
+            end
+        )
+
+        self.shadow=Shadows:newShadow('tornado')
+
+        table.insert(Entities.entitiesTable,self)
+    end
+
+    function tornado:update()
+        self.xPos,self.yPos=self.collider:getPosition()
+        for i,anim in pairs(self.animations) do anim:update(dt) end
+        for i,o in pairs(self.oscillations) do
+            self.oscillations[i]=self.oscillations[i]+dt*8
+        end
+
+        --apply force to move the tornado in a circle to match it's sprite oscillation
+        self.collider:applyForce(
+            3*math.cos(self.oscillations.s1+math.pi*0.25)*self.moveSpeed*0.2,
+            2*math.sin(self.oscillations.s1+math.pi*0.25)*self.moveSpeed*0.2
+        )
+
+        --travel in the direction of angle
+        self.collider:applyForce(
+            math.cos(self.angle)*self.moveSpeed,
+            math.sin(self.angle)*self.moveSpeed
+        )
+
+        if self.willDie then 
+            --slow down speed over time
+            self.moveSpeed=self.moveSpeed-45*dt
+
+            --once all segments are removed, remove the tornado itself from game
+            if self.animations.s8==nil then 
+                self.collider:destroy()
+                return false 
+            end
+            return
+        end
+
+        --update angle to player after initial travel time
+        if self.moveToPlayer then 
+            self.angle=math.atan2(
+                (Player.yPos-self.yPos),(Player.xPos-self.xPos)
+            )
+        end
+
+        --damage and knockback player
+        if not self.attackOnCooldown 
+            --manually check for 'stay' collision, since collider:stay() doesn't work
+            and self.collider:isTouching(Player.collider:getBody())
+        then
+            local angleToPlayer=math.atan2(
+                (Player.yPos-self.yPos),(Player.xPos-self.xPos)
+            )
+            self.attackOnCooldown=true 
+            TimerState:after(0.5,function() self.attackOnCooldown=false end)
+            Player:takeDamage('melee','pure',self.moveSpeed*0.5,angleToPlayer,20)
+        end
+
+        if Player.health.current==0 then 
+            self:removeSegments()
+            self.willDie=true 
+        end
+    end
+
+    function tornado:draw()
+        self.shadow:draw(self.xPos,self.yPos)
+        for i,segment in pairs(self.animations) do
+            segment:draw(
+                self.spriteSheets[i],
+                self.xPos+self.offsets[i].x+3*math.cos(self.oscillations[i]),
+                self.yPos+self.offsets[i].y+2*math.sin(self.oscillations[i])
+            )
+        end
+    end
+
+    function tornado:removeSegments() 
+        for i=1,8 do --use timers to remove each segment gradually from bottom to top
+            TimerState:after(i*0.2,function() self.animations['s'..i]=nil end)
+        end
+    end
+
+    tornado:load()
+end
+
