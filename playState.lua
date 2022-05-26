@@ -107,7 +107,7 @@ function PlayState:drawBossBattle()
     cam:attach()
         BossRoom:draw() 
         --TODO: draw boss room floor where environmental hazards will be
-        -- world:draw() --draws colliders
+        world:draw() --draws colliders
         Entities:draw() --draw all entities, sorted by yPos
         UI:draw() --draw ui elements (dialog,healthbars,etc.)
     cam:detach()
@@ -156,9 +156,9 @@ function PlayState:startDungeonPhase()
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t2')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t2')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
+    Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
+    Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
+    Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
     -- Items:spawn_item(playerStartX,playerStartY,'broken_staff')
@@ -182,10 +182,13 @@ function PlayState:startBossBattle()
     Dungeon:closeDungeon() --delete dungeon rooms and entities
 
     --if player has active protection magics, deactivate
-    if Player.state.protectionActivated then
-        Player.protectionMagics:deactivate()
-        Player.collider.fixtures['magic']:setSensor(true)
-    end
+    if Player.state.protectionActivated then Player.protectionMagics:deactivate() end
+
+    --remove shapes associated with weapon and magic sprites
+    Player.collider:removeShape('left')
+    Player.collider:removeShape('right')
+    Player.collider:removeShape('magic')
+    Player:updateCurrentGear() --recalculate mass after removing shapes
 
     --increase the range the player can query for enemies (to accomodate larger boss room)
     Player.combatData.queryCombatRange={x=800,y=600}

@@ -369,7 +369,7 @@ function ActionButtons:addActionButtonProtectionMagics()
                 if not Player.state.protectionActivated then 
                     if Player.mana.current>0 then 
                         Player.protectionMagics:activate(self.state.currentSpell)
-                        Player.collider.fixtures['magic']:setSensor(false)
+                        Player:setShapeSensor('magic',false)
                     else --if player has no mana left, don't activate
                         Player.dialog:say( --choose random 'out of mana' line to say
                             Player.dialogLines.outOfMana[
@@ -381,7 +381,7 @@ function ActionButtons:addActionButtonProtectionMagics()
                 --otherwise, deactivate and remove collision.
                 elseif Player.state.protectionActivated then 
                     Player.protectionMagics:deactivate()
-                    Player.collider.fixtures['magic']:setSensor(true)
+                    Player:setShapeSensor('magic',true)
                 end
                 
                 --after button hold, don't listen for any more holds until after

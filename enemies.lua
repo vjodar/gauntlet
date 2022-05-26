@@ -1624,6 +1624,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
                     self.state.basicAttackCounter=0
                     self.state.currentAttack='magical'
                     self.animations.combat.current=self.animations.combat.magical
+                    self.state.magicAttackCycles=self.state.magicAttackCycles+1
+                    self.state.disablingFireballAttackNum=love.math.random(1,4)
                 end
             end
         )
@@ -1668,6 +1670,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
         self.state.attackOnCooldown=true 
         self.state.basicAttackCounter=0
+        self.state.magicAttackCycles=0 --used to determine when to launch a disablingFireball
+        self.state.disablingFireballAttackNum=0 --what attack number to launch disablingFireBall
         self.state.attacksTaken=0 --how many attacks has the boss taken
         self.state.protectionActivated=true --currently using protection magics
         self.state.currentProtectionMagic='' --currently protected against
@@ -1675,7 +1679,9 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.particleSystems={} --all particle systems
         --fireball (used for initial explosion from mouth)
         self.particleSystems.fireball=SpecialAttacks.particleSystems.fireball:clone()
-        self.particleSystems.fireball:setSpeed(20,60)
+        self.particleSystems.fireball:setSpeed(20,60)        
+        self.particleSystems.disablingFireball=SpecialAttacks.particleSystems.disablingFireball:clone()
+        self.particleSystems.disablingFireball:setSpeed(20,60)        
 
         --used to select initial attack and protection type
         local attackStyles={'physical','magical'}
@@ -1688,6 +1694,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --select attack style opposite of current protection magic
         self.state.currentAttack=chooseStyle
+        if chooseStyle=='magical' then self.state.magicAttackCycles=1 end
         self.animations.combat.current=self.animations.combat[chooseStyle]
 
         self.health={
@@ -1787,11 +1794,21 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
     function enemy:attackMagical()
         if self.currentAnim.position>=13 and not self.state.hasAttacked then
             self.state.hasAttacked=true 
+            --fireball will be disabling only on even magical attack cycles and
+            --only on the selected attack number (chosen after 4th physical attack)
+            local isDisabling=( 
+                self.state.magicAttackCycles%2==0 and
+                self.state.basicAttackCounter==self.state.disablingFireballAttackNum
+            )
             SpecialAttacks:launchFireball(
                 self.xPos+5*self.state.scaleX,
-                self.yPos-3,Player
+                self.yPos-3,Player,isDisabling
             )
-            self.particleSystems.fireball:emit(100) --initial explosion
+            if isDisabling then --emit correct color particles for initial explosion
+                self.particleSystems.disablingFireball:emit(100)
+            else
+                self.particleSystems.fireball:emit(100) 
+            end
             --apply some recoil to boss
             self.collider:applyLinearImpulse(-60*self.state.scaleX,0)
         else --continue facing player until fireball is launched
@@ -1828,7 +1845,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --change protection magics after taking 5 hits
         self.state.attacksTaken=self.state.attacksTaken+1
-        if self.state.attacksTaken==5 then 
+        if self.state.attacksTaken==6 then 
             self.state.attacksTaken=0
             self.protectionMagics:deactivate()
             local opposite={physical='magical',magical='physical'}

@@ -238,7 +238,7 @@ function Player:update()
     self.state.movingVertically=false 
 
     --default sprite colliders to be sensors (have no collision)
-    self.collider.fixtures[self.state.facing]:setSensor(true)
+    self:setShapeSensor(self.state.facing,true)
 
     --update scaleX
     if self.state.facing=='left' then self.scaleX=-1 else self.scaleX=1 end       
@@ -611,7 +611,7 @@ function Player:fightEnemy()
     --give the bow or staff sprite collision
     if self.equippedWeapon~='bow_t0' and self.equippedWeapon~='staff_t0' then 
         --set the shape to have collision
-        self.collider.fixtures[self.state.facing]:setSensor(false)
+        self:setShapeSensor(self.state.facing,false)
     end
 
     --Check LOS. If any obstructions are between player and enemy,
@@ -686,7 +686,7 @@ function Player:updateMana(_val)
     elseif self.mana.current<=0 then 
         self.mana.current=0        
         self.protectionMagics:deactivate()
-        self.collider.fixtures['magic']:setSensor(true)
+        self:setShapeSensor('magic',true)
         self.dialog:say('Out of mana!')
     end
     Meters:updateMeterValues() --update the HUD
@@ -718,4 +718,12 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
             math.cos(_angle)*_knockback,math.sin(_angle)*_knockback
         )   
     end 
+end
+
+--sets a shape to or from a sensor as long as it isn't destroyed
+--(shapes get destroyed upon entering the boss room)
+function Player:setShapeSensor(_shape,_bool)
+    if not self.collider.fixtures[_shape]==nil then 
+        self.collider.fixtures[_shape]:setSensor(_bool) 
+    end
 end

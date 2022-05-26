@@ -3,13 +3,22 @@ BossRoom={}
 function BossRoom:load()
     self.boss=nil --holds the boss instance
 
+    --spritesheets and animations
     self.sprites={
         lava=love.graphics.newImage('assets/maps/boss_lava.png'),
         floor=love.graphics.newImage('assets/maps/boss_floor.png'),
+        floorTile=love.graphics.newImage('assets/maps/boss_floor_tile.png')
     }
     self.floorW,self.floorH=self.sprites.floor:getWidth(),self.sprites.floor:getHeight()
+    self.grids={
+        floorTile=anim8.newGrid(
+            16,16,self.sprites.floorTile:getWidth(),
+            self.sprites.floorTile:getHeight()
+        )
+    }
 
-    self.lavaColliders={ --colliders for lava surrounding the floor
+     --colliders for lava surrounding the floor
+    self.lavaColliders={
         top=world:newRectangleCollider(224,160-32,self.floorW,32),
         bot=world:newRectangleCollider(224,160+self.floorH,self.floorW,32),
         left=world:newRectangleCollider(224-32,160,32,self.floorH),
@@ -22,28 +31,91 @@ function BossRoom:load()
     self.lavaColliderKnockbackAngles={top=0.5*math.pi,bot=-0.5*math.pi,left=0,right=math.pi}
     self.lavaAttackOnCooldown={top=false,bot=false,left=false,right=false}
 
+    self.floorTiles=self:generateFloorTiles()   
+    
     self.tornadoTimer=10 --start 10s in to spawn first torando soon
+    self.floorTileTimer=28
 end
 
 function BossRoom:update()
+    self:updateFloorTiles() --update floorTiles' animations
     self:updateLava() --damage and knockback player when touching lava
 
     self.tornadoTimer=self.tornadoTimer+dt 
-    if self.tornadoTimer>=20 then --spawn tornados every 30s
+    if self.tornadoTimer>=20 then --spawn tornados every 20s
         self.tornadoTimer=0
         self:spawnFlameTonados()
+    end
+
+    self.floorTileTimer=self.floorTileTimer+dt
+    if self.floorTileTimer>=30 then 
+        self.floorTileTimer=0 
+        self:activateFloorTiles()
     end
 end
 
 function BossRoom:draw()
     love.graphics.draw(self.sprites.lava,0,0)
     love.graphics.draw(self.sprites.floor,224,160)
+    self:drawFloorTiles()
+end
+
+--generates the floor tile objects. Floor tiles have an x,y (absolute) position 
+--and an animation. Tiles are stored in a 2D array which represent their
+--relative position on the 'board'.
+function BossRoom:generateFloorTiles()
+    local floorTiles={}
+    for x=1,25 do
+        floorTiles[x]={}
+        for y=1,19 do
+            floorTiles[x][y]={
+                xPos=224+16*(x-1),
+                yPos=160+16*(y-1),
+                animations={} --holds all animations
+            }
+            floorTiles[x][y].animations.seep=anim8.newAnimation( --lava seeps through cracks
+                self.grids.floorTile('1-4',1),0.15,
+                function() floorTiles[x][y].animations.seep:pauseAtEnd() end
+            )
+            floorTiles[x][y].animations.fill=anim8.newAnimation( --lava fills tile
+                self.grids.floorTile('5-10',1),0.15,
+                function() floorTiles[x][y].animations.fill:pauseAtEnd() end
+            )
+            floorTiles[x][y].animations.receed=anim8.newAnimation( --lava receeds from tile
+                self.grids.floorTile('10-1',1),0.15,
+                function() floorTiles[x][y].animations.receed:pauseAtEnd() end
+            )
+            floorTiles[x][y].animations.seep:pauseAtStart()
+            floorTiles[x][y].animations.fill:pauseAtStart()
+            floorTiles[x][y].animations.receed:pauseAtStart()
+            floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.seep            
+        end
+    end
+    return floorTiles
+end
+
+function BossRoom:updateFloorTiles() --update all floor tiles
+    for x=1,#self.floorTiles do 
+        for y,tile in pairs(self.floorTiles[x]) do 
+            tile.animations.currentAnim:update(dt) 
+        end
+    end
+end
+
+function BossRoom:drawFloorTiles() --draw all floor tiles
+    for x=1,#self.floorTiles do 
+        for y,tile in pairs(self.floorTiles[x]) do 
+            tile.animations.currentAnim:draw(
+                self.sprites.floorTile,tile.xPos,tile.yPos
+            )            
+        end
+    end
 end
 
 function BossRoom:updateLava()
     for i,c in pairs(self.lavaColliders) do
         if not self.lavaAttackOnCooldown[i]
-        and c:enter('player')
+        and c:isTouching(Player.collider:getBody())
         then
             local angle=self.lavaColliderKnockbackAngles[i]           
             Player:takeDamage('melee','pure',25*(Player.collider:getMass()/0.1),angle,5)
@@ -91,5 +163,25 @@ function BossRoom:spawnFlameTonados()
             positions[selectedCorner].y,
             angles[selectedCorner]
         )
+    end
+end
+
+function BossRoom:activateFloorTiles()
+    for x=1,#self.floorTiles do 
+        for y,tile in pairs(self.floorTiles[x]) do 
+            tile.animations.seep:pauseAtStart()
+            tile.animations.fill:pauseAtStart()
+            tile.animations.receed:pauseAtStart()
+            TimerState:after(3,function() 
+                tile.animations.currentAnim=tile.animations.fill
+                tile.animations.currentAnim:resume()
+            end)
+            TimerState:after(6,function() 
+                tile.animations.currentAnim=tile.animations.receed
+                tile.animations.currentAnim:resume()
+            end)
+            tile.animations.currentAnim=tile.animations.seep
+            tile.animations.currentAnim:resume()
+        end
     end
 end

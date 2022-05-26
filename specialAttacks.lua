@@ -137,6 +137,16 @@ function SpecialAttacks:load()
         (218/255),(78/255),(56/255),1,
         (34/255),(34/255),(34/255),1
     )
+    --particle system for disabling Fireball (disables protection magics on hit)
+    self.particleSystems.disablingFireball=self.particleSystems.fireball:clone()
+    self.particleSystems.disablingFireball:setColors(
+        1,1,1,1,
+        (247/255),(134/255),(151/255),1,
+        (220/255),(74/255),(123/255),1,
+        (159/255),(41/255),(78/255),1,
+        (95/255),(45/255),(86/255),1,
+        (34/255),(34/255),(34/255),1
+    )
 end 
 
 --spawns a tornado at a given set of coordinates and an initial travel angle
@@ -575,7 +585,7 @@ end
 --boss' basic magical attack. 
 --Launches a fireball that acts as a projectile, but uses particle systems to
 --make it look much more detailed and deadlier
-function SpecialAttacks:launchFireball(_xPos,_yPos,_target)
+function SpecialAttacks:launchFireball(_xPos,_yPos,_target,_disablingBool)
     local fireball={}
 
     function fireball:load()
@@ -592,21 +602,37 @@ function SpecialAttacks:launchFireball(_xPos,_yPos,_target)
         self.angle=0
         self.willDie=false 
         self.hitTarget=false --true when fissure reached and hit its target
-        self.particles=SpecialAttacks.particleSystems.fireball:clone()
+        self.isDisabling=_disablingBool
+        if self.isDisabling then --pink/purple particles
+            self.particles=SpecialAttacks.particleSystems.disablingFireball:clone()
+        else --yellow/red particles
+            self.particles=SpecialAttacks.particleSystems.fireball:clone()
+        end
         self.emissionRate=1/60
         self.yOffset=-20
         self.shadow=Shadows:newShadow('fireball')
 
+        --rate at which the sprite will lower to the ground over time.
+        --the closer the target, the higher the rate of lowering
+        self.lowerRate=-180*(self.yOffset)/(
+            ((self.target.xPos-self.xPos)^2+(self.target.yPos-self.yPos)^2)^0.5
+        )
+
         table.insert(Entities.entitiesTable,self)
     end
 
-    function fireball:update()
+    function fireball:update()        
         self.particles:update(dt)
         if self.willDie then --must wait for particle system to be empty before dying
             if self.particles:getCount()==0 then 
                 self.collider:destroy()
                 return false 
             else return end
+        end
+
+        --'lower' sprite by increasing yOffset to -10
+        if self.yOffset<-10 then 
+            self.yOffset=self.yOffset+self.lowerRate*dt
         end
 
         self.xPos,self.yPos=self.collider:getPosition()
@@ -640,6 +666,9 @@ function SpecialAttacks:launchFireball(_xPos,_yPos,_target)
             self.particles:setLinearAcceleration(0,0)
             self.particles:setSpeed(20,80)
             self.particles:emit(200)
+            if self.isDisabling and self.target.state.protectionActivated then 
+                self.target.protectionMagics:deactivate() 
+            end 
             self.willDie=true --fireball will die once particle system is empty
         end
     end
