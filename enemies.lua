@@ -1624,8 +1624,9 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
                     self.state.basicAttackCounter=0
                     self.state.currentAttack='magical'
                     self.animations.combat.current=self.animations.combat.magical
-                    self.state.magicAttackCycles=self.state.magicAttackCycles+1
-                    self.state.disablingFireballAttackNum=love.math.random(1,4)
+                    --choose an attack number to launch a disablingFireball.
+                    --effectively ~57% to launch on a given magic attack cycle
+                    self.state.disablingFireballAttackNum=love.math.random(7)-1
                 end
             end
         )
@@ -1669,9 +1670,10 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.state.reachedMoveTarget=false --true as soon as enemy reaches target
         self.state.movingTimer=0 --tracks how long enemy has been moving toward target
         self.state.attackOnCooldown=true 
-        self.state.basicAttackCounter=0
-        self.state.magicAttackCycles=0 --used to determine when to launch a disablingFireball
-        self.state.disablingFireballAttackNum=0 --what attack number to launch disablingFireBall
+        self.state.basicAttackCounter=0        
+        --choose an attack number to launch a disablingFireball.
+        --effectively ~57% to launch on a given magic attack cycle
+        self.state.disablingFireballAttackNum=love.math.random(7)-1
         self.state.attacksTaken=0 --how many attacks has the boss taken
         self.state.protectionActivated=true --currently using protection magics
         self.state.currentProtectionMagic='' --currently protected against
@@ -1694,7 +1696,6 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --select attack style opposite of current protection magic
         self.state.currentAttack=chooseStyle
-        if chooseStyle=='magical' then self.state.magicAttackCycles=1 end
         self.animations.combat.current=self.animations.combat[chooseStyle]
 
         self.health={
@@ -1796,10 +1797,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             self.state.hasAttacked=true 
             --fireball will be disabling only on even magical attack cycles and
             --only on the selected attack number (chosen after 4th physical attack)
-            local isDisabling=( 
-                self.state.magicAttackCycles%2==0 and
-                self.state.basicAttackCounter==self.state.disablingFireballAttackNum
-            )
+            local isDisabling=self.state.basicAttackCounter==self.state.disablingFireballAttackNum
             SpecialAttacks:launchFireball(
                 self.xPos+5*self.state.scaleX,
                 self.yPos-3,Player,isDisabling

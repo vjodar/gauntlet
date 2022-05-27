@@ -88,9 +88,9 @@ function PlayState:drawDungeonPhase() --draw funtion of the gathering/crafting p
     
     Hud:draw() --draw hud 
 
-    --testing--------------------------
-    love.graphics.print(#TimerState.timers,0,30,nil,3)
-    --testing--------------------------
+    -- --testing--------------------------
+    -- love.graphics.print(#TimerState.timers,0,30,nil,3)
+    -- --testing--------------------------
 end
 
 function PlayState:updateBossBattle()
@@ -107,7 +107,7 @@ function PlayState:drawBossBattle()
     cam:attach()
         BossRoom:draw() 
         --TODO: draw boss room floor where environmental hazards will be
-        world:draw() --draws colliders
+        -- world:draw() --draws colliders
         Entities:draw() --draw all entities, sorted by yPos
         UI:draw() --draw ui elements (dialog,healthbars,etc.)
     cam:detach()
@@ -115,6 +115,7 @@ function PlayState:drawBossBattle()
 
     -- --testing--------------------------
     -- love.graphics.print(love.timer:getFPS(),0,0,nil,6)
+    -- love.graphics.print(#TimerState.timers,0,40,nil,6)
     -- --testing--------------------------
 end
 
@@ -154,8 +155,8 @@ function PlayState:startDungeonPhase()
     -- Enemies.enemySpawner.t3[1](randomPoints())
     -- Enemies.enemySpawner.t3[2](randomPoints())
 
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t2')
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t2')
+    Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
+    Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
     Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
     Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
     Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
