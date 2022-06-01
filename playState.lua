@@ -140,7 +140,7 @@ function PlayState:startDungeonPhase()
         Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     end
 
-    TimerState:after(3,function() self:startBossBattle() end)
+    -- TimerState:after(3,function() self:startBossBattle() end)
 
     -- SpecialAttacks:spawnFissure(randomPoints(),randomPoints(),Player)
     -- SpecialAttacks:spawnFireCircle(randomPoints())
@@ -170,8 +170,8 @@ function PlayState:startDungeonPhase()
     -- Items:spawn_item(playerStartX,playerStartY,'tree_wood')
     -- Items:spawn_item(playerStartX,playerStartY,'rock_metal')
     -- Items:spawn_item(playerStartX,playerStartY,'vine_thread')
-    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'potion') end
-    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'fish_cooked') end
+    for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'potion') end
+    for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'fish_cooked') end
     --testing----------------------------------
 end
 

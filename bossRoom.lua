@@ -7,13 +7,20 @@ function BossRoom:load()
     self.sprites={
         lava=love.graphics.newImage('assets/maps/boss_lava.png'),
         floor=love.graphics.newImage('assets/maps/boss_floor.png'),
-        floorTile=love.graphics.newImage('assets/maps/boss_floor_tile1.png')
+        floorTile1=love.graphics.newImage('assets/maps/boss_floor_tile7.png'),
+        floorTile2=love.graphics.newImage('assets/maps/boss_floor_tile8.png'),
+        floorTile3=love.graphics.newImage('assets/maps/boss_floor_tile9.png'),
+        floorTile4=love.graphics.newImage('assets/maps/boss_floor_tile10.png'),
+        floorTile5=love.graphics.newImage('assets/maps/boss_floor_tile11.png'),
+        floorTile6=love.graphics.newImage('assets/maps/boss_floor_tile12.png'),
+        floorTile7=love.graphics.newImage('assets/maps/boss_floor_tile13.png'),
+        floorTile8=love.graphics.newImage('assets/maps/boss_floor_tile14.png'),
     }
     self.floorW,self.floorH=self.sprites.floor:getWidth(),self.sprites.floor:getHeight()
     self.grids={
         floorTile=anim8.newGrid(
-            16,16,self.sprites.floorTile:getWidth(),
-            self.sprites.floorTile:getHeight()
+            16,16,self.sprites.floorTile1:getWidth(),
+            self.sprites.floorTile1:getHeight()
         )
     }
 
@@ -84,6 +91,7 @@ function BossRoom:generateFloorTiles()
         floorTiles[x]={}
         for y=1,19 do
             floorTiles[x][y]={
+                spriteNum=love.math.random(1,8), --choose a tile sprite
                 xPos=224+16*(x-1),
                 yPos=160+16*(y-1),
                 animations={} --holds all animations
@@ -93,28 +101,34 @@ function BossRoom:generateFloorTiles()
                 function() floorTiles[x][y].animations.seep:pauseAtEnd() end
             )
             floorTiles[x][y].animations.fill=anim8.newAnimation( --lava fills tile
-                self.grids.floorTile('5-10',1),0.15,
-                function() floorTiles[x][y].animations.fill:pauseAtEnd() end
+                self.grids.floorTile('5-10',1),0.1,
+                function() --after filling, go to rise/fall idle
+                    floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.fall
+                    floorTiles[x][y].animations.fall:resume()
+                end
             )
             floorTiles[x][y].animations.receed=anim8.newAnimation( --lava receeds from tile
-                self.grids.floorTile('10-1',1),0.15,
+                self.grids.floorTile('10-1',1),0.1,
                 function() floorTiles[x][y].animations.receed:pauseAtEnd() end
+            )
+            floorTiles[x][y].animations.fall=anim8.newAnimation( --lava idle fall
+                self.grids.floorTile('9-7',1),0.1+2*love.math.random(),
+                function() --return to fall idle
+                    floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.rise                    
+                end
+            )
+            floorTiles[x][y].animations.rise=anim8.newAnimation( --lava idle rise
+                self.grids.floorTile('8-10',1),0.1+2*love.math.random(),
+                function() --return to rise idle
+                    floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.fall
+                end
             )
             floorTiles[x][y].animations.seep:pauseAtStart()
             floorTiles[x][y].animations.fill:pauseAtStart()
             floorTiles[x][y].animations.receed:pauseAtStart()
+            floorTiles[x][y].animations.fall:pauseAtStart()
 
-            --flip animations vertically,horizontally,both,or neither
-            local flipFunctions={
-                function(_a) _a:flipV() end, --vertically
-                function(_a) _a:flipH() end , --horizontally
-                function(_a) _a:flipV() _a:flipH() end, --both
-                function() return end --neither
-            }
-            local flipFn=flipFunctions[love.math.random(#flipFunctions)]
-            for i,anim in pairs(floorTiles[x][y].animations) do flipFn(anim) end
-
-            floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.seep            
+            floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.seep     
         end
     end
     return floorTiles
@@ -292,7 +306,7 @@ function BossRoom:drawFloorTiles() --draw all floor tiles
     for x=1,#self.floorTiles do 
         for y,tile in pairs(self.floorTiles[x]) do 
             tile.animations.currentAnim:draw(
-                self.sprites.floorTile,tile.xPos,tile.yPos
+                self.sprites['floorTile'..tile.spriteNum],tile.xPos,tile.yPos
             )            
         end
     end
@@ -373,6 +387,7 @@ function BossRoom:activateFloorTiles()
         tile.animations.seep:pauseAtStart()
         tile.animations.fill:pauseAtStart()
         tile.animations.receed:pauseAtStart()
+        tile.animations.fall:pauseAtStart()
         TimerState:after(3,function() 
             tile.animations.currentAnim=tile.animations.fill
             tile.animations.currentAnim:resume()
