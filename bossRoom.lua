@@ -5,26 +5,31 @@ function BossRoom:load()
 
     --spritesheets and animations
     self.sprites={
-        lava=love.graphics.newImage('assets/maps/boss_lava.png'),
-        floor=love.graphics.newImage('assets/maps/boss_floor.png'),
-        floorTile1=love.graphics.newImage('assets/maps/boss_floor_tile7.png'),
-        floorTile2=love.graphics.newImage('assets/maps/boss_floor_tile8.png'),
-        floorTile3=love.graphics.newImage('assets/maps/boss_floor_tile9.png'),
-        floorTile4=love.graphics.newImage('assets/maps/boss_floor_tile10.png'),
-        floorTile5=love.graphics.newImage('assets/maps/boss_floor_tile11.png'),
-        floorTile6=love.graphics.newImage('assets/maps/boss_floor_tile12.png'),
-        floorTile7=love.graphics.newImage('assets/maps/boss_floor_tile13.png'),
-        floorTile8=love.graphics.newImage('assets/maps/boss_floor_tile14.png'),
+        lava=love.graphics.newImage('assets/maps/boss_room/boss_lava.png'),
+        lavaBubbles=love.graphics.newImage('assets/maps/boss_room/lava_bubbles.png'),
+        floor=love.graphics.newImage('assets/maps/boss_room/boss_floor.png'),
+        floorTile1=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile7.png'),
+        floorTile2=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile8.png'),
+        floorTile3=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile9.png'),
+        floorTile4=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile10.png'),
+        floorTile5=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile11.png'),
+        floorTile6=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile12.png'),
+        floorTile7=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile13.png'),
+        floorTile8=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile14.png'),
     }
     self.floorW,self.floorH=self.sprites.floor:getWidth(),self.sprites.floor:getHeight()
     self.grids={
         floorTile=anim8.newGrid(
             16,16,self.sprites.floorTile1:getWidth(),
             self.sprites.floorTile1:getHeight()
+        ),
+        lavaBubbles=anim8.newGrid(
+            16,16,self.sprites.lavaBubbles:getWidth(),
+            self.sprites.lavaBubbles:getHeight()
         )
     }
 
-     --colliders for lava surrounding the floor
+    --  colliders for lava surrounding the floor
     self.lavaColliders={
         top=world:newRectangleCollider(224,160-32,self.floorW,32),
         bot=world:newRectangleCollider(224,160+self.floorH,self.floorW,32),
@@ -39,6 +44,7 @@ function BossRoom:load()
     self.lavaAttackOnCooldown={top=false,bot=false,left=false,right=false}
 
     self.floorTiles=self:generateFloorTiles()
+    self.lavaBubbles=self:generateLavaBubbles()
     self.floorLavaPatterns,self.floorLavaColliderData=self:generateFloorLavaPatterns()    
 
     self.floorLavaColliders={} --holds the colliders for floor lava
@@ -50,7 +56,9 @@ end
 
 function BossRoom:update()
     self:updateFloorTiles() --update floorTiles' animations
-    self:updateLava() --damage and knockback player when touching lava
+    self:updateLava() --damage and knockback player when touching perimeter lava
+    --update lava bubbles animations
+    for i,b in pairs(self.lavaBubbles) do b.currentAnim:update(dt) end 
 
     self.tornadoTimer=self.tornadoTimer+dt 
     if self.tornadoTimer>=20 then --spawn tornados every 20s
@@ -79,7 +87,45 @@ end
 
 function BossRoom:draw()
     love.graphics.draw(self.sprites.lava,0,0)
-    self:drawFloorTiles()
+    for i,b in pairs(self.lavaBubbles) do --draw lava bubbling animation
+        b.currentAnim:draw(self.sprites.lavaBubbles,b.xPos,b.yPos)
+    end
+    self:drawFloorTiles() --draw floor tiles
+end
+
+--generates the lava bubbling animations that are beneath tiles and get revealed
+--when a tile gets 'filled' with lava.
+function BossRoom:generateLavaBubbles()    
+    local bubbles={} --stores all bubbles
+    --helper function for animations. returns a time within [0.15,0.25)
+    local t=function() return 0.15+0.1*love.math.random() end
+    for x=1,25 do 
+        for y=1,19 do 
+            local b={}
+            -- onLoop function for all animations. After one animation ends,
+            -- select next animation randomly.
+            local onLoop=function()
+                b.currentAnim=b.animations[love.math.random(#b.animations)]
+                b.currentAnim:gotoFrame(1)
+            end
+            b.xPos=224+16*(x-1)
+            b.yPos=160+16*(y-1)
+            b.animations={ --all variations of lava bubbling
+            anim8.newAnimation(self.grids.lavaBubbles(1,1),t()*10,onLoop), --blank
+                anim8.newAnimation(self.grids.lavaBubbles('1-10',1),t(),onLoop),
+                anim8.newAnimation(self.grids.lavaBubbles('1-10',2),t(),onLoop),
+                anim8.newAnimation(self.grids.lavaBubbles('1-18',3),t(),onLoop),
+            }
+            for i,anim in pairs(b.animations) do --50% chance to mirror animation
+                if love.math.random(2)==2 then anim:flipH() end 
+            end
+            --choose a random starting animation, and a random starting frame
+            b.currentAnim=b.animations[love.math.random(#b.animations)]
+            b.currentAnim:gotoFrame(love.math.random(#b.currentAnim.frames))
+            table.insert(bubbles,b)
+        end
+    end
+    return bubbles
 end
 
 --generates the floor tile objects. Floor tiles have an x,y (absolute) position 
@@ -102,31 +148,15 @@ function BossRoom:generateFloorTiles()
             )
             floorTiles[x][y].animations.fill=anim8.newAnimation( --lava fills tile
                 self.grids.floorTile('5-10',1),0.1,
-                function() --after filling, go to rise/fall idle
-                    floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.fall
-                    floorTiles[x][y].animations.fall:resume()
-                end
+                function() floorTiles[x][y].animations.fill:pauseAtEnd() end
             )
             floorTiles[x][y].animations.receed=anim8.newAnimation( --lava receeds from tile
                 self.grids.floorTile('10-1',1),0.1,
                 function() floorTiles[x][y].animations.receed:pauseAtEnd() end
             )
-            floorTiles[x][y].animations.fall=anim8.newAnimation( --lava idle fall
-                self.grids.floorTile('9-7',1),0.1+2*love.math.random(),
-                function() --return to fall idle
-                    floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.rise                    
-                end
-            )
-            floorTiles[x][y].animations.rise=anim8.newAnimation( --lava idle rise
-                self.grids.floorTile('8-10',1),0.1+2*love.math.random(),
-                function() --return to rise idle
-                    floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.fall
-                end
-            )
             floorTiles[x][y].animations.seep:pauseAtStart()
             floorTiles[x][y].animations.fill:pauseAtStart()
             floorTiles[x][y].animations.receed:pauseAtStart()
-            floorTiles[x][y].animations.fall:pauseAtStart()
 
             floorTiles[x][y].animations.currentAnim=floorTiles[x][y].animations.seep     
         end
@@ -387,7 +417,6 @@ function BossRoom:activateFloorTiles()
         tile.animations.seep:pauseAtStart()
         tile.animations.fill:pauseAtStart()
         tile.animations.receed:pauseAtStart()
-        tile.animations.fall:pauseAtStart()
         TimerState:after(3,function() 
             tile.animations.currentAnim=tile.animations.fill
             tile.animations.currentAnim:resume()
