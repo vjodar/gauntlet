@@ -127,7 +127,7 @@ function SpecialAttacks:load()
     self.particleSystems.fireball:setParticleLifetime(0.1,0.4)
     self.particleSystems.fireball:setSpeed(10,20)
     self.particleSystems.fireball:setEmissionArea('ellipse',5,5,0,true)
-    self.particleSystems.fireball:setRelativeRotation(true)
+    self.particleSystems.fireball:setSpin(50)
     self.particleSystems.fireball:setRotation(0,0.5*math.pi)
     self.particleSystems.fireball:setColors(
         1,1,1,1,
@@ -146,6 +146,25 @@ function SpecialAttacks:load()
         (159/255),(41/255),(78/255),1,
         (95/255),(45/255),(86/255),1,
         (95/255),(45/255),(86/255),1,
+        (34/255),(34/255),(34/255),1
+    )
+    --particle system for flame tornado
+    self.particleSystems.flameTornado=love.graphics.newParticleSystem(self.spriteSheets.flame,4000)
+    self.particleSystems.flameTornado:setParticleLifetime(2)
+    self.particleSystems.flameTornado:setRadialAcceleration(-2000)
+    self.particleSystems.flameTornado:setLinearAcceleration(-50,-2000,50,-2000)
+    self.particleSystems.flameTornado:setLinearDamping(1)
+    self.particleSystems.flameTornado:setSpeed(-50,50)
+    self.particleSystems.flameTornado:setSpin(20)
+    self.particleSystems.flameTornado:setEmissionArea('borderellipse',5,3,0,true)
+    self.particleSystems.flameTornado:setColors(
+        1,1,1,1,
+        (250/255),(203/255),(62/255),1,
+        (250/255),(203/255),(62/255),1,
+        (238/255),(142/255),(46/255),1,
+        (238/255),(142/255),(46/255),1,
+        (218/255),(78/255),(56/255),1,
+        (218/255),(78/255),(56/255),1,
         (34/255),(34/255),(34/255),1
     )
 end 
@@ -687,49 +706,7 @@ function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
     local tornado={}
 
     function tornado:load()
-        self.spriteSheets={
-            s1=SpecialAttacks.spriteSheets.flame_tornado_segment_1,
-            s2=SpecialAttacks.spriteSheets.flame_tornado_segment_2,
-            s3=SpecialAttacks.spriteSheets.flame_tornado_segment_3,
-            s4=SpecialAttacks.spriteSheets.flame_tornado_segment_4,
-            s5=SpecialAttacks.spriteSheets.flame_tornado_segment_5,
-            s6=SpecialAttacks.spriteSheets.flame_tornado_segment_6,
-            s7=SpecialAttacks.spriteSheets.flame_tornado_segment_7,
-            s8=SpecialAttacks.spriteSheets.flame_tornado_segment_8,
-        }
-
-        self.animations={
-            s1=SpecialAttacks.animations.tornado_segment_1:clone(),
-            s2=SpecialAttacks.animations.tornado_segment_2:clone(),
-            s3=SpecialAttacks.animations.tornado_segment_3:clone(),
-            s4=SpecialAttacks.animations.tornado_segment_4:clone(),
-            s5=SpecialAttacks.animations.tornado_segment_5:clone(),
-            s6=SpecialAttacks.animations.tornado_segment_6:clone(),
-            s7=SpecialAttacks.animations.tornado_segment_7:clone(),
-            s8=SpecialAttacks.animations.tornado_segment_8:clone(),
-        }
-
-        self.offsets={
-            s1={x=-3,y=-4},
-            s2={x=-3,y=-8},
-            s3={x=-4,y=-12},
-            s4={x=-5,y=-17},
-            s5={x=-6,y=-22},
-            s6={x=-7,y=-28},
-            s7={x=-9,y=-32},
-            s8={x=-12,y=-38},
-        }
-
-        self.oscillations={
-            s1=0.25*8,
-            s2=0.25*7,
-            s3=0.25*6,
-            s4=0.25*5,
-            s5=0.25*4,
-            s6=0.25*3,
-            s7=0.25*2,
-            s8=0.25*1,
-        }
+        self.particles=SpecialAttacks.particleSystems.flameTornado:clone()
 
         self.collider=world:newBSGRectangleCollider(_xPos,_yPos,12,5,3)
         self.collider:setFixedRotation(true)
@@ -740,6 +717,8 @@ function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
         self.collider:setSensor(true)
         self.collider:setObject(self)
         self.xPos,self.yPos=self.collider:getPosition()
+        self.emissionRate=0.016 --emit particles every ~1/60s
+        self.emissionTimer=0 --used to emit particles at the emission rate
         self.moveSpeed=140
         self.angle=_angle
         self.attackOnCooldown=false
@@ -750,9 +729,8 @@ function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
 
         --after some time from spawning, destroy tornado
         TimerState:after(
-            love.math.random(10,15), --lifespan is 10-20s
+            love.math.random(10,15), --lifespan is 10-15s
             function() 
-                self:removeSegments()
                 self.willDie=true
             end
         )
@@ -764,16 +742,7 @@ function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
 
     function tornado:update()
         self.xPos,self.yPos=self.collider:getPosition()
-        for i,anim in pairs(self.animations) do anim:update(dt) end
-        for i,o in pairs(self.oscillations) do
-            self.oscillations[i]=self.oscillations[i]+dt*8
-        end
-
-        --apply force to move the tornado in a circle to match it's sprite oscillation
-        self.collider:applyForce(
-            3*math.cos(self.oscillations.s1+math.pi*0.25)*self.moveSpeed*0.2,
-            2*math.sin(self.oscillations.s1+math.pi*0.25)*self.moveSpeed*0.2
-        )
+        self.particles:update(dt)
 
         --travel in the direction of angle
         self.collider:applyForce(
@@ -785,12 +754,19 @@ function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
             --slow down speed over time
             self.moveSpeed=self.moveSpeed-45*dt
 
-            --once all segments are removed, remove the tornado itself from game
-            if self.animations.s8==nil then 
+            --once all particles are destroyed, remove the tornado itself from game
+            if self.particles:getCount()==0 then 
                 self.collider:destroy()
                 return false 
             end
             return
+        end
+
+        --emit 20 particles ~60 times per second
+        self.emissionTimer=self.emissionTimer+dt 
+        if self.emissionTimer>=self.emissionRate then 
+            self.emissionTimer=0 --reset timer
+            self.particles:emit(20) --emit particles
         end
 
         --update angle to player after initial travel time
@@ -814,26 +790,13 @@ function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
         end
 
         if Player.health.current==0 then 
-            self:removeSegments()
             self.willDie=true 
         end
     end
 
     function tornado:draw()
         self.shadow:draw(self.xPos,self.yPos)
-        for i,segment in pairs(self.animations) do
-            segment:draw(
-                self.spriteSheets[i],
-                self.xPos+self.offsets[i].x+3*math.cos(self.oscillations[i]),
-                self.yPos+self.offsets[i].y+2*math.sin(self.oscillations[i])
-            )
-        end
-    end
-
-    function tornado:removeSegments() 
-        for i=1,8 do --use timers to remove each segment gradually from bottom to top
-            TimerState:after(i*0.2,function() self.animations['s'..i]=nil end)
-        end
+        love.graphics.draw(self.particles,self.xPos,self.yPos)
     end
 
     tornado:load()

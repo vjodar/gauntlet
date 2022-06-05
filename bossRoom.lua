@@ -5,7 +5,8 @@ function BossRoom:load()
 
     --spritesheets and animations
     self.sprites={
-        lava=love.graphics.newImage('assets/maps/boss_room/boss_lava.png'),
+        lava=love.graphics.newImage('assets/maps/boss_room/lava.png'),
+        lavaBlank=love.graphics.newImage('assets/maps/boss_room/lava_blank.png'),
         lavaBubbles=love.graphics.newImage('assets/maps/boss_room/lava_bubbles.png'),
         floor=love.graphics.newImage('assets/maps/boss_room/boss_floor.png'),
         floorTile1=love.graphics.newImage('assets/maps/boss_room/boss_floor_tile7.png'),
@@ -19,6 +20,9 @@ function BossRoom:load()
     }
     self.floorW,self.floorH=self.sprites.floor:getWidth(),self.sprites.floor:getHeight()
     self.grids={
+        lava=anim8.newGrid(
+            32,32,self.sprites.lava:getWidth(),self.sprites.lava:getHeight()
+        ),
         floorTile=anim8.newGrid(
             16,16,self.sprites.floorTile1:getWidth(),
             self.sprites.floorTile1:getHeight()
@@ -43,6 +47,7 @@ function BossRoom:load()
     self.lavaColliderKnockbackAngles={top=0.5*math.pi,bot=-0.5*math.pi,left=0,right=math.pi}
     self.lavaAttackOnCooldown={top=false,bot=false,left=false,right=false}
 
+    self.lava=self:generateLava()
     self.floorTiles=self:generateFloorTiles()
     self.lavaBubbles=self:generateLavaBubbles()
     self.floorLavaPatterns,self.floorLavaColliderData=self:generateFloorLavaPatterns()    
@@ -55,8 +60,9 @@ function BossRoom:load()
 end
 
 function BossRoom:update()
+    for i,l in pairs(self.lava) do l.currentAnim:update(dt) end --update lava animation
     self:updateFloorTiles() --update floorTiles' animations
-    self:updateLava() --damage and knockback player when touching perimeter lava
+    self:updatePerimeterLava() --damage and knockback player when touching perimeter lava
     --update lava bubbles animations
     for i,b in pairs(self.lavaBubbles) do b.currentAnim:update(dt) end 
 
@@ -86,11 +92,25 @@ function BossRoom:update()
 end
 
 function BossRoom:draw()
-    love.graphics.draw(self.sprites.lava,0,0)
+    --animate lava
+    for i,l in pairs(self.lava) do l.currentAnim:draw(self.sprites.lava,l.xPos,l.yPos) end
+    love.graphics.draw(self.sprites.lavaBlank,224,160)
     for i,b in pairs(self.lavaBubbles) do --draw lava bubbling animation
         b.currentAnim:draw(self.sprites.lavaBubbles,b.xPos,b.yPos)
     end
     self:drawFloorTiles() --draw floor tiles
+end
+
+--generates the lava surrounding and underneath the floor tiles which consist
+--of a grid of lava animations
+function BossRoom:generateLava()
+    local lava={}
+    for x=1,27 do for y=1,20 do 
+        local l={xPos=32*(x-1),yPos=32*(y-1)} --frames are 32x32
+        l.currentAnim=anim8.newAnimation(self.grids.lava('1-16',1),0.12)
+        table.insert(lava,l)
+    end end
+    return lava
 end
 
 --generates the lava bubbling animations that are beneath tiles and get revealed
@@ -111,7 +131,7 @@ function BossRoom:generateLavaBubbles()
             b.xPos=224+16*(x-1)
             b.yPos=160+16*(y-1)
             b.animations={ --all variations of lava bubbling
-            anim8.newAnimation(self.grids.lavaBubbles(1,1),t()*10,onLoop), --blank
+                anim8.newAnimation(self.grids.lavaBubbles(1,1),t()*10,onLoop), --blank
                 anim8.newAnimation(self.grids.lavaBubbles('1-10',1),t(),onLoop),
                 anim8.newAnimation(self.grids.lavaBubbles('1-10',2),t(),onLoop),
                 anim8.newAnimation(self.grids.lavaBubbles('1-18',3),t(),onLoop),
@@ -342,7 +362,7 @@ function BossRoom:drawFloorTiles() --draw all floor tiles
     end
 end
 
-function BossRoom:updateLava()
+function BossRoom:updatePerimeterLava()
     for i,c in pairs(self.lavaColliders) do
         if not self.lavaAttackOnCooldown[i]
         and c:isTouching(Player.collider:getBody())

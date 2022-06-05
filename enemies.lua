@@ -1843,7 +1843,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --change protection magics after taking 5 hits
         self.state.attacksTaken=self.state.attacksTaken+1
-        if self.state.attacksTaken==6 then 
+        if self.state.attacksTaken==5 then 
             self.state.attacksTaken=0
             self.protectionMagics:deactivate()
             local opposite={physical='magical',magical='physical'}

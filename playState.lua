@@ -88,9 +88,10 @@ function PlayState:drawDungeonPhase() --draw funtion of the gathering/crafting p
     
     Hud:draw() --draw hud 
 
-    -- --testing--------------------------
+    --testing--------------------------
+    -- love.graphics.print(love.timer:getFPS(),0,0,nil,6)
     -- love.graphics.print(#TimerState.timers,0,30,nil,3)
-    -- --testing--------------------------
+    --testing--------------------------
 end
 
 function PlayState:updateBossBattle()
@@ -140,7 +141,7 @@ function PlayState:startDungeonPhase()
         Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     end
 
-    -- TimerState:after(3,function() self:startBossBattle() end)
+    TimerState:after(3,function() self:startBossBattle() end)
 
     -- SpecialAttacks:spawnFissure(randomPoints(),randomPoints(),Player)
     -- SpecialAttacks:spawnFireCircle(randomPoints())
