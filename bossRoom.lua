@@ -5,7 +5,7 @@ function BossRoom:load()
 
     --spritesheets and animations
     self.sprites={
-        lava=love.graphics.newImage('assets/maps/boss_room/lava.png'),
+        lava=love.graphics.newImage('assets/maps/boss_room/lava_blurred.png'),
         lavaBlank=love.graphics.newImage('assets/maps/boss_room/lava_blank.png'),
         lavaBubbles=love.graphics.newImage('assets/maps/boss_room/lava_bubbles.png'),
         floor=love.graphics.newImage('assets/maps/boss_room/boss_floor.png'),
@@ -55,7 +55,7 @@ function BossRoom:load()
     self.floorLavaColliders={} --holds the colliders for floor lava
     self.floorLavaAttackOnCooldown=false 
     
-    self.tornadoTimer=10 --start 10s in to spawn first torando soon
+    self.flamePillarTimer=10 --start 10s in to spawn first torando soon
     self.floorTileTimer=8
 end
 
@@ -66,9 +66,9 @@ function BossRoom:update()
     --update lava bubbles animations
     for i,b in pairs(self.lavaBubbles) do b.currentAnim:update(dt) end 
 
-    self.tornadoTimer=self.tornadoTimer+dt 
-    if self.tornadoTimer>=20 then --spawn tornados every 20s
-        self.tornadoTimer=0
+    self.flamePillarTimer=self.flamePillarTimer+dt 
+    if self.flamePillarTimer>=20 then --spawn flamePillars every 20s
+        self.flamePillarTimer=0
         self:spawnFlameTonados()
     end
 
@@ -107,7 +107,7 @@ function BossRoom:generateLava()
     local lava={}
     for x=1,27 do for y=1,20 do 
         local l={xPos=32*(x-1),yPos=32*(y-1)} --frames are 32x32
-        l.currentAnim=anim8.newAnimation(self.grids.lava('1-16',1),0.12)
+        l.currentAnim=anim8.newAnimation(self.grids.lava('1-16',1),0.15)
         table.insert(lava,l)
     end end
     return lava
@@ -395,7 +395,7 @@ function BossRoom:spawnFlameTonados()
         botRight=math.atan2(-1,-1)
     }
 
-    --amount of tornados increase as boss loses thirds of max health
+    --amount of flamePillars increase as boss loses thirds of max health
     if self.boss.health.current<=self.boss.health.max*0.33 then numTornados=4
     elseif self.boss.health.current<=self.boss.health.max*0.66 then numTornados=3
     else numTornados=2
@@ -403,12 +403,12 @@ function BossRoom:spawnFlameTonados()
 
     for i=1,numTornados do 
         --pick a corner to spawn in, then remove that corner from the selection
-        --so that the next tornado can't choose the same corner.
+        --so that the next flamePillar can't choose the same corner.
         local i=love.math.random(#corners)
         local selectedCorner=corners[i]
         table.remove(corners,i)
 
-        SpecialAttacks:spawnFlameTornado( --spawn tornado at the selected corner 
+        SpecialAttacks:spawnFlamePillar( --spawn flame pillar at the selected corner 
             positions[selectedCorner].x,
             positions[selectedCorner].y,
             angles[selectedCorner]

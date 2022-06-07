@@ -21,6 +21,8 @@ function SpecialAttacks:load()
 
         fireInsignia=love.graphics.newImage('assets/specials/fire_insignia.png'),
         flame=love.graphics.newImage('assets/specials/flame_particle.png'),
+        fireball=love.graphics.newImage('assets/specials/fireball_particle.png'),
+        flamePillar=love.graphics.newImage('assets/specials/flame_pillar_particle.png'),
 
         fissure_trail_1=love.graphics.newImage('assets/specials/fissure_trail_1.png'),
         fissure_trail_2=love.graphics.newImage('assets/specials/fissure_trail_2.png'),
@@ -123,7 +125,7 @@ function SpecialAttacks:load()
         (34/255),(34/255),(34/255),1
     ) 
     --particle system for Fireball
-    self.particleSystems.fireball=love.graphics.newParticleSystem(self.spriteSheets.flame,1000)
+    self.particleSystems.fireball=love.graphics.newParticleSystem(self.spriteSheets.fireball,1000)
     self.particleSystems.fireball:setParticleLifetime(0.1,0.4)
     self.particleSystems.fireball:setSpeed(10,20)
     self.particleSystems.fireball:setEmissionArea('ellipse',5,5,0,true)
@@ -149,17 +151,17 @@ function SpecialAttacks:load()
         (34/255),(34/255),(34/255),1
     )
     --particle system for flame tornado
-    self.particleSystems.flameTornado=love.graphics.newParticleSystem(self.spriteSheets.flame,4000)
-    self.particleSystems.flameTornado:setParticleLifetime(2)
-    self.particleSystems.flameTornado:setRadialAcceleration(-2000)
-    self.particleSystems.flameTornado:setLinearAcceleration(-50,-2000,50,-2000)
-    self.particleSystems.flameTornado:setLinearDamping(1)
-    self.particleSystems.flameTornado:setSpeed(-50,50)
-    self.particleSystems.flameTornado:setSpin(20)
-    self.particleSystems.flameTornado:setEmissionArea('borderellipse',5,3,0,true)
-    self.particleSystems.flameTornado:setColors(
+    self.particleSystems.flamePillar=love.graphics.newParticleSystem(self.spriteSheets.flamePillar,4000)
+    self.particleSystems.flamePillar:setParticleLifetime(1.8,2.2)
+    self.particleSystems.flamePillar:setRadialAcceleration(-2000)
+    self.particleSystems.flamePillar:setLinearAcceleration(-40,-2000,40,-2000)
+    self.particleSystems.flamePillar:setLinearDamping(1)
+    self.particleSystems.flamePillar:setSpeed(-100,100)
+    self.particleSystems.flamePillar:setSpin(15)
+    self.particleSystems.flamePillar:setEmissionArea('borderellipse',4,3,0,true)
+    self.particleSystems.flamePillar:setColors(
         1,1,1,1,
-        (250/255),(203/255),(62/255),1,
+        (255/255),(204/255),(104/255),1,
         (250/255),(203/255),(62/255),1,
         (238/255),(142/255),(46/255),1,
         (238/255),(142/255),(46/255),1,
@@ -702,11 +704,11 @@ function SpecialAttacks:launchFireball(_xPos,_yPos,_target,_disablingBool)
 end
 
 --spawns a tornado at a given set of coordinates and an initial travel angle
-function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
+function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
     local tornado={}
 
     function tornado:load()
-        self.particles=SpecialAttacks.particleSystems.flameTornado:clone()
+        self.particles=SpecialAttacks.particleSystems.flamePillar:clone()
 
         self.collider=world:newBSGRectangleCollider(_xPos,_yPos,12,5,3)
         self.collider:setFixedRotation(true)
@@ -719,13 +721,16 @@ function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
         self.xPos,self.yPos=self.collider:getPosition()
         self.emissionRate=0.016 --emit particles every ~1/60s
         self.emissionTimer=0 --used to emit particles at the emission rate
-        self.moveSpeed=140
         self.angle=_angle
+        local angleOffsetSelection={-0.3,-0.2,-0.1,0,0.1,0.2,0.3}
+        self.angleOffset=angleOffsetSelection[(love.math.random(#angleOffsetSelection))]
+        self.baseMoveSpeed=200
+        self.moveSpeed=self.baseMoveSpeed
         self.attackOnCooldown=false
         self.willDie=false
         
         self.moveToPlayer=false --travel along initial angle, after 2s, move to player
-        TimerState:after(2,function() self.moveToPlayer=true end)
+        TimerState:after(1,function() self.moveToPlayer=true end)
 
         --after some time from spawning, destroy tornado
         TimerState:after(
@@ -771,9 +776,16 @@ function SpecialAttacks:spawnFlameTornado(_xPos,_yPos,_angle)
 
         --update angle to player after initial travel time
         if self.moveToPlayer then 
-            self.angle=math.atan2(
-                (Player.yPos-self.yPos),(Player.xPos-self.xPos)
-            )
+            local xDistance=Player.xPos-self.xPos
+            local yDistance=Player.yPos-self.yPos
+            self.angle=math.atan2(yDistance,xDistance)
+
+            --apply angle offset to make pillar travel a little to the left/right
+            --of target. Also increase speed the further away from target.
+            --This effectively makes them flank the target quickly when far,
+            --but just chase target at base movement speed when near.
+            self.angle=self.angle+self.angleOffset
+            self.moveSpeed=self.baseMoveSpeed*(1+(math.abs(xDistance)+math.abs(yDistance))*0.001)
         end
 
         --damage and knockback player

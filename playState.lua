@@ -5,7 +5,7 @@ function PlayState:load()
     local glyphs=( --used for fonts
         " abcdefghijklmnopqrstuvwxyz" ..
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ..
-        "1234567890.!,'+"
+        "1234567890.:!,'+"
     )
     fonts={
         yellow=love.graphics.newImageFont("assets/fonts/font_yellow.png",glyphs), --default/dialog
@@ -134,6 +134,8 @@ function PlayState:startDungeonPhase()
     cam:lookAt(playerStartX,playerStartY)
     camTarget=Player
 
+    Clock:start()
+
     --testing----------------------------------
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
     local function randomPoints()
@@ -141,12 +143,12 @@ function PlayState:startDungeonPhase()
         Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     end
 
-    TimerState:after(3,function() self:startBossBattle() end)
+    -- TimerState:after(3,function() self:startBossBattle() end)
 
     -- SpecialAttacks:spawnFissure(randomPoints(),randomPoints(),Player)
     -- SpecialAttacks:spawnFireCircle(randomPoints())
     -- SpecialAttacks:launchFireball(randomPoints(),randomPoints(),Player)
-    -- SpecialAttacks:spawnFlameTornado(playerStartX,playerStartY,love.math.random()*2*math.pi-math.pi)
+    -- SpecialAttacks:spawnFlamePillar(playerStartX,playerStartY+30,love.math.random()*2*math.pi-math.pi)
     -- Enemies.enemySpawner.t1[1](randomPoints())
     -- Enemies.enemySpawner.t1[2](randomPoints())
     -- Enemies.enemySpawner.t1[3](randomPoints())
@@ -156,11 +158,11 @@ function PlayState:startDungeonPhase()
     -- Enemies.enemySpawner.t3[1](randomPoints())
     -- Enemies.enemySpawner.t3[2](randomPoints())
 
-    Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
-    Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
-    Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
-    Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
-    Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
     -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
     -- Items:spawn_item(playerStartX,playerStartY,'broken_staff')
@@ -171,8 +173,8 @@ function PlayState:startDungeonPhase()
     -- Items:spawn_item(playerStartX,playerStartY,'tree_wood')
     -- Items:spawn_item(playerStartX,playerStartY,'rock_metal')
     -- Items:spawn_item(playerStartX,playerStartY,'vine_thread')
-    for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'potion') end
-    for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'fish_cooked') end
+    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'potion') end
+    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'fish_cooked') end
     --testing----------------------------------
 end
 
@@ -180,6 +182,10 @@ function PlayState:startBossBattle()
     --set associated update and draw function
     self._update=self.updateBossBattle
     self._draw=self.drawBossBattle
+
+    --set clock to 0:00 and stop
+    Clock.min.val,Clock.sec.val=0,0
+    Clock:stop()
 
     Dungeon:closeDungeon() --delete dungeon rooms and entities
 

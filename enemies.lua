@@ -1542,7 +1542,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
     function enemy:draw()
         self.shadow:draw(self.xPos,self.yPos) --draw shadow
         self.currentAnim:draw(
-            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,16,55
+            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,16,32
         )
     end
 
