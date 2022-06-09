@@ -36,9 +36,6 @@ function Clock:update()
         if self.sec.val==-1 then 
             self.min.val=self.min.val-1
             if self.min.val==-1 then 
-                self.min.val=0
-                self.sec.val=0
-                self:stop() 
                 PlayState:startBossBattle()
             else 
                 self.sec.val=59 --rollover
@@ -63,4 +60,8 @@ function Clock:draw()
 end
 
 function Clock:start() self.runClock=true end --start the clock
-function Clock:stop() self.runClock=false end --stop the clock
+function Clock:pause() self.runClock=false end --pause the clock
+function Clock:stop() --stop and set clock to 0:00
+    self.runClock=false
+    self.min.val,self.sec.val=0,0 
+end 

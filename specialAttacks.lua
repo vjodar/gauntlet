@@ -722,7 +722,7 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
         self.emissionRate=0.016 --emit particles every ~1/60s
         self.emissionTimer=0 --used to emit particles at the emission rate
         self.angle=_angle
-        local angleOffsetSelection={-0.3,-0.2,-0.1,0,0.1,0.2,0.3}
+        local angleOffsetSelection={-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5}
         self.angleOffset=angleOffsetSelection[(love.math.random(#angleOffsetSelection))]
         self.baseMoveSpeed=200
         self.moveSpeed=self.baseMoveSpeed

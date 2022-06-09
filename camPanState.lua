@@ -2,9 +2,9 @@ CamPanState={}
 
 function CamPanState:update()
     --begin revealing the room by fading out rectangle
-    self.alpha=self.alpha-0.01
+    self.alpha=self.alpha-self.step*dt
     if self.panToRoomDone then --accelerate reveal when room is in full view
-        self.alpha=self.alpha-0.05
+        self.alpha=self.alpha-5*self.step*dt
     end
 
     if self.panToPlayer then
@@ -40,6 +40,7 @@ function CamPanState:pan(_xPos,_yPos)
     self.h=Rooms.ROOMHEIGHT
     self.alpha=1
     self.color=2/15
+    self.step=0.6 --decrement by 0.01 at 60fps
 
     --create a new target for the camera to look at, but keep its current position
     self.target={}

@@ -21,6 +21,10 @@ function PlayState:load()
     --1x zoom for every 400px width and 300px height
     cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5))
 
+    --color and alpha of screen used for fading in and out
+    black=2/15
+    transitionScreenAlpha=0
+
     world=wf.newWorld() --initialize physics world which handles colliders
     world:addCollisionClass('player')
     world:addCollisionClass('enemy')
@@ -62,7 +66,19 @@ end
 --update and draw functions. They will be changed depending on which part of
 --the game the player is currently on (starting room, dungeon, and boss battle)
 function PlayState:update() return self:_update() end
-function PlayState:draw() self:_draw() end
+function PlayState:draw() self:_draw() self:drawTransitionScreen() end
+
+--draw transition screen (alpha is controlled by FadeState)
+function PlayState:drawTransitionScreen()
+    cam:attach()
+        love.graphics.setColor(black,black,black,transitionScreenAlpha)
+        love.graphics.rectangle(
+            'fill',cam.x-(WINDOW_WIDTH*0.5),cam.y-(WINDOW_HEIGHT*0.5),
+            WINDOW_WIDTH,WINDOW_HEIGHT
+        )
+        love.graphics.setColor(1,1,1,1)
+    cam:detach()
+end
 
 function PlayState:updateDungeonPhase() --update function of gathering/crafting phase
     world:update(dt) --update physics colliders
@@ -131,10 +147,12 @@ function PlayState:startDungeonPhase()
     Player.collider:setPosition(playerStartX,playerStartY)
 
     --set camera target to be the player's position
-    cam:lookAt(playerStartX,playerStartY)
+    cam:lookAt(playerStartX,playerStartY) 
     camTarget=Player
 
-    Clock:start()
+    --fade in, start clock after fade in complete
+    local afterFn=function() Clock:start() end 
+    FadeState:fadeIn(afterFn)
 
     --testing----------------------------------
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
@@ -183,9 +201,7 @@ function PlayState:startBossBattle()
     self._update=self.updateBossBattle
     self._draw=self.drawBossBattle
 
-    --set clock to 0:00 and stop
-    Clock.min.val,Clock.sec.val=0,0
-    Clock:stop()
+    Clock:stop() --stop clock
 
     Dungeon:closeDungeon() --delete dungeon rooms and entities
 
@@ -203,12 +219,13 @@ function PlayState:startBossBattle()
     --increase the distance the player can be from enemy before disengaging combat
     Player.combatData.aggroRange={x=800,y=600} 
 
-    -- testing----------------------------
-    TimerState:after(1,function() 
-        Enemies.enemySpawner.t4[1](424,350) 
-    end)
-    -- testing----------------------------
+    --spawn boss on the next frame (must allow entitiesTable to clear)
+    TimerState:after(0.001,function() Enemies.enemySpawner.t4[1](424,250) end)
 
-    Player.collider:setPosition(424,388)
+    Player.collider:setPosition(424,370)
     cam:lookAt(Player.collider:getPosition())
+
+    --Start boss AI after 1s
+    local afterFn=function() TimerState:after(1,function() BossRoom.boss.state.wait=false end) end
+    FadeState:fadeIn(afterFn)
 end

@@ -17,6 +17,7 @@ require 'dialog'
 require 'protectionMagics'
 require 'ui'
 require 'bossRoom'
+require 'fadeState'
 
 function love.load()
     --set pixelated look
@@ -63,6 +64,7 @@ function love.load()
 
     --Initialize all states in gamestates that need loading
     TimerState:load()
+    FadeState:load()
     PlayState:load()
     CraftingMenuState:load()
 end

@@ -926,11 +926,6 @@ function Rooms:spawnLadder(_room)
         self.collider:setCollisionClass('ladder')
         self.collider:setObject(self) --attach collider to this object
 
-        --testing--------------------
-        print("adding ladder testing features")
-        self.dialogBoolean=true 
-        --testing--------------------
-
         table.insert(Entities.entitiesTable,self)
     end
 
@@ -941,13 +936,9 @@ function Rooms:spawnLadder(_room)
     end
 
     function ladder:nodeInteract()
-        --TODO---------------------------
-        -- if self.dialogBoolean then 
-        --     Player.dialog:say("I wonder what's down there...") 
-        --     self.dialogBoolean=false
-        -- end
-        PlayState:startBossBattle()
-        --TODO---------------------------
+        local afterFn=function() PlayState:startBossBattle() end
+        Clock:pause()
+        FadeState:fadeOut(afterFn)
     end
 
     ladder:load()

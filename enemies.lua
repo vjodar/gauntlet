@@ -1655,6 +1655,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --enemy's current state metatable
         self.state={}
+        self.state.wait=true --wait for transitions/animations before starting AI
         self.state.facing='right'
         self.state.scaleX=1 --used to flip horizontally
         self.state.moving=false
@@ -1734,6 +1735,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         if self.state.facing=='right' then 
             self.state.scaleX=1 else self.state.scaleX=-1
         end
+
+        if self.state.wait then return end --wait for transitions/animations before starting AI
 
         self:updateHealth() --update healthbar
 
