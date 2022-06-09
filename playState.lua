@@ -152,7 +152,9 @@ function PlayState:startDungeonPhase()
 
     --fade in, start clock after fade in complete
     local afterFn=function() Clock:start() end 
-    FadeState:fadeIn(afterFn)
+    FadeState:fadeIn()
+    PlayerTransitionState:enterRoom(Player,afterFn)
+
 
     --testing----------------------------------
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
@@ -162,6 +164,7 @@ function PlayState:startDungeonPhase()
     end
 
     -- TimerState:after(3,function() self:startBossBattle() end)
+    -- TimerState:after(3,function() Player.state.falling=true end)
 
     -- SpecialAttacks:spawnFissure(randomPoints(),randomPoints(),Player)
     -- SpecialAttacks:spawnFireCircle(randomPoints())
@@ -181,18 +184,6 @@ function PlayState:startDungeonPhase()
     -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'arcane_orb')
-    -- Items:spawn_item(playerStartX,playerStartY,'arcane_bowstring')
-    -- Items:spawn_item(playerStartX,playerStartY,'broken_staff')
-    -- Items:spawn_item(playerStartX,playerStartY,'broken_bow')
-    -- Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
-    -- Items:spawn_item(playerStartX,playerStartY,'potion')
-    -- Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')
-    -- Items:spawn_item(playerStartX,playerStartY,'tree_wood')
-    -- Items:spawn_item(playerStartX,playerStartY,'rock_metal')
-    -- Items:spawn_item(playerStartX,playerStartY,'vine_thread')
-    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'potion') end
-    -- for i=1,10 do Items:spawn_item(playerStartX,playerStartY,'fish_cooked') end
     --testing----------------------------------
 end
 
@@ -220,12 +211,14 @@ function PlayState:startBossBattle()
     Player.combatData.aggroRange={x=800,y=600} 
 
     --spawn boss on the next frame (must allow entitiesTable to clear)
-    TimerState:after(0.001,function() Enemies.enemySpawner.t4[1](424,250) end)
+    TimerState:after(0.001,function() Enemies.enemySpawner.t4[1](410,300) end)
 
     Player.collider:setPosition(424,370)
     cam:lookAt(Player.collider:getPosition())
 
     --Start boss AI after 1s
-    local afterFn=function() TimerState:after(1,function() BossRoom.boss.state.wait=false end) end
+    local afterFn=function() 
+        TimerState:after(3,function() BossRoom.boss.state.wait=false end) 
+    end
     FadeState:fadeIn(afterFn)
 end

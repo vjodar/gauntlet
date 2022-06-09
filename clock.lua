@@ -30,13 +30,18 @@ function Clock:update()
     if not self.runClock then return end --allows for pausing and resuming clock
 
     self.counter=self.counter+dt 
-    if self.counter>=1 then
+    if self.counter>=1 then --count seconds
         self.counter=0
         self.sec.val=self.sec.val-1
-        if self.sec.val==-1 then 
+        if self.sec.val==-1 then  --count minutes
             self.min.val=self.min.val-1
-            if self.min.val==-1 then 
-                PlayState:startBossBattle()
+            if self.min.val==-1 then --clock is 0:00, start boss battle
+                local afterFn=function()             
+                    PlayerTransitionState:enterRoom(Player)
+                    PlayState:startBossBattle() 
+                end
+                Clock:pause()
+                FadeState:fadeOut(afterFn)
             else 
                 self.sec.val=59 --rollover
             end

@@ -936,7 +936,10 @@ function Rooms:spawnLadder(_room)
     end
 
     function ladder:nodeInteract()
-        local afterFn=function() PlayState:startBossBattle() end
+        local afterFn=function()             
+            PlayerTransitionState:enterRoom(Player)
+            PlayState:startBossBattle() 
+        end
         Clock:pause()
         FadeState:fadeOut(afterFn)
     end

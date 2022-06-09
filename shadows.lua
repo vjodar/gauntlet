@@ -78,22 +78,24 @@ function Shadows:newShadow(_type)
     if shadow.sprite==nil then print(_type) end 
     shadow.w=shadow.sprite:getWidth()*0.5
     shadow.h=shadow.sprite:getHeight()*0.5
+    shadow.scale=1
 
     function shadow:draw(_xPos,_yPos,_rotation)
-        local rotation=_rotation or 0
+        local rotation=_rotation
 
-        --draw shadow with 0.5 alpha to make it transparent
+        --draw shadow with 0.6 alpha to make it transparent
         love.graphics.setColor(1,1,1,0.6)
 
-        if self.rotation~=0 then 
-            love.graphics.draw(self.sprite,_xPos,_yPos,rotation,1,1,self.w,self.h)
-        else
-            love.graphics.draw(self.sprite,_xPos-self.w,_yPos-self.h) --draw shadow
-        end
+        love.graphics.draw(
+            self.sprite,_xPos,_yPos,rotation,self.scale,self.scale,self.w,self.h
+        )
 
         --revert color settings so everything after has full opacity
         love.graphics.setColor(1,1,1,1)
     end
+
+    --change the scale (size) of the shadow
+    function shadow:changeScale(_scale) self.scale=_scale end
 
     return shadow 
 end

@@ -14,6 +14,10 @@ function Player:load()
     self.moveSpeed=240
     self.scaleX=1 --used to flip sprites horizontally
 
+    --used to '(de-)elevate' the player model
+    self.yOffsetBase=22 
+    self.yOffset=self.yOffsetBase+(WINDOW_HEIGHT*0.25)
+    
     --colliders that will be used for sprites that pop in and out of game (like weapons)
     --these colliders will be sensors until their associated sprites are drawn in the game
     self.collider:addShape('left','RectangleShape',self.xPos-14,self.yPos-2,8,4)
@@ -66,7 +70,7 @@ function Player:load()
     }    
     self.grids={} --holds animation grids
     self.grids.armor=anim8.newGrid(
-        16,22,self.spriteSheets.head_t0:getWidth(),
+        16,23,self.spriteSheets.head_t0:getWidth(),
         self.spriteSheets.head_t0:getHeight()
     )
     self.grids.bow=anim8.newGrid(
@@ -80,6 +84,7 @@ function Player:load()
     self.animations={ --animations for each armor piece and tier
         idle=anim8.newAnimation(self.grids.armor('1-4',1), 0.1),
         moving=anim8.newAnimation(self.grids.armor('5-8',1), 0.1),
+        falling=anim8.newAnimation(self.grids.armor(9,1), 1),
         bow=anim8.newAnimation(
             self.grids.bow('1-9',1),0.075,
             --onLoop function
@@ -196,6 +201,7 @@ function Player:load()
     --'metatable' containing info of the player's current state
     self.state={}
     self.state.facing='right'
+    self.state.falling=false
     self.state.moving=false
     self.state.isNearNode=false 
     self.state.protectionActivated=false --true when protection magics activated
@@ -231,6 +237,9 @@ function Player:update()
     --update position and velocity vectors
     self.xPos, self.yPos=self.collider:getPosition()
     self.xVel, self.yVel=self.collider:getLinearVelocity()
+
+    --player is falling (entering a room), change animation and return
+    if self.state.falling then self.currentAnim=self.animations.falling return end
     
     --default movement states to idle
     self.state.moving=false 
@@ -286,22 +295,22 @@ function Player:update()
     for i,p in pairs(self.particleSystems) do p:update(dt) end --update particle systems
 end
 
-function Player:draw()
+function Player:draw(_noShadow)
     --draw shadow before sprite
-    self.shadow:draw(self.xPos,self.yPos)
+    if not _noShadow then self.shadow:draw(self.xPos,self.yPos) end
     
     --draw the appropriate current animation for each armor piece
     self.currentAnim:draw(
         self.spriteSheets[self.currentGear.armor.head],
-        self.xPos,self.yPos,nil,self.scaleX,1,8,20
+        self.xPos,self.yPos,nil,self.scaleX,1,8,self.yOffset
     )
     self.currentAnim:draw(
         self.spriteSheets[self.currentGear.armor.chest],
-        self.xPos,self.yPos,nil,self.scaleX,1,8,20
+        self.xPos,self.yPos,nil,self.scaleX,1,8,self.yOffset
     )
     self.currentAnim:draw(
         self.spriteSheets[self.currentGear.armor.legs],
-        self.xPos,self.yPos,nil,self.scaleX,1,8,20
+        self.xPos,self.yPos,nil,self.scaleX,1,8,self.yOffset
     )
 
     --draw weapon when attacking, if player has a bow or staff and isn't 
@@ -720,10 +729,10 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
     end 
 end
 
---sets a shape to or from a sensor as long as it isn't destroyed
+--sets a shape to or from a sensor as long as it exists
 --(shapes get destroyed upon entering the boss room)
 function Player:setShapeSensor(_shape,_bool)
-    if not self.collider.fixtures[_shape]==nil then 
+    if self.collider.fixtures[_shape] then 
         self.collider.fixtures[_shape]:setSensor(_bool) 
     end
 end
