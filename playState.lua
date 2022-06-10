@@ -181,9 +181,16 @@ function PlayState:startDungeonPhase()
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t1')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t2')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
+    -- for i=1,10 do 
+    --     Items:spawn_item(playerStartX,playerStartY,'fish_raw')
+    --     Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
+    --     Items:spawn_item(playerStartX,playerStartY,'potion')
+    --     Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')
+    --     Items:spawn_item(playerStartX,playerStartY,'arcane_shards')
+    -- end
     --testing----------------------------------
 end
 

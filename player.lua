@@ -85,6 +85,12 @@ function Player:load()
         idle=anim8.newAnimation(self.grids.armor('1-4',1), 0.1),
         moving=anim8.newAnimation(self.grids.armor('5-8',1), 0.1),
         falling=anim8.newAnimation(self.grids.armor(9,1), 1),
+        dying=anim8.newAnimation(self.grids.armor('10-13',1),0.15,
+            function() 
+                self.animations.dying:pauseAtEnd()                 
+                self:releaseItems()
+            end
+        ),
         bow=anim8.newAnimation(
             self.grids.bow('1-9',1),0.075,
             --onLoop function
@@ -203,6 +209,7 @@ function Player:load()
     self.state.facing='right'
     self.state.falling=false
     self.state.moving=false
+    self.state.isDead=false 
     self.state.isNearNode=false 
     self.state.protectionActivated=false --true when protection magics activated
 
@@ -253,7 +260,7 @@ function Player:update()
     if self.state.facing=='left' then self.scaleX=-1 else self.scaleX=1 end       
     
     --Only accept inputs when currently on top of state stack
-    if acceptInput then 
+    if acceptInput and not self.state.isDead then 
         self:move()
         if self.combatData.inCombat then
             self:fightEnemy()
@@ -266,6 +273,8 @@ function Player:update()
     --set current animation based on self.state
     if self.state.moving==true then 
         self.currentAnim=self.animations.moving 
+    elseif self.state.isDead then 
+        self.currentAnim=self.animations.dying
     else --defaults to idle animation
         self.currentAnim=self.animations.idle 
     end
@@ -682,7 +691,7 @@ function Player:updateHealth(_val)
         self.health.current=self.health.max 
     elseif self.health.current<=0 then 
         self.health.current=0
-        self.dialog:say("I'm dead")
+        self:die()
     end
     Meters:updateMeterValues() --update the HUD
 end
@@ -704,6 +713,7 @@ end
 --player takes some damage depending on the attackType(melee or projectile),
 --damageType(physical or magical), knockback, and angle of the hit.
 function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
+    if self.state.isDead then return end --don't take damage when already dead
     if self.state.protectionActivated 
     and ActionButtons.protectionMagics.state.currentSpell==_damageType 
     then 
@@ -734,5 +744,34 @@ end
 function Player:setShapeSensor(_shape,_bool)
     if self.collider.fixtures[_shape] then 
         self.collider.fixtures[_shape]:setSensor(_bool) 
+    end
+end
+
+function Player:die()
+    self.state.isDead=true
+    self.currentAnim=self.animations.dying
+    self.combatData.inCombat=false 
+    camTarget=self 
+    self.protectionMagics:deactivate()
+    Clock:pause()
+    --TODO----------
+    --game over screen
+    --TODO----------
+end
+
+--remove all items, supplies, and gear from player. Spawn them back into the world.
+function Player:releaseItems()
+    local x=function() return self.xPos+(love.math.random()+4)-8 end 
+    local y=function() return self.yPos+(love.math.random()+3)-6 end 
+    --remove and release items in inventory
+    for item,quantity in pairs(self.inventory) do 
+        self:removeFromInventory(item,quantity)
+        for i=1,quantity do Items:spawn_item(x(),y(),item) end 
+    end  
+
+    --remove and release items in supply pouch
+    for supply,quantity in pairs(self.suppliesPouch) do 
+        self:removeFromInventory(supply,quantity)
+        for i=1,quantity do Items:spawn_item(x(),y(),supply) end 
     end
 end

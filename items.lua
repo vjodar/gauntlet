@@ -92,7 +92,7 @@ function Items:spawn_item(_x,_y,_name)
         self.xOffset=self.sprite:getWidth()*0.5
         self.yOffset=0
         self.height=self.sprite:getHeight()+2
-        self.oscillation=0
+        self.oscillation=love.math.random()*2*math.pi
 
         self.isCollectable=false --boolean determines when the item can be collected
         self.removeEntity=false --should item be removed from entities table
@@ -132,6 +132,7 @@ function Items:spawn_item(_x,_y,_name)
     --move item toward the player when they are in range
     --when item and player collide, "remove" and add item to player inventory
     function item:gravitateToPlayer()
+        if Player.state.isDead then return end --don't gravitate to a dead player
         if math.abs(self.xPos-Player.xPos)<40 and math.abs(self.yPos-Player.yPos)<30 then
             if self.xPos<Player.xPos then --item is left of player
                 self.collider:applyLinearImpulse(45*dt,0)
