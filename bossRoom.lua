@@ -57,6 +57,8 @@ function BossRoom:load()
     
     self.flamePillarTimer=10 --start 10s in to spawn first torando soon
     self.floorTileTimer=8
+
+    self.isBattleOver=false 
 end
 
 function BossRoom:update()
@@ -463,4 +465,13 @@ function BossRoom:activateFloorTiles()
         end
         self.floorLavaColliders={} --empty floorLavaCollidersTable
     end)
+end
+
+function BossRoom:endBossBattle()
+    self.isBattleOver=true
+    Clock:pause()
+    print("Completion time:")
+    print("Dungeon: "..Clock.internalTimer.dungeon)
+    print("Boss: "..Clock.internalTimer.boss)
+    print("Total: "..Clock.internalTimer.dungeon+Clock.internalTimer.boss)
 end

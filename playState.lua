@@ -181,10 +181,12 @@ function PlayState:startDungeonPhase()
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t1')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t2')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
     -- for i=1,10 do 
+    --     Items:spawn_item(playerStartX,playerStartY,'tree_wood')
+    --     Items:spawn_item(playerStartX,playerStartY,'rock_ore')
     --     Items:spawn_item(playerStartX,playerStartY,'fish_raw')
     --     Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
     --     Items:spawn_item(playerStartX,playerStartY,'potion')
@@ -223,9 +225,11 @@ function PlayState:startBossBattle()
     Player.collider:setPosition(424,370)
     cam:lookAt(Player.collider:getPosition())
 
-    --Start boss AI after 1s
+    --Start boss AI after 2s
     local afterFn=function() 
-        TimerState:after(3,function() BossRoom.boss.state.wait=false end) 
+        TimerState:after(2,function() BossRoom.boss.state.wait=false end) 
+        Clock:setMode('countUp') --set clock to count up 
+        Clock:start()
     end
     FadeState:fadeIn(afterFn)
 end

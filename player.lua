@@ -85,9 +85,10 @@ function Player:load()
         idle=anim8.newAnimation(self.grids.armor('1-4',1), 0.1),
         moving=anim8.newAnimation(self.grids.armor('5-8',1), 0.1),
         falling=anim8.newAnimation(self.grids.armor(9,1), 1),
-        dying=anim8.newAnimation(self.grids.armor('10-13',1),0.15,
+        dying=anim8.newAnimation(self.grids.armor('10-13',1),0.2,
             function() 
                 self.animations.dying:pauseAtEnd()                 
+                self.protectionMagics:deactivate()
                 self:releaseItems()
             end
         ),
@@ -760,13 +761,20 @@ function Player:die()
 end
 
 --remove all items, supplies, and gear from player. Spawn them back into the world.
+--stagger item drops spawning each 1 frame after the next (assuming 60fps). This
+--prevents everything from dropping all on a single frame which can cause fps spikes.
 function Player:releaseItems()
     local x=function() return self.xPos+(love.math.random()+4)-8 end 
     local y=function() return self.yPos+(love.math.random()+3)-6 end 
-    --remove and release items in inventory
+    local i=0 --used to stagger items drops
+
+    --remove and release items in inventory (including gear/weapons/armor)
     for item,quantity in pairs(self.inventory) do 
         self:removeFromInventory(item,quantity)
-        for i=1,quantity do Items:spawn_item(x(),y(),item) end 
+        i=i+(1/60)
+        TimerState:after(i,function() --stagger items drops over multiple frames
+            for i=1,quantity do Items:spawn_item(x(),y(),item) end 
+        end)
     end  
 
     --remove and release items in supply pouch

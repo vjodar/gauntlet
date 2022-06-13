@@ -1860,11 +1860,13 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         if Player.combatData.currentEnemy==self then 
             Player.combatData.currentEnemy=nil 
         end 
+
         self.protectionMagics:deactivate() 
         self.collider:destroy()
 
         --TODO-------------
         --end the game I guess
+        BossRoom:endBossBattle()
         --TODO-------------
 
         return false --return false to remove entity from game

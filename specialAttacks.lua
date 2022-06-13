@@ -703,11 +703,11 @@ function SpecialAttacks:launchFireball(_xPos,_yPos,_target,_disablingBool)
     fireball:load()
 end
 
---spawns a tornado at a given set of coordinates and an initial travel angle
+--spawns a pillar at a given set of coordinates and an initial travel angle
 function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
-    local tornado={}
+    local pillar={}
 
-    function tornado:load()
+    function pillar:load()
         self.particles=SpecialAttacks.particleSystems.flamePillar:clone()
 
         self.collider=world:newBSGRectangleCollider(_xPos,_yPos,12,5,3)
@@ -722,7 +722,7 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
         self.emissionRate=0.016 --emit particles every ~1/60s
         self.emissionTimer=0 --used to emit particles at the emission rate
         self.angle=_angle
-        local angleOffsetSelection={-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5}
+        local angleOffsetSelection={-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3}
         self.angleOffset=angleOffsetSelection[(love.math.random(#angleOffsetSelection))]
         self.baseMoveSpeed=200
         self.moveSpeed=self.baseMoveSpeed
@@ -732,7 +732,7 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
         self.moveToPlayer=false --travel along initial angle, after 2s, move to player
         TimerState:after(1,function() self.moveToPlayer=true end)
 
-        --after some time from spawning, destroy tornado
+        --after some time from spawning, destroy pillar
         TimerState:after(
             love.math.random(10,15), --lifespan is 10-15s
             function() 
@@ -745,7 +745,7 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
         table.insert(Entities.entitiesTable,self)
     end
 
-    function tornado:update()
+    function pillar:update()
         self.xPos,self.yPos=self.collider:getPosition()
         self.particles:update(dt)
 
@@ -759,7 +759,7 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
             --slow down speed over time
             self.moveSpeed=self.moveSpeed-45*dt
 
-            --once all particles are destroyed, remove the tornado itself from game
+            --once all particles are destroyed, remove the pillar itself from game
             if self.particles:getCount()==0 then 
                 self.collider:destroy()
                 return false 
@@ -801,16 +801,16 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
             Player:takeDamage('melee','pure',self.moveSpeed*0.5,angleToPlayer,20)
         end
 
-        if Player.health.current==0 then 
+        if Player.health.current==0 or BossRoom.isBattleOver then 
             self.willDie=true 
         end
     end
 
-    function tornado:draw()
+    function pillar:draw()
         self.shadow:draw(self.xPos,self.yPos)
         love.graphics.draw(self.particles,self.xPos,self.yPos)
     end
 
-    tornado:load()
+    pillar:load()
 end
 

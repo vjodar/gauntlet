@@ -88,10 +88,10 @@ function CraftingNodes:load()
     } 
 
     self.particleEmissionRates={ --how many frames between particle emission
-        furnace=8,
-        grill=5,
-        sawmill=2,
-        spinning_wheel=5
+        furnace=4,
+        grill=3,
+        sawmill=1,
+        spinning_wheel=3
     } 
 
     self.particleSystems={} --particle systems
@@ -104,6 +104,7 @@ function CraftingNodes:load()
     self.particleSystems.furnace:setLinearAcceleration(0,-200) --accelerate upward
     self.particleSystems.furnace:setEmissionArea('uniform',8,4)
     self.particleSystems.furnace:setRelativeRotation(true)
+    self.particleSystems.furnace:setSpin(4)
     self.particleSystems.furnace:setColors(1,1,1,0.9, 1,1,1,0) --particles will fade out
     self.particleSystems.furnace:setSizes(0.5,3) --particles will grow
 
@@ -113,6 +114,7 @@ function CraftingNodes:load()
     self.particleSystems.grill:setLinearAcceleration(0,0,0,-150)
     self.particleSystems.grill:setEmissionArea('uniform',7,4)
     self.particleSystems.grill:setRotation(0,6.3)
+    self.particleSystems.grill:setSpin(1)
     self.particleSystems.grill:setColors(1,1,1,0.2, 1,1,1,0) --particles will fade out
     self.particleSystems.grill:setSizes(0.1,2) --particles will grow
 
@@ -122,7 +124,7 @@ function CraftingNodes:load()
     self.particleSystems.sawmill:setDirection(4.7) --shoot upward
     self.particleSystems.sawmill:setSpread(1.5) --90degree spread
     self.particleSystems.sawmill:setEmissionArea('uniform',4,4)
-    self.particleSystems.sawmill:setRelativeRotation(true)
+    self.particleSystems.sawmill:setSpin(5)
     self.particleSystems.sawmill:setColors(1,1,1,1, 1,1,1,0) --particles will fade out
 
     --currently no particle system for spinning wheel, so immediately stop
@@ -211,7 +213,7 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
         else
             self.currentAnim=self.animations.crafting
 
-            self.particleTimer=self.particleTimer+1
+            self.particleTimer=self.particleTimer+dt*60
             if self.particleTimer>=self.particleEmissionRate then 
                 self.particles:emit(1)
                 self.particleTimer=0
