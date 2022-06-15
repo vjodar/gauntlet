@@ -171,28 +171,13 @@ function CraftingMenuState:load()
         arcane_bowstring='an Arcane Bowstring'
     }
 
-    self.buttons={
-        blankSprite={ActionButtons.blankUp,ActionButtons.blankDown},
-        acceptSprite=love.graphics.newImage('assets/crafting_menu/accept.png'),
-        declineSprite=love.graphics.newImage('assets/crafting_menu/decline.png'),
-        acceptPressedFlag=0, --1 when the accept button is pressed
-        declinePressedFlag=0 --1 when the decline button is pressed
-    }
-
     self.state={} --metatable
     self.state.keyIsReleased=false --checks if the player released the 'open menu' button 
 end
 
 function CraftingMenuState:update()
-    Inventory:open() --open HUD inventory to show players their items.
-
-    --buttons default to not being pressed
-    self.buttons.acceptPressedFlag, self.buttons.declinePressedFlag=0,0
-
-    if acceptInput then --listen for accept/decline button presses, update flags
-        if love.keyboard.isDown(controls.btnDown) then self.buttons.acceptPressedFlag=1 end 
-        if love.keyboard.isDown(controls.btnRight) then self.buttons.declinePressedFlag=1 end 
-    end
+    Inventory:open() --open HUD inventory to show players their items.    
+    ActionButtons:update() --update the menu actionButtons
 
     --gameState must be accepting input and the player must have released the
     --'open crafting menu' button before inputs regarding crafting will be taken
@@ -232,7 +217,7 @@ function CraftingMenuState:update()
         end
 
         if releasedKey==controls.btnRight then
-            ActionButtons.hideActionButtons=false --reveal playState's action buttons
+            ActionButtons:setMenuMode(false) --back to regular action buttons
             return false  --exit crafting menu
         end 
     end
@@ -269,38 +254,9 @@ function CraftingMenuState:draw()
         )
     end
 
-    --draw accept button. Align with down button (combatInteract)
-    love.graphics.draw( --draw blank first
-        self.buttons.blankSprite[1+self.buttons.acceptPressedFlag], --draw blankSprite[2] when pressed
-        self.xPos+140,
-        --draw 1px lower when button is currently pressed
-        self.yPos+120+self.buttons.acceptPressedFlag 
-    )
-    love.graphics.draw( --draw accept sprite
-        self.buttons.acceptSprite, 
-        self.xPos+140, 
-        --draw 1px lower when button is currently pressed
-        self.yPos+120+self.buttons.acceptPressedFlag
-    )
-
-    --draw decline button. Align with right button (protectionMagics)
-    love.graphics.draw( --draw blank first
-        self.buttons.blankSprite[1+self.buttons.declinePressedFlag], --draw blankSprite[2] when pressed
-        self.xPos+160,
-        --draw 1px lower when button is currently pressed
-        self.yPos+100+self.buttons.declinePressedFlag 
-    )
-    love.graphics.draw( --draw decline sprite
-        self.buttons.declineSprite, 
-        self.xPos+160, 
-        --draw 1px lower when button is currently pressed
-        self.yPos+100+self.buttons.declinePressedFlag
-    )
-
     cam:detach()
-
-    --draw HUD again to keep it on top of menu
-    Hud:draw()
+    
+    Hud:draw() --draw HUD again to keep it on top of menu
 end
 
 --opens the crafting menu. Called by the enchanted crafting table craftingNode
@@ -330,7 +286,7 @@ function CraftingMenuState:openCraftingMenu(_x,_y)
 
     self.state.keyIsReleased=false --hasn't yet released the key used to open this menu
     
-    ActionButtons.hideActionButtons=true --hide the usual playState's actions buttons
+    ActionButtons:setMenuMode(true) --buttons are in menu mode
 end
 
 --Craft the item as long as player has all the necessary components

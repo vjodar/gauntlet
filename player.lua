@@ -755,9 +755,7 @@ function Player:die()
     camTarget=self 
     self.protectionMagics:deactivate()
     Clock:pause()
-    --TODO----------
-    --game over screen
-    --TODO----------
+    FadeState:fadeOut(0.5,function() EndScreenState:lose() end)
 end
 
 --remove all items, supplies, and gear from player. Spawn them back into the world.

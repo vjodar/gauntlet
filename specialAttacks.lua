@@ -502,6 +502,15 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
             self.timer=0
         end 
 
+        if Player.health.current==0 or BossRoom.boss.health.current==0 then 
+            self.willDie=true 
+        end
+        
+        if self.willDie then 
+            self.collider:destroy()
+            return false 
+        end
+
         --travel toward target
         self.angle=math.atan2((self.target.yPos-self.yPos),(self.target.xPos-self.xPos))
         self.collider:applyForce(
@@ -522,11 +531,6 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
             self.hitTarget=true
             self.collider:setActive(false)
             TimerState:after(2,function() self.willDie=true end)
-        end
-
-        if self.willDie then 
-            self.collider:destroy()
-            return false 
         end
     end
 
@@ -645,6 +649,9 @@ function SpecialAttacks:launchFireball(_xPos,_yPos,_target,_disablingBool)
 
     function fireball:update()        
         self.particles:update(dt)
+        if Player.health.current==0 or BossRoom.boss.health.current==0 then 
+            self.willDie=true 
+        end
         if self.willDie then --must wait for particle system to be empty before dying
             if self.particles:getCount()==0 then 
                 self.collider:destroy()

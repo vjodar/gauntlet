@@ -1,7 +1,8 @@
 FadeState={} --used to fade screen in or out
 
 function FadeState:load()
-    self.step=1.2
+    self.step=1.2 --used to increment/decrement alpha
+    self.target=0 --target alpha value
     self._upd=nil --holds the appropriate update function
     self.done=false 
 end
@@ -18,8 +19,8 @@ end
 
 function FadeState:draw()end
 
-function FadeState:fadeOut(_afterFn)
-    transitionScreenAlpha=0
+function FadeState:fadeOut(_target,_afterFn)
+    self.target=_target or 1
     self.step=1.2 --increment by 0.02 at 60fps
     self._upd=self.fadeOutUpd
     self.afterFn=_afterFn or function()end
@@ -29,15 +30,16 @@ function FadeState:fadeOut(_afterFn)
 end
 
 function FadeState:fadeOutUpd()
-    if transitionScreenAlpha>=1 then 
+    if transitionScreenAlpha>=self.target then 
+        transitionScreenAlpha=self.target
         self.done=true
         self.afterFn()
     end 
 end
 
-function FadeState:fadeIn(_afterFn)
-    transitionScreenAlpha=1
-    self.step=-1.2 --decrement by 0.02 at 60fps
+function FadeState:fadeIn(_target,_afterFn)
+    self.target=_target or 0
+    self.step=-0.8
     self._upd=self.fadeInUpd
     self.afterFn=_afterFn or function()end
     self.done=false
@@ -46,27 +48,28 @@ function FadeState:fadeIn(_afterFn)
 end
 
 function FadeState:fadeInUpd()
-    if transitionScreenAlpha<=0 then 
+    if transitionScreenAlpha<=self.target then 
+        transitionScreenAlpha=self.target
         self.done=true 
         self.afterFn()
     end
 end
 
---fade out, hold back screen for _holdTime, then fade back in
-function FadeState:fadeComplete(_holdTime,_afterOutFn,_afterInFn) 
-    transitionScreenAlpha=0
-    self.step=1.2 --increment by 0.02 at 60fps
-    self._upd=self.fadeOutUpd
-    self.done=false 
-    self.afterFn=function() --essentially fadeIn, but wait for _holdTime
-        self.done=false
-        transitionScreenAlpha=1
-        self.step=0 --wait for _holdTime to start decrementing alpha
-        TimerState:after(_holdTime,function() self.step=-1.2 end)
-        self._upd=self.fadeInUpd
-        self.afterFn=_afterInFn or function()end
-        if _afterOutFn then _afterOutFn() end --call afterOutFn
-    end
+-- --fade out, hold back screen for _holdTime, then fade back in
+-- function FadeState:fadeComplete(_holdTime,_afterOutFn,_afterInFn) 
+--     transitionScreenAlpha=0
+--     self.step=1.2 --increment by 0.02 at 60fps
+--     self._upd=self.fadeOutUpd
+--     self.done=false 
+--     self.afterFn=function() --essentially fadeIn, but wait for _holdTime
+--         self.done=false
+--         transitionScreenAlpha=1
+--         self.step=0 --wait for _holdTime to start decrementing alpha
+--         TimerState:after(_holdTime,function() self.step=-1.2 end)
+--         self._upd=self.fadeInUpd
+--         self.afterFn=_afterInFn or function()end
+--         if _afterOutFn then _afterOutFn() end --call afterOutFn
+--     end
 
-    table.insert(gameStates,self)
-end
+--     table.insert(gameStates,self)
+-- end

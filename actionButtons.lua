@@ -4,24 +4,37 @@ function ActionButtons:load()
     --pressed and unpressed blank buttons
     self.blankUp=love.graphics.newImage('assets/hud/action_buttons/hud_action_blank_up.png')
     self.blankDown=love.graphics.newImage('assets/hud/action_buttons/hud_action_blank_down.png')
+
     --create and store action buttons
     self.weapons=self:addActionButtonWeapons()
     self.supplies=self:addActionButtonSupplies()
     self.protectionMagics=self:addActionButtonProtectionMagics()
     self.combatInteract=self:addActionButtonCombatInteract()
 
-    self.hideActionButtons=false --used to not draw the action buttons
+    --create and store menu specific buttons
+    self.menuAccept=self:addMenuAccept()
+    self.menuDecline=self:addMenuDecline()
+
+    self.inMenuMode=false --true when a menu is active
 end
 
 function ActionButtons:update()
-    self.weapons:update()
-    self.supplies:update()
-    self.protectionMagics:update()
-    self.combatInteract:update()
+    if self.inMenuMode then --menu mode
+        self.menuAccept:update()
+        self.menuDecline:update()
+    else --default 'game' mode
+        self.weapons:update()
+        self.supplies:update()
+        self.protectionMagics:update()
+        self.combatInteract:update()
+    end
 end
 
 function ActionButtons:draw()
-    if self.hideActionButtons==false then 
+    if self.inMenuMode then --menu mode
+        self.menuAccept:draw()
+        self.menuDecline:draw()
+    else --default 'game' mode
         self.weapons:draw()
         self.supplies:draw()
         self.protectionMagics:draw()
@@ -677,4 +690,80 @@ function ActionButtons:addActionButtonCombatInteract()
     end
 
     return button 
+end
+
+function ActionButtons:setMenuMode(_bool) self.inMenuMode=_bool end 
+
+function ActionButtons:addMenuAccept()
+    local button={}
+
+    function button:load()
+        self.blankSprite={ActionButtons.blankUp,ActionButtons.blankDown} --[1]=up sprite,[2]=down sprite
+        self.sprite=love.graphics.newImage('assets/crafting_menu/accept.png')
+        self.pressedFlag=0
+        return self 
+    end
+
+    function button:update()
+        self.pressedFlag=0 --default to not pressed
+        if acceptInput then 
+            if love.keyboard.isDown(controls.btnDown) then self.pressedFlag=1 end
+        end
+    end
+
+    function button:draw()
+        love.graphics.draw( --draw blank button
+            self.blankSprite[1+self.pressedFlag], --draw blankSprite[2] when pressed
+            WINDOW_WIDTH-60*WINDOWSCALE_X,
+            --draw 1px (scaled) lower when button is currently pressed
+            WINDOW_HEIGHT-30*WINDOWSCALE_Y+self.pressedFlag*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+        love.graphics.draw(
+            button.sprite,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,
+            --draw 1px (scaled) lower when button is currently pressed
+            WINDOW_HEIGHT-30*WINDOWSCALE_Y+self.pressedFlag*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+    end
+
+    return button:load()
+end
+
+function ActionButtons:addMenuDecline()
+    local button={}
+
+    function button:load()
+        self.blankSprite={ActionButtons.blankUp,ActionButtons.blankDown} --[1]=up sprite,[2]=down sprite
+        self.sprite=love.graphics.newImage('assets/crafting_menu/decline.png')
+        self.pressedFlag=0
+        return self 
+    end
+
+    function button:update()
+        self.pressedFlag=0 --default to not pressed
+        if acceptInput then 
+            if love.keyboard.isDown(controls.btnRight) then self.pressedFlag=1 end
+        end
+    end
+
+    function button:draw()
+        love.graphics.draw( --draw blank button
+            self.blankSprite[1+self.pressedFlag], --draw blankSprite[2] when pressed
+            WINDOW_WIDTH-40*WINDOWSCALE_X,
+            --draw 1px (scaled) lower when button is currently pressed
+            WINDOW_HEIGHT-50*WINDOWSCALE_Y+self.pressedFlag*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+        love.graphics.draw(
+            button.sprite,
+            WINDOW_WIDTH-40*WINDOWSCALE_X,
+            --draw 1px (scaled) lower when button is currently pressed
+            WINDOW_HEIGHT-50*WINDOWSCALE_Y+self.pressedFlag*WINDOWSCALE_Y,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+    end
+
+    return button:load()
 end

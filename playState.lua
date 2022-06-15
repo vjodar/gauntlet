@@ -23,7 +23,7 @@ function PlayState:load()
 
     --color and alpha of screen used for fading in and out
     black=2/15
-    transitionScreenAlpha=0
+    transitionScreenAlpha=1
 
     world=wf.newWorld() --initialize physics world which handles colliders
     world:addCollisionClass('player')
@@ -179,11 +179,11 @@ function PlayState:startDungeonPhase()
     -- Enemies.enemySpawner.t3[1](randomPoints())
     -- Enemies.enemySpawner.t3[2](randomPoints())
 
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
-    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
+    Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
+    Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
+    Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
+    Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
+    Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
     -- for i=1,10 do 
     --     Items:spawn_item(playerStartX,playerStartY,'tree_wood')
     --     Items:spawn_item(playerStartX,playerStartY,'rock_ore')
@@ -228,8 +228,8 @@ function PlayState:startBossBattle()
     --Start boss AI after 2s
     local afterFn=function() 
         TimerState:after(2,function() BossRoom.boss.state.wait=false end) 
-        Clock:setMode('countUp') --set clock to count up 
+        Clock:setMode('boss') --set clock to count up 
         Clock:start()
     end
-    FadeState:fadeIn(afterFn)
+    FadeState:fadeIn(0,afterFn)
 end

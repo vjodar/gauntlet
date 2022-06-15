@@ -6,7 +6,7 @@ function Clock:load()
     self.xPos=WINDOW_WIDTH-WINDOWSCALE_X*(self.w+2)
     self.yPos=WINDOWSCALE_Y
     self.runClock=false --used to pause and resume clock
-    self.counter=0 --used to count seconds
+    self.mode="" --used to show either dungeon or boss clock
     self.internalTimer={ --used to keep track of completion times
         dungeon=0,boss=0
     }
@@ -30,70 +30,62 @@ function Clock:load()
         yPos=WINDOWSCALE_Y*7,
     }
     
-    self:setMode('countDown') --initialize update function to be countDown
+    self:setMode('dungeon') --initialize update function to be dungeon
 end
 
 function Clock:update()
     if not self.runClock then return end --allows for pausing and resuming clock
-    self:_upd()
-end
 
-function Clock:countDown() --countDown update function
-    self.counter=self.counter+dt 
-    if self.counter>=1 then --count seconds
-        self.counter=0
-        self.sec.val=self.sec.val-1
-        if self.sec.val==-1 then  --count minutes
-            self.min.val=self.min.val-1
-            if self.min.val==-1 then --minute is 0, start boss battle
-                local afterFn=function()             
-                    PlayerTransitionState:enterRoom(Player)
-                    PlayState:startBossBattle() 
-                end
-                Clock:pause()
-                FadeState:fadeOut(afterFn)
-            else 
-                self.sec.val=59 --rollover seconds
+    if self.mode=='dungeon' then --update dungeon clock
+        self.internalTimer.dungeon=self.internalTimer.dungeon+dt
+        if self.internalTimer.dungeon>=600 then --10min are up, start boss battle
+            self.internalTimer.dungeon=600 
+            local afterFn=function()             
+                PlayerTransitionState:enterRoom(Player)
+                PlayState:startBossBattle() 
             end
-        end 
+            self:pause()
+            FadeState:fadeOut(1,afterFn)
+        end
+    elseif self.mode=='boss' then --update boss clock
+        self.internalTimer.boss=self.internalTimer.boss+dt
+        if self.internalTimer.boss>=5999.99 then --clock is maxed, stop counting
+            self.internalTimer.boss=5999.99
+            self:pause()
+        end
     end
-    self.internalTimer.dungeon=self.internalTimer.dungeon+dt
-end
-
-function Clock:countUp() --countUp update function
-    self.counter=self.counter+dt 
-    if self.counter>=1 then --count seconds
-        self.counter=0
-        self.sec.val=self.sec.val+1
-        if self.sec.val==60 then  --count minutes
-            self.min.val=self.min.val+1
-            if self.min.val==99 then --minute is max val, pause clock
-                self.sec.val=59
-                Clock:pause()
-            else 
-                self.sec.val=0 --rollover seconds
-            end
-        end 
-    end
-    self.internalTimer.boss=self.internalTimer.boss+dt
 end
 
 function Clock:draw()
     love.graphics.draw(self.sprite,self.xPos,self.yPos,nil,WINDOWSCALE_X,WINDOWSCALE_Y)
-    love.graphics.print( --minutes
-        string.format("%02d",self.min.val),
-        self.min.xPos,self.min.yPos,
-        nil,WINDOWSCALE_X,WINDOWSCALE_Y
-    )
     love.graphics.print(":",self.colon.xPos,self.colon.yPos,nil,WINDOWSCALE_X,WINDOWSCALE_Y)
-    love.graphics.print( --seconds
-        string.format("%02d",self.sec.val),
-        self.sec.xPos,self.sec.yPos,
-        nil,WINDOWSCALE_X,WINDOWSCALE_Y
-    )
+
+    if self.mode=='dungeon' then --draw dungeon clock
+        love.graphics.print( --minutes
+            string.format("%02d",math.floor(10-(self.internalTimer.dungeon/60))),
+            self.min.xPos,self.min.yPos,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+        love.graphics.print( --seconds
+            string.format("%02d",math.floor((60-self.internalTimer.dungeon)%60)),
+            self.sec.xPos,self.sec.yPos,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+    elseif self.mode=='boss' then --draw boss clock
+        love.graphics.print( --minutes
+            string.format("%02d",math.floor(self.internalTimer.boss/60)),
+            self.min.xPos,self.min.yPos,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+        love.graphics.print( --seconds
+            string.format("%02d",math.floor(self.internalTimer.boss%60)),
+            self.sec.xPos,self.sec.yPos,
+            nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+    end
 end
 
-function Clock:setMode(_mode) self._upd=self[_mode] end --sets mode (countDown or countUp)
+function Clock:setMode(_mode) self.mode=_mode end --sets mode (dungeon or boss)
 
 function Clock:start() self.runClock=true end --start the clock
 function Clock:pause() self.runClock=false end --pause the clock

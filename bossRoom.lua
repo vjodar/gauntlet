@@ -64,9 +64,12 @@ end
 function BossRoom:update()
     for i,l in pairs(self.lava) do l.currentAnim:update(dt) end --update lava animation
     self:updateFloorTiles() --update floorTiles' animations
+    for i,b in pairs(self.lavaBubbles) do b.currentAnim:update(dt) end --animate lava bubbles
+    
+    if self.isBattleOver then return end --if boss is dead, don't damage player
+    
     self:updatePerimeterLava() --damage and knockback player when touching perimeter lava
-    --update lava bubbles animations
-    for i,b in pairs(self.lavaBubbles) do b.currentAnim:update(dt) end 
+    self:updateTileLava() --damage and knockback player when touching lava filled tiles
 
     self.flamePillarTimer=self.flamePillarTimer+dt 
     if self.flamePillarTimer>=20 then --spawn flamePillars every 20s
@@ -78,18 +81,6 @@ function BossRoom:update()
     if self.floorTileTimer>=10 then 
         self.floorTileTimer=0 
         self:activateFloorTiles()
-    end
-
-    for i,lava in pairs(self.floorLavaColliders) do 
-        if not self.floorLavaAttackOnCooldown
-        and lava:isTouching(Player.collider:getBody()) 
-        then 
-            self.floorLavaAttackOnCooldown=true 
-            TimerState:after(0.1,function() self.floorLavaAttackOnCooldown=false end)
-            --choose random angle in 360 degree spread
-            local angle=2*math.pi*love.math.random()-math.pi
-            Player:takeDamage('melee','pure',10,angle,5)
-        end
     end
 end
 
@@ -113,6 +104,21 @@ function BossRoom:generateLava()
         table.insert(lava,l)
     end end
     return lava
+end
+
+--for any tiles that are filled with lava, damage and knockback player if touching
+function BossRoom:updateTileLava()
+    for i,lava in pairs(self.floorLavaColliders) do 
+        if not self.floorLavaAttackOnCooldown
+        and lava:isTouching(Player.collider:getBody()) 
+        then 
+            self.floorLavaAttackOnCooldown=true 
+            TimerState:after(0.1,function() self.floorLavaAttackOnCooldown=false end)
+            --choose random angle in 360 degree spread
+            local angle=2*math.pi*love.math.random()-math.pi
+            Player:takeDamage('melee','pure',10,angle,5)
+        end
+    end
 end
 
 --generates the lava bubbling animations that are beneath tiles and get revealed
@@ -346,7 +352,7 @@ function BossRoom:createColliderData(_x1,_x2,_y1,_y2)
     return {x=224+16*(_x1-1),y=160+16*(_y1-1),w=(1+_x2-_x1)*16,h=(1+_y2-_y1)*16}
 end
 
-function BossRoom:updateFloorTiles() --update all floor tiles
+function BossRoom:updateFloorTiles() --update all floor tile animations
     for x=1,#self.floorTiles do 
         for y,tile in pairs(self.floorTiles[x]) do 
             tile.animations.currentAnim:update(dt) 
@@ -469,9 +475,7 @@ end
 
 function BossRoom:endBossBattle()
     self.isBattleOver=true
+    Player.protectionMagics:deactivate()
     Clock:pause()
-    print("Completion time:")
-    print("Dungeon: "..Clock.internalTimer.dungeon)
-    print("Boss: "..Clock.internalTimer.boss)
-    print("Total: "..Clock.internalTimer.dungeon+Clock.internalTimer.boss)
+    FadeState:fadeOut(0.5,function() EndScreenState:win() end)
 end

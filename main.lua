@@ -19,6 +19,7 @@ require 'ui'
 require 'bossRoom'
 require 'fadeState'
 require 'playerTransitionState'
+require 'endScreenState'
 
 function love.load()
     --set pixelated look
@@ -88,6 +89,9 @@ function love.update(_dt)
     
     if releasedKey=='escape' then love.event.quit() end --easy close for devs.
     if releasedKey=='backspace' then love.load() end --easy restart for devs.
+    if releasedKey=='p' then --easy player death for devs
+        Player:takeDamage('projectile','pure',0,0,999) 
+    end
     
     --testing----------------------
 end

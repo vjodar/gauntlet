@@ -19,7 +19,7 @@ function PlayerTransitionState:enterRoom(_actor,_afterFn)
     self.afterFn=_afterFn or function()end
 
     --set actor yOffset to above screen, and state to 'falling'
-    self.actor.yOffset=self.actor.yOffsetBase+(WINDOW_HEIGHT*0.4)
+    self.actor.yOffset=self.actor.yOffsetBase+300
     self.actor.state.falling=true 
     self.actor.shadow:changeScale(0)
 

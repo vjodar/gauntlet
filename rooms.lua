@@ -941,7 +941,7 @@ function Rooms:spawnLadder(_room)
             PlayState:startBossBattle() 
         end
         Clock:pause()
-        FadeState:fadeOut(afterFn)
+        FadeState:fadeOut(1,afterFn)
     end
 
     ladder:load()
