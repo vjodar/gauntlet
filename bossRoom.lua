@@ -58,6 +58,7 @@ function BossRoom:load()
     self.floorLavaAttackOnCooldown=false 
     
     self.flamePillarTimer=10 --10s to spawn first flame pillar
+    self.flamePillarRate=20 --spawns flame pillars every 20s
     self.floorTileTimer=0
     self.floorTileActivationRate=5 --5s to activate first floor lava pattern
 
@@ -75,9 +76,11 @@ function BossRoom:update()
     self:updateTileLava() --damage and knockback player when touching lava filled tiles
 
     self.flamePillarTimer=self.flamePillarTimer+dt 
-    if self.flamePillarTimer>=20 then --spawn flamePillars every 20s
+    if self.flamePillarTimer>=self.flamePillarRate then --spawn flamePillars every 20s
         self.flamePillarTimer=0
         self:spawnFlameTonados()
+        --flame pillars spawn every 15s when boss is half health or less
+        if self.boss.health.current<=100 then self.flamePillarRate=15 end
     end
 
     self.floorTileTimer=self.floorTileTimer+dt

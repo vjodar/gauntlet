@@ -159,15 +159,16 @@ function SpecialAttacks:load()
     self.particleSystems.flamePillar:setSpeed(-100,100)
     self.particleSystems.flamePillar:setSpin(15)
     self.particleSystems.flamePillar:setEmissionArea('borderellipse',4,3,0,true)
+    -- self.particleSystems.flamePillar:setSizes(0.7,1,1,1)
     self.particleSystems.flamePillar:setColors(
-        1,1,1,1,
+        1,1,1,0.6,
         (255/255),(204/255),(104/255),1,
         (250/255),(203/255),(62/255),1,
-        (238/255),(142/255),(46/255),1,
-        (238/255),(142/255),(46/255),1,
-        (218/255),(78/255),(56/255),1,
-        (218/255),(78/255),(56/255),1,
-        (34/255),(34/255),(34/255),1
+        (238/255),(142/255),(46/255),0.8,
+        (238/255),(142/255),(46/255),0.6,
+        (218/255),(78/255),(56/255),0.6,
+        (218/255),(78/255),(56/255),0.4,
+        (34/255),(34/255),(34/255),0.2
     )
 end 
 
@@ -745,14 +746,33 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
         self.emissionRate=0.016 --emit particles every ~1/60s
         self.emissionTimer=0 --used to emit particles at the emission rate
         self.angle=_angle
-        local angleOffsetSelection={-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3}
-        self.angleOffset=angleOffsetSelection[(love.math.random(#angleOffsetSelection))]
-        self.baseMoveSpeed=200
-        self.moveSpeed=self.baseMoveSpeed
+        self.moveSpeed=200
         self.attackOnCooldown=false
         self.damage=20
         self.knockback=50
         self.willDie=false
+
+        --set of verticies used to target a set of points in a star pattern
+        --around the player. Start with a random vertex, then continually change
+        --targetted vertex to be the vertex across the player.
+        self.targetVerticies={ --these verticies form a star
+            top='botRight',
+            botRight='left',
+            left='right',
+            right='botLeft',
+            botLeft='top'
+        }
+        self.targetVerticiesCoordinates={ --these coords will be added to Player's
+            top={x=0,y=-20},
+            botRight={x=20,y=20},
+            left={x=-20,y=-5},
+            right={x=20,y=-5},
+            botLeft={x=-20,y=20}
+        }
+        local v={'top','botRight','left','right','botLeft'}
+        self.currentVertex=v[love.math.random(#v)] --pick random starting vertex
+        self.vertexChangeTimer=0
+        self.vertexChangeRate=love.math.random()+0.5 --change vertex after 0.5-1.5 sec
         
         self.moveToPlayer=false --travel along initial angle, after 2s, move to player
         TimerState:after(1,function() self.moveToPlayer=true end)
@@ -792,32 +812,33 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
             return
         end
 
-        --emit 20 particles ~60 times per second
+        --emit 10 particles ~60 times per second
         self.emissionTimer=self.emissionTimer+dt 
         if self.emissionTimer>=self.emissionRate then 
             self.emissionTimer=0 --reset timer
-            self.particles:emit(20) --emit particles
+            self.particles:emit(10) --emit particles
         end
 
         --update angle to player after initial travel time
         if self.moveToPlayer then 
-            local xDistance=Player.xPos-self.xPos
-            local yDistance=Player.yPos-self.yPos
+            local targetX=Player.xPos+self.targetVerticiesCoordinates[self.currentVertex].x
+            local targetY=Player.yPos+self.targetVerticiesCoordinates[self.currentVertex].y
+            local xDistance=targetX-self.xPos
+            local yDistance=targetY-self.yPos
             self.angle=math.atan2(yDistance,xDistance)
+        end
 
-            --apply angle offset to make pillar travel a little to the left/right
-            --of target. Also increase speed the further away from target.
-            --This effectively makes them flank the target quickly when far,
-            --but just chase target at base movement speed when near.
-            self.angle=self.angle+self.angleOffset
-            self.moveSpeed=self.baseMoveSpeed*(1+(math.abs(xDistance)+math.abs(yDistance))*0.001)
+        --change targetted vertex to vertex across player
+        self.vertexChangeTimer=self.vertexChangeTimer+dt 
+        if self.vertexChangeTimer>=self.vertexChangeRate then 
+            self.vertexChangeTimer=0
+            self.currentVertex=self.targetVerticies[self.currentVertex]
         end
 
         --damage and knockback player
         if not self.attackOnCooldown 
-            --manually check for 'stay' collision, since collider:stay() doesn't work
-            and self.collider:isTouching(Player.collider:getBody())
-        then
+        and self.collider:isTouching(Player.collider:getBody())
+        then 
             local angleToPlayer=math.atan2(
                 (Player.yPos-self.yPos),(Player.xPos-self.xPos)
             )
@@ -826,9 +847,8 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
             Player:takeDamage('melee','pure',self.knockback,angleToPlayer,self.damage)
         end
 
-        if Player.health.current==0 or BossRoom.isBattleOver then 
-            self.willDie=true 
-        end
+        --if player or boss is dead, flame pillar dies
+        if Player.health.current==0 or BossRoom.isBattleOver then self.willDie=true end
     end
 
     function pillar:draw()
