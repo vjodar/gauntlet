@@ -46,6 +46,8 @@ function BossRoom:load()
     end
     self.lavaColliderKnockbackAngles={top=0.5*math.pi,bot=-0.5*math.pi,left=0,right=math.pi}
     self.lavaAttackOnCooldown={top=false,bot=false,left=false,right=false}
+    self.lavaKnockback=25
+    self.lavaDamage=10
 
     self.lava=self:generateLava()
     self.floorTiles=self:generateFloorTiles()
@@ -55,8 +57,9 @@ function BossRoom:load()
     self.floorLavaColliders={} --holds the colliders for floor lava
     self.floorLavaAttackOnCooldown=false 
     
-    self.flamePillarTimer=10 --start 10s in to spawn first torando soon
-    self.floorTileTimer=8
+    self.flamePillarTimer=10 --10s to spawn first flame pillar
+    self.floorTileTimer=0
+    self.floorTileActivationRate=5 --5s to activate first floor lava pattern
 
     self.isBattleOver=false 
 end
@@ -78,7 +81,7 @@ function BossRoom:update()
     end
 
     self.floorTileTimer=self.floorTileTimer+dt
-    if self.floorTileTimer>=10 then 
+    if self.floorTileTimer>=self.floorTileActivationRate then 
         self.floorTileTimer=0 
         self:activateFloorTiles()
     end
@@ -116,7 +119,7 @@ function BossRoom:updateTileLava()
             TimerState:after(0.1,function() self.floorLavaAttackOnCooldown=false end)
             --choose random angle in 360 degree spread
             local angle=2*math.pi*love.math.random()-math.pi
-            Player:takeDamage('melee','pure',10,angle,5)
+            Player:takeDamage('melee','pure',self.lavaKnockback,angle,self.lavaDamage)
         end
     end
 end
@@ -201,116 +204,116 @@ function BossRoom:generateFloorLavaPatterns()
     local colliderData={}
 
     local a1={} --1
-    for x=5,14 do for y=5,13 do table.insert(a1,{x,y}) end end
+    for x=4,15 do for y=4,14 do table.insert(a1,{x,y}) end end
     table.insert(patterns,a1)
     local a1_data={}
-    table.insert(a1_data,self:createColliderData(5,14,5,13))
+    table.insert(a1_data,self:createColliderData(4,15,4,14))
     table.insert(colliderData,a1_data)
 
     local a2={} --2 
-    for x=5,14 do for y=7,15 do table.insert(a2,{x,y}) end end
+    for x=4,15 do for y=6,16 do table.insert(a2,{x,y}) end end
     table.insert(patterns,a2)
     local a2_data={}
-    table.insert(a2_data,self:createColliderData(5,14,7,15))
+    table.insert(a2_data,self:createColliderData(4,15,6,16))
     table.insert(colliderData,a2_data)
 
     local a3={} --3
-    for x=12,21 do for y=5,13 do table.insert(a3,{x,y}) end end
+    for x=12,22 do for y=4,13 do table.insert(a3,{x,y}) end end
     table.insert(patterns,a3)
     local a3_data={}
-    table.insert(a3_data,self:createColliderData(12,21,5,13))
+    table.insert(a3_data,self:createColliderData(12,22,4,13))
     table.insert(colliderData,a3_data)
 
     local a4={} --4
-    for x=12,21 do for y=7,15 do table.insert(a4,{x,y}) end end
+    for x=12,22 do for y=7,16 do table.insert(a4,{x,y}) end end
     table.insert(patterns,a4)    
     local a4_data={}
-    table.insert(a4_data,self:createColliderData(12,21,7,15))
+    table.insert(a4_data,self:createColliderData(12,22,7,16))
     table.insert(colliderData,a4_data)
 
     local b1={} --5
-    for x=1,12 do for y=1,10 do table.insert(b1,{x,y}) end end
+    for x=1,13 do for y=1,11 do table.insert(b1,{x,y}) end end
     table.insert(patterns,b1)
     local b1_data={}
-    table.insert(b1_data,self:createColliderData(1,12,1,10))
+    table.insert(b1_data,self:createColliderData(1,13,1,11))
     table.insert(colliderData,b1_data)
     
     local b2={} --6
-    for x=14,25 do for y=1,10 do table.insert(b2,{x,y}) end end
+    for x=13,25 do for y=1,11 do table.insert(b2,{x,y}) end end
     table.insert(patterns,b2)
     local b2_data={}
-    table.insert(b2_data,self:createColliderData(14,25,1,10))
+    table.insert(b2_data,self:createColliderData(13,25,1,11))
     table.insert(colliderData,b2_data)
 
     local b3={} --7
-    for x=1,12 do for y=10,19 do table.insert(b3,{x,y}) end end
+    for x=1,13 do for y=9,19 do table.insert(b3,{x,y}) end end
     table.insert(patterns,b3)
     local b3_data={}
-    table.insert(b3_data,self:createColliderData(1,12,10,19))
+    table.insert(b3_data,self:createColliderData(1,13,9,19))
     table.insert(colliderData,b3_data)
 
     local b4={} --8
-    for x=14,25 do for y=10,19 do table.insert(b4,{x,y}) end end
+    for x=13,25 do for y=9,19 do table.insert(b4,{x,y}) end end
     table.insert(patterns,b4)
     local b4_data={}
-    table.insert(b4_data,self:createColliderData(14,25,10,19))
+    table.insert(b4_data,self:createColliderData(13,25,9,19))
     table.insert(colliderData,b4_data)
 
     local c1={} --9
-    for x=1,6 do for y=1,19 do table.insert(c1,{x,y}) end end 
-    for x=20,25 do for y=1,19 do table.insert(c1,{x,y}) end end 
+    for x=1,7 do for y=1,19 do table.insert(c1,{x,y}) end end 
+    for x=19,25 do for y=1,19 do table.insert(c1,{x,y}) end end 
     table.insert(patterns,c1)
     local c1_data={}
-    table.insert(c1_data,self:createColliderData(1,6,1,19))
-    table.insert(c1_data,self:createColliderData(20,25,1,19))
+    table.insert(c1_data,self:createColliderData(1,7,1,19))
+    table.insert(c1_data,self:createColliderData(19,25,1,19))
     table.insert(colliderData,c1_data)
 
     local c2={} --10
-    for x=1,25 do for y=1,4 do table.insert(c2,{x,y}) end end 
-    for x=1,25 do for y=16,19 do table.insert(c2,{x,y}) end end 
+    for x=1,25 do for y=1,5 do table.insert(c2,{x,y}) end end 
+    for x=1,25 do for y=15,19 do table.insert(c2,{x,y}) end end 
     table.insert(patterns,c2)
     local c2_data={}
-    table.insert(c2_data,self:createColliderData(1,25,1,4))
-    table.insert(c2_data,self:createColliderData(1,25,16,19))
+    table.insert(c2_data,self:createColliderData(1,25,1,5))
+    table.insert(c2_data,self:createColliderData(1,25,15,19))
     table.insert(colliderData,c2_data)
 
     local d1={} --11
-    for x=1,25 do for y=1,8 do table.insert(d1,{x,y}) end end
+    for x=1,25 do for y=1,10 do table.insert(d1,{x,y}) end end
     table.insert(patterns,d1)
     local d1_data={}
-    table.insert(d1_data,self:createColliderData(1,25,1,8))
+    table.insert(d1_data,self:createColliderData(1,25,1,10))
     table.insert(colliderData,d1_data)
 
     local d2={} --12
-    for x=1,25 do for y=12,19 do table.insert(d2,{x,y}) end end
+    for x=1,25 do for y=10,19 do table.insert(d2,{x,y}) end end
     table.insert(patterns,d2)
     local d2_data={}
-    table.insert(d2_data,self:createColliderData(1,25,12,19))
+    table.insert(d2_data,self:createColliderData(1,25,10,19))
     table.insert(colliderData,d2_data)
 
     local d3={} --13
-    for x=1,10 do for y=1,19 do table.insert(d3,{x,y}) end end
+    for x=1,12 do for y=1,19 do table.insert(d3,{x,y}) end end
     table.insert(patterns,d3)
     local d3_data={}
-    table.insert(d3_data,self:createColliderData(1,10,1,19))
+    table.insert(d3_data,self:createColliderData(1,12,1,19))
     table.insert(colliderData,d3_data)
 
     local d4={} --14
-    for x=16,25 do for y=1,19 do table.insert(d4,{x,y}) end end
+    for x=14,25 do for y=1,19 do table.insert(d4,{x,y}) end end
     table.insert(patterns,d4)
     local d4_data={}
-    table.insert(d4_data,self:createColliderData(16,25,1,19))
+    table.insert(d4_data,self:createColliderData(14,25,1,19))
     table.insert(colliderData,d4_data)
 
     local e={} --15
-    for x=9,17 do for y=7,13 do table.insert(e,{x,y}) end end
+    for x=8,18 do for y=6,14 do table.insert(e,{x,y}) end end
     for x=1,7 do for y=1,5 do table.insert(e,{x,y}) end end
     for x=1,7 do for y=15,19 do table.insert(e,{x,y}) end end
     for x=19,25 do for y=1,5 do table.insert(e,{x,y}) end end
     for x=19,25 do for y=15,19 do table.insert(e,{x,y}) end end
     table.insert(patterns,e)
     local e_data={}
-    table.insert(e_data,self:createColliderData(9,17,7,13))
+    table.insert(e_data,self:createColliderData(8,18,6,14))
     table.insert(e_data,self:createColliderData(1,7,1,5))
     table.insert(e_data,self:createColliderData(1,7,15,19))
     table.insert(e_data,self:createColliderData(19,25,1,5))
@@ -331,16 +334,16 @@ function BossRoom:generateFloorLavaPatterns()
     table.insert(colliderData,f_data)
 
     local g={} --17
-    for x=1,25 do for y=1,4 do table.insert(g,{x,y}) end end
-    for x=1,25 do for y=16,19 do table.insert(g,{x,y}) end end
-    for x=1,5 do for y=5,15 do table.insert(g,{x,y}) end end
-    for x=21,25 do for y=5,15 do table.insert(g,{x,y}) end end
+    for x=1,25 do for y=1,5 do table.insert(g,{x,y}) end end
+    for x=1,25 do for y=15,19 do table.insert(g,{x,y}) end end
+    for x=1,6 do for y=6,14 do table.insert(g,{x,y}) end end
+    for x=20,25 do for y=6,14 do table.insert(g,{x,y}) end end
     table.insert(patterns,g)
     local g_data={}
-    table.insert(g_data,self:createColliderData(1,25,1,4))
-    table.insert(g_data,self:createColliderData(1,25,16,19))
-    table.insert(g_data,self:createColliderData(1,5,5,15))
-    table.insert(g_data,self:createColliderData(21,25,5,15))
+    table.insert(g_data,self:createColliderData(1,25,1,5))
+    table.insert(g_data,self:createColliderData(1,25,15,19))
+    table.insert(g_data,self:createColliderData(1,6,6,14))
+    table.insert(g_data,self:createColliderData(20,25,6,14))
     table.insert(colliderData,g_data)
 
     return patterns,colliderData
@@ -376,7 +379,12 @@ function BossRoom:updatePerimeterLava()
         and c:isTouching(Player.collider:getBody())
         then
             local angle=self.lavaColliderKnockbackAngles[i]           
-            Player:takeDamage('melee','pure',25*(Player.collider:getMass()/0.1),angle,5)
+            Player:takeDamage(
+                'melee','pure',
+                --constant knockback, regardless of armor worn
+                self.lavaKnockback*(Player.collider:getMass()/0.1), 
+                angle,self.lavaDamage
+            )
             self.lavaAttackOnCooldown[i]=true
             TimerState:after(0.1,function() self.lavaAttackOnCooldown[i]=false end) 
         end
@@ -437,7 +445,11 @@ function BossRoom:activateFloorTiles()
     else --boss has over 1/3hp, choose a normal lava pattern
         patternIndex=love.math.random(1,14)
     end
-    local selectedPattern=self.floorLavaPatterns[patternIndex]
+    local selectedPattern=self.floorLavaPatterns[patternIndex]    
+
+    --time between lava seeping and lava filling tile decreases as boss loses health
+    local bossHealthLost=self.boss.health.max-self.boss.health.current
+    local timeToFill=3-(0.01*bossHealthLost)
 
     --activate the floorTiles at all coordinate pairs in the selected pattern
     for i,coordinate in pairs(selectedPattern) do 
@@ -445,11 +457,11 @@ function BossRoom:activateFloorTiles()
         tile.animations.seep:pauseAtStart()
         tile.animations.fill:pauseAtStart()
         tile.animations.receed:pauseAtStart()
-        TimerState:after(3,function() 
+        TimerState:after(timeToFill,function() 
             tile.animations.currentAnim=tile.animations.fill
             tile.animations.currentAnim:resume()
         end)
-        TimerState:after(6,function() 
+        TimerState:after(2*timeToFill,function() 
             tile.animations.currentAnim=tile.animations.receed
             tile.animations.currentAnim:resume()            
         end)
@@ -457,7 +469,7 @@ function BossRoom:activateFloorTiles()
         tile.animations.currentAnim:resume()
     end
 
-    TimerState:after(3,function() --create colliders upon 'fill' animation
+    TimerState:after(timeToFill,function() --create colliders upon 'fill' animation
         for i,data in pairs(self.floorLavaColliderData[patternIndex]) do 
             local collider=world:newRectangleCollider(data.x,data.y,data.w,data.h)
             collider:setSensor(true)
@@ -465,12 +477,16 @@ function BossRoom:activateFloorTiles()
         end        
     end)
 
-    TimerState:after(6,function() --destroy colliders upon 'receed' animation
+    TimerState:after(2*timeToFill,function() --destroy colliders upon 'receed' animation
         for i,collider in pairs(self.floorLavaColliders) do 
             collider:destroy()
         end
         self.floorLavaColliders={} --empty floorLavaCollidersTable
     end)
+    
+    --recalculate time between floorTile lava activation. 
+    --the lower the boss' health, the more frequent the activations.
+    self.floorTileActivationRate=timeToFill*2.7
 end
 
 function BossRoom:endBossBattle()

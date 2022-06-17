@@ -108,6 +108,7 @@ end
 
 --Create and launch a new projectile at a given target entity
 function Projectiles:launch(_xPos,_yPos,_type,_target,_damageBonus)
+    if _target==nil then return end 
     local p={}
 
     function p:load()

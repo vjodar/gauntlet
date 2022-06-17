@@ -294,7 +294,12 @@ function Player:update()
         self.combatData.manaDrainTimer=self.combatData.manaDrainTimer+dt 
         if self.combatData.manaDrainTimer>=0.5 then --drain every 0.5s
             self.combatData.manaDrainTimer=0
-            self:updateMana(self.combatData.magicBonus-4)
+            -- drain rates:
+            -- full t0 - 30s
+            -- full t1 - 40s
+            -- full t2 - 50s
+            -- full t3 - 60s
+            self:updateMana(self.combatData.magicBonus-(5/3))
         end
     end
 
@@ -492,19 +497,19 @@ function Player:updateCurrentGear()
         self.currentGear.armor.head='head_t3'
         headBonus=4
         headResist=30
-        headMagic=1.5
+        headMagic=5/12
         headMass=0.15
     elseif self.inventory['armor_head_t2']>0 then 
         self.currentGear.armor.head='head_t2'
         headBonus=2
         headResist=20
-        headMagic=1
+        headMagic=1/3
         headMass=0.1
     elseif self.inventory['armor_head_t1']>0 then 
         self.currentGear.armor.head='head_t1'
         headBonus=1
         headResist=10
-        headMagic=0.5
+        headMagic=5/24
         headMass=0.05
     else 
         self.currentGear.armor.head='head_t0'
@@ -515,19 +520,19 @@ function Player:updateCurrentGear()
         self.currentGear.armor.chest='chest_t3'
         chestBonus=2
         chestResist=15
-        chestMagic=0.75
+        chestMagic=5/24
         chestMass=0.075
     elseif self.inventory['armor_chest_t2']>0 then 
         self.currentGear.armor.chest='chest_t2'
         chestBonus=1
         chestResist=10
-        chestMagic=0.5
+        chestMagic=1/6
         chestMass=0.05
     elseif self.inventory['armor_chest_t1']>0 then 
         self.currentGear.armor.chest='chest_t1'
         chestBonus=0.5
         chestResist=5
-        chestMagic=0.25
+        chestMagic=5/48
         chestMass=0.025
     else 
         self.currentGear.armor.chest='chest_t0'
@@ -538,19 +543,19 @@ function Player:updateCurrentGear()
         self.currentGear.armor.legs='legs_t3'
         legsBonus=2
         legsResist=15
-        legsMagic=0.75
+        legsMagic=5/24
         legsMass=0.075
     elseif self.inventory['armor_legs_t2']>0 then 
         self.currentGear.armor.legs='legs_t2'
         legsBonus=1
         legsResist=10
-        legsMagic=0.5
+        legsMagic=1/6
         legsMass=0.05
     elseif self.inventory['armor_legs_t1']>0 then 
         self.currentGear.armor.legs='legs_t1'
         legsBonus=0.5
         legsResist=5
-        legsMagic=0.25
+        legsMagic=5/48
         legsMass=0.025
     else 
         self.currentGear.armor.legs='legs_t0' 
@@ -667,6 +672,7 @@ function Player:consumeSupply(_supply)
     self.suppliesData.consuming[_supply]=true 
     TimerState:after(0.5,function()
         self.suppliesData.consuming[_supply]=false
+        if self.state.isDead then return end --don't consume if dead
         if _supply=='fish_cooked' then 
             self:updateHealth(20)
             self.particleSystems.health:emit(2)
@@ -687,6 +693,7 @@ end
 
 --updates the player's health
 function Player:updateHealth(_val)
+    if self.state.isDead then return end --don't heal or damage a dead player
     self.health.current=self.health.current+_val
     if self.health.current>self.health.max then 
         self.health.current=self.health.max 

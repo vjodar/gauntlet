@@ -123,7 +123,6 @@ end
 function PlayState:drawBossBattle()
     cam:attach()
         BossRoom:draw() 
-        --TODO: draw boss room floor where environmental hazards will be
         -- world:draw() --draws colliders
         Entities:draw() --draw all entities, sorted by yPos
         UI:draw() --draw ui elements (dialog,healthbars,etc.)
@@ -169,6 +168,7 @@ function PlayState:startDungeonPhase()
     -- SpecialAttacks:spawnFissure(randomPoints(),randomPoints(),Player)
     -- SpecialAttacks:spawnFireCircle(randomPoints())
     -- SpecialAttacks:launchFireball(randomPoints(),randomPoints(),Player)
+    -- SpecialAttacks:spawnTornado(playerStartX,playerStartY+50,0)
     -- SpecialAttacks:spawnFlamePillar(playerStartX,playerStartY+30,love.math.random()*2*math.pi-math.pi)
     -- Enemies.enemySpawner.t1[1](randomPoints())
     -- Enemies.enemySpawner.t1[2](randomPoints())
@@ -179,19 +179,19 @@ function PlayState:startDungeonPhase()
     -- Enemies.enemySpawner.t3[1](randomPoints())
     -- Enemies.enemySpawner.t3[2](randomPoints())
 
-    Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
-    Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
-    Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
-    Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
-    Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
-    -- for i=1,10 do 
-    --     Items:spawn_item(playerStartX,playerStartY,'tree_wood')
-    --     Items:spawn_item(playerStartX,playerStartY,'rock_ore')
-    --     Items:spawn_item(playerStartX,playerStartY,'fish_raw')
-    --     Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
-    --     Items:spawn_item(playerStartX,playerStartY,'potion')
-    --     Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')
-    --     Items:spawn_item(playerStartX,playerStartY,'arcane_shards')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
+    -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
+    -- for i=1,20 do 
+        -- Items:spawn_item(playerStartX,playerStartY,'tree_wood')
+        -- Items:spawn_item(playerStartX,playerStartY,'rock_ore')
+        -- Items:spawn_item(playerStartX,playerStartY,'fish_raw')
+        -- Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
+        -- Items:spawn_item(playerStartX,playerStartY,'potion')
+        -- Items:spawn_item(playerStartX,playerStartY,'fungi_mushroom')
+        -- Items:spawn_item(playerStartX,playerStartY,'arcane_shards')
     -- end
     --testing----------------------------------
 end

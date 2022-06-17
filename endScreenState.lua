@@ -6,7 +6,13 @@ function EndScreenState:update()
 end
 
 function EndScreenState:draw() 
-    cam:draw(self._drw) 
+    cam:attach() 
+    self._drw()
+    if self.acceptInput then 
+        love.graphics.print("PLAY AGAIN",cam.x+81,cam.y+123)
+        love.graphics.print("MAIN MENU",cam.x+105,cam.y+103)
+    end
+    cam:detach()
     ActionButtons:draw() --redraw menu buttons
 end
 
@@ -55,6 +61,17 @@ function EndScreenState:restartOrMainMenu()
             end
             FadeState:fadeOut(1,afterFn)
             return false
+        end
+        if love.keyboard.isDown(controls.btnRight) then --main menu
+            local afterFn=function()
+                --TODO----
+                --goto main menu
+                --TODO----
+                PlayState:load()
+                ActionButtons:setMenuMode(false)
+            end
+            FadeState:fadeOut(1,afterFn)
+            return false 
         end
     end
     return true --return true to remain on gamestates

@@ -220,7 +220,13 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
             s8=0.25*1,
         }
 
-        self.collider=world:newBSGRectangleCollider(_xPos,_yPos,12,5,3)
+        self.collider=world:newBSGRectangleCollider(_xPos,_yPos,12,5,3) --physical collider
+        --need to use another collider for detecting collisions with the player
+        --because the player has fixtures that extend out and can be sensors.
+        --if only the physical collider was used, tornados will be able to damage
+        --the player through vertical walls.
+        self.damageCollider=world:newRectangleCollider(_xPos,_yPos,2,5) --damaging collider
+        self.damageCollider:setSensor(true )
         self.collider:setFixedRotation(true)
         self.collider:setFriction(0)
         self.collider:setRestitution(0)
@@ -230,6 +236,8 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
         self.collider:setObject(self)
         self.xPos,self.yPos=self.collider:getPosition()
         self.moveSpeed=100
+        self.knockback=50
+        self.damage=20
         self.angle=_angle
         self.attackOnCooldown=false
         self.willDie=false
@@ -270,6 +278,9 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
             math.sin(self.angle)*self.moveSpeed
         )
 
+        --move damage collider to physical collider location
+        self.damageCollider:setPosition(self.collider:getPosition())
+
         if self.willDie then 
             --slow down speed over time
             self.moveSpeed=self.moveSpeed-45*dt
@@ -277,6 +288,7 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
             --once all segments are removed, remove the tornado itself from game
             if self.animations.s8==nil then 
                 self.collider:destroy()
+                self.damageCollider:destroy()
                 return false 
             end
             return
@@ -291,15 +303,17 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
 
         --damage and knockback player
         if not self.attackOnCooldown 
-            --manually check for 'stay' collision, since collider:stay() doesn't work
-            and self.collider:isTouching(Player.collider:getBody())
+            --using the damageCollider which is smaller because otherwise
+            --the tornado will detect collisions with the fixtures that
+            --extend beyond the player's hitbox.
+            and self.damageCollider:isTouching(Player.collider:getBody())
         then
             local angleToPlayer=math.atan2(
                 (Player.yPos-self.yPos),(Player.xPos-self.xPos)
             )
             self.attackOnCooldown=true 
             TimerState:after(0.5,function() self.attackOnCooldown=false end)
-            Player:takeDamage('melee','pure',self.moveSpeed*0.5,angleToPlayer,20)
+            Player:takeDamage('melee','pure',self.knockback,angleToPlayer,self.damage)
         end
 
         if Player.health.current==0 then 
@@ -343,6 +357,8 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
         )
         self.collider:setSensor(true)
         self.attackOnCooldown=true
+        self.damage=5
+        self.knockback=10
 
         TimerState:after(1,function() --spawn flames after 1s
             self:spawnFlames()
@@ -360,7 +376,7 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
         and self.collider:isTouching(Player.collider:getBody())
         then 
             local angle=2*math.pi*love.math.random()-math.pi -- -pi to +pi range
-            Player:takeDamage('melee','pure',10,angle,5)
+            Player:takeDamage('melee','pure',self.knockback,angle,self.damage)
             self.attackOnCooldown=true
             TimerState:after(0.1,function() self.attackOnCooldown=false end)
         end
@@ -472,8 +488,8 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
         self.collider:setMass(0.1)
         self.collider:setSensor(true)
         self.target=_target 
-        self.damage=30
-        self.knockback=60
+        self.damage=45
+        self.knockback=120
         self.speed=480
         self.timer=-0.075
         self.angle=0
@@ -505,7 +521,7 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
         if Player.health.current==0 or BossRoom.boss.health.current==0 then 
             self.willDie=true 
         end
-        
+
         if self.willDie then 
             self.collider:destroy()
             return false 
@@ -621,8 +637,8 @@ function SpecialAttacks:launchFireball(_xPos,_yPos,_target,_disablingBool)
         self.collider:setMass(0.1)
         self.collider:setSensor(true)
         self.target=_target 
-        self.damage=30
-        self.knockback=60
+        self.damage=45
+        self.knockback=120
         self.speed=480
         self.timer=0
         self.angle=0
@@ -734,6 +750,8 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
         self.baseMoveSpeed=200
         self.moveSpeed=self.baseMoveSpeed
         self.attackOnCooldown=false
+        self.damage=20
+        self.knockback=50
         self.willDie=false
         
         self.moveToPlayer=false --travel along initial angle, after 2s, move to player
@@ -805,7 +823,7 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
             )
             self.attackOnCooldown=true 
             TimerState:after(0.5,function() self.attackOnCooldown=false end)
-            Player:takeDamage('melee','pure',self.moveSpeed*0.5,angleToPlayer,20)
+            Player:takeDamage('melee','pure',self.knockback,angleToPlayer,self.damage)
         end
 
         if Player.health.current==0 or BossRoom.isBattleOver then 

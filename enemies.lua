@@ -94,23 +94,18 @@ function Enemies:load()
                 Dungeon.nextBrokenItem=1
             end
         end
-        if love.math.random(3)==1 then --1/3 chance to spawn a fish or mushroom
-            if love.math.random(2)==1 then 
-                Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw')
-            else
-                Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom')
-            end
-        end
+        -- if love.math.random(3)==1 then --1/3 chance to spawn a fish or mushroom
+        --     if love.math.random(2)==1 then 
+        --         Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw')
+        --     else
+        --         Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom')
+        --     end
+        -- end
     end
 
     self.sharedEnemyFunctions.dropLoot_t2=function(_enemy) 
         for i=love.math.random(5),10 do --drop 5 to 10 shards
             Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_shards')
-        end
-        if _enemy.name=='mage_t2' then --additional role for mages
-            for i=love.math.random(5),10 do
-                Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_shards')
-            end
         end
         if love.math.random(2)==1 then --1/2 chance to spawn a broken bow or staff
             if Dungeon.nextBrokenItem==1 then 
@@ -127,6 +122,16 @@ function Enemies:load()
             else         
                 for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom') end  
             end      
+        end
+        --additional role for mages to compensate for being the only t2 enemy in the room
+        if _enemy.name=='mage_t2' then
+            if love.math.random(3)==1 then
+                if love.math.random(2)==1 then 
+                    for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end
+                else         
+                    for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom') end
+                end      
+            end
         end
     end
 
