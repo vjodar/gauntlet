@@ -76,7 +76,7 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
 
         --After 1s from spawning, make the collider static. This is to allow
         --physics engine to push node out of other colliders
-        TimerState:after(1,function() self.collider:setType('static') end)
+        TimerState:after(1.5,function() self.collider:setType('static') end)
     end
 
     function node:update() 
@@ -229,7 +229,7 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
 
         --After 1s from spawning, make the collider static. This is to allow
         --physics engine to push node out of other colliders
-        TimerState:after(1,function() self.collider:setType('static') end)
+        TimerState:after(1.5,function() self.collider:setType('static') end)
     end
 
     function node:update() 
@@ -485,7 +485,7 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
 
         --After 1s from spawning, make the collider static. This is to allow
         --physics engine to push node out of other colliders
-        TimerState:after(1,function() self.collider:setType('static') end)
+        TimerState:after(1.5,function() self.collider:setType('static') end)
     end
 
     function node:update() 
@@ -616,7 +616,7 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
 
         --After 1s from spawning, make the collider static. This is to allow
         --physics engine to push node out of other colliders
-        TimerState:after(1,function() self.collider:setType('static') end)
+        TimerState:after(1.5,function() self.collider:setType('static') end)
     end
 
     function node:update() 

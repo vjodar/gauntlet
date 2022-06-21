@@ -201,7 +201,7 @@ function PlayState:startBossBattle()
     self._update=self.updateBossBattle
     self._draw=self.drawBossBattle
 
-    Clock:stop() --stop clock
+    Clock:pause() --stop clock
 
     Dungeon:closeDungeon() --delete dungeon rooms and entities
 

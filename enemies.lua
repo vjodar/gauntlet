@@ -94,13 +94,6 @@ function Enemies:load()
                 Dungeon.nextBrokenItem=1
             end
         end
-        -- if love.math.random(3)==1 then --1/3 chance to spawn a fish or mushroom
-        --     if love.math.random(2)==1 then 
-        --         Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw')
-        --     else
-        --         Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom')
-        --     end
-        -- end
     end
 
     self.sharedEnemyFunctions.dropLoot_t2=function(_enemy) 

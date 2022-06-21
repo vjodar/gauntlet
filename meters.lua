@@ -3,7 +3,6 @@ Meters={}
 function Meters:load()
     self.health={
         spriteBar=love.graphics.newImage('assets/hud/meters/hud_health.png'),
-        xPos=2*WINDOWSCALE_X, yPos=WINDOWSCALE_Y,
         spritePiece=love.graphics.newImage('assets/hud/meters/hud_health_piece.png'),
         filledPieces=math.ceil(Player.health.current/2), --how many actual pieces
         filledPiecesShown=math.ceil(Player.health.current/2), --how many pieces are shown
@@ -11,7 +10,6 @@ function Meters:load()
     }
     self.mana={
         spriteBar=love.graphics.newImage('assets/hud/meters/hud_mana.png'),
-        xPos=2*WINDOWSCALE_X, yPos=18*WINDOWSCALE_Y,        
         spritePiece=love.graphics.newImage('assets/hud/meters/hud_mana_piece.png'),
         filledPieces=math.ceil(Player.mana.current/2), --how many actual pieces
         filledPiecesShown=math.ceil(Player.mana.current/2), --how many pieces are shown
@@ -54,12 +52,12 @@ function Meters:draw()
     --draw background meter sprites
     love.graphics.draw( 
         self.health.spriteBar,
-        self.health.xPos, self.health.yPos,
+        2*WINDOWSCALE_X, WINDOWSCALE_Y,
         nil,WINDOWSCALE_X,WINDOWSCALE_Y
     )
     love.graphics.draw(
         self.mana.spriteBar,
-        self.mana.xPos, self.mana.yPos,
+        2*WINDOWSCALE_X, 18*WINDOWSCALE_Y,
         nil,WINDOWSCALE_X,WINDOWSCALE_Y
     )
 
@@ -68,8 +66,8 @@ function Meters:draw()
         if i%6~=0 then --skip every 6th piece to separate into segments
             love.graphics.draw(
                 self.health.spritePiece,
-                self.health.xPos+(5+i)*WINDOWSCALE_X,
-                self.health.yPos+6*WINDOWSCALE_Y,
+                2*WINDOWSCALE_X+(5+i)*WINDOWSCALE_X,
+                WINDOWSCALE_Y+6*WINDOWSCALE_Y,
                 nil,WINDOWSCALE_X,WINDOWSCALE_Y
             )
         end
@@ -78,8 +76,8 @@ function Meters:draw()
         if i%6~=0 then --skip every 6th piece to separate into segments
             love.graphics.draw(
                 self.mana.spritePiece,
-                self.mana.xPos+(5+i)*WINDOWSCALE_X,
-                self.mana.yPos+6*WINDOWSCALE_Y,
+                2*WINDOWSCALE_X+(5+i)*WINDOWSCALE_X,
+                18*WINDOWSCALE_Y+6*WINDOWSCALE_Y,
                 nil,WINDOWSCALE_X,WINDOWSCALE_Y
             )
         end
