@@ -11,6 +11,7 @@ function Enemies:load()
     self.spriteSheets.orcT3=love.graphics.newImage('assets/enemies/orc_t3.png')
     self.spriteSheets.demonT3=love.graphics.newImage('assets/enemies/demon_t3.png')
     self.spriteSheets.boss=love.graphics.newImage('assets/enemies/boss.png')
+    self.spriteSheets.deathParticle=love.graphics.newImage('assets/specials/flame_particle.png')
 
     self.healthbars={
         t1=love.graphics.newImage('assets/enemies/healthbar_t1.png'),
@@ -20,6 +21,16 @@ function Enemies:load()
     }
 
     self.healthRGB={red=218/255,green=78/255,blue=56/255} --for drawing remaining health of enemy
+
+    self.particleSystems={}
+    self.particleSystems.death=love.graphics.newParticleSystem(self.spriteSheets.deathParticle,1000)
+    self.particleSystems.death:setParticleLifetime(0.2,1.5)
+    self.particleSystems.death:setSpeed(5,60)
+    self.particleSystems.death:setLinearDamping(1)
+    self.particleSystems.death:setSizes(1,1,1,1,1.5,2,3)
+    self.particleSystems.death:setSpin(10,5)
+    self.particleSystems.death:setColors(1,1,1,1, 1,1,1,0)
+    self.particleSystems.death:setEmissionArea('ellipse',4,3,0,true)
 
     self.sharedEnemyFunctions={} --common enemy functions
 
@@ -72,13 +83,27 @@ function Enemies:load()
 
     self.sharedEnemyFunctions.die=function(_enemy)         
         _enemy:dropLoot() --drop loot
+        _enemy.particles:emit(_enemy.particleEmissionCount)
 
         --if player is still targeting enemy at this point, stop targeting it
         if Player.combatData.currentEnemy==_enemy then 
             Player.combatData.currentEnemy=nil 
         end 
+        _enemy.state.isTargetted=false
         _enemy.collider:destroy() --destroy collider
-        return false --return false to remove entity from game
+
+        --change update function to only update dialog and particle systems, and
+        --return false when particle system is empty to remove enemy from entities table
+        _enemy.update=function(_enemy)
+            _enemy.dialog:update()
+            _enemy.particles:update(dt)
+            if _enemy.particles:getCount()==0 then return false end
+        end
+
+        --change draw function to only draw death particles
+        _enemy.draw=function(_enemy)
+            love.graphics.draw(_enemy.particles,_enemy.xPos,_enemy.yPos)
+        end
     end
 
     self.sharedEnemyFunctions.dropLoot_t1=function(_enemy) 
@@ -109,16 +134,16 @@ function Enemies:load()
                 Dungeon.nextBrokenItem=1
             end
         end
-        if love.math.random(3)==1 then --1/3 chance to spawn 2 fish or mushroom
+        if love.math.random(2)==2 then --50% chance to spawn 2 fish or mushroom
             if love.math.random(2)==1 then 
                 for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end
             else         
                 for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom') end  
             end      
         end
-        --additional role for mages to compensate for being the only t2 enemy in the room
+        --additional role for mages to compensate for being the only t2 enemy in it's room
         if _enemy.name=='mage_t2' then
-            if love.math.random(3)==1 then
+            if love.math.random(2)==2 then
                 if love.math.random(2)==1 then 
                     for i=1,2 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end
                 else         
@@ -144,11 +169,13 @@ function Enemies:load()
         elseif _enemy.name=='orc_t3' then 
             Items:spawn_item(_enemy.xPos,_enemy.yPos,'arcane_bowstring')
         end
-        if love.math.random(2)==1 then --1/2 chance to spawn 3 fish or mushrooms
-            if love.math.random(2)==1 then 
-                for i=1,3 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw') end
-            else
-                for i=1,3 do Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom') end
+        if love.math.random(4)>1 then --75% chance to spawn 3 fish or mushrooms
+            for i=1,3 do 
+                if love.math.random(2)==1 then 
+                    Items:spawn_item(_enemy.xPos,_enemy.yPos,'fish_raw')
+                else
+                    Items:spawn_item(_enemy.xPos,_enemy.yPos,'fungi_mushroom')
+                end
             end
         end
     end
@@ -452,6 +479,8 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('tiny') --shadow
         self.dialog=Dialog:newDialogSystem() --dialog system
+        self.particles=Enemies.particleSystems.death:clone() --particle system
+        self.particleEmissionCount=20
 
         --enemy's current state metatable
         self.state={}
@@ -495,6 +524,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -509,7 +539,6 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
 
         self:updateHealth() --update healthbar
 
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -528,8 +557,8 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
     function enemy:draw()
         self.shadow:draw(self.xPos,self.yPos) --draw shadow
         self.currentAnim:draw(
-            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,8,14)
-
+            self.spriteSheet,self.xPos,self.yPos,nil,self.state.scaleX,1,8,14
+        )
     end
 
     function enemy:drawUIelements() --called by UI
@@ -595,6 +624,8 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('tiny') --shadow
         self.dialog=Dialog:newDialogSystem() --dialog system
+        self.particles=Enemies.particleSystems.death:clone() --particle system
+        self.particleEmissionCount=20
 
         --enemy's current state metatable
         self.state={}
@@ -637,6 +668,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -651,7 +683,6 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
 
         self:updateHealth() --update healthbar
 
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -737,6 +768,8 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('small') --shadow
         self.dialog=Dialog:newDialogSystem() --dialog system
+        self.particles=Enemies.particleSystems.death:clone() --particle system
+        self.particleEmissionCount=20
 
         --enemy's current state metatable
         self.state={}
@@ -780,6 +813,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -794,7 +828,6 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
 
         self:updateHealth() --update healthbar
 
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -880,6 +913,8 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('small') --shadow
         self.dialog=Dialog:newDialogSystem() --dialog system
+        self.particles=Enemies.particleSystems.death:clone() --particle system
+        self.particleEmissionCount=60
 
         --enemy's current state metatable
         self.state={}
@@ -920,6 +955,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -934,7 +970,6 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
 
         self:updateHealth() --update healthbar
 
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -1020,6 +1055,8 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('small') --shadow
         self.dialog=Dialog:newDialogSystem() --dialog system
+        self.particles=Enemies.particleSystems.death:clone() --particle system
+        self.particleEmissionCount=60
 
         --enemy's current state metatable
         self.state={}
@@ -1064,6 +1101,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -1078,7 +1116,6 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
 
         self:updateHealth() --update healthbar
 
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -1165,6 +1202,8 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('medium') --shadow
         self.dialog=Dialog:newDialogSystem() --dialog system
+        self.particles=Enemies.particleSystems.death:clone() --particle system
+        self.particleEmissionCount=60
 
         --enemy's current state metatable
         self.state={}
@@ -1205,6 +1244,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -1219,7 +1259,6 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
 
         self:updateHealth() --update healthbar
 
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -1310,6 +1349,8 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('large') --shadow
         self.dialog=Dialog:newDialogSystem() --dialog system
+        self.particles=Enemies.particleSystems.death:clone() --particle system
+        self.particleEmissionCount=100
 
         --enemy's current state metatable
         self.state={}
@@ -1351,6 +1392,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -1365,7 +1407,6 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
 
         self:updateHealth() --update healthbar
 
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -1466,6 +1507,8 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.currentAnim:gotoFrame(love.math.random(1,4)) --start at random frame
         self.shadow=Shadows:newShadow('large') --shadow
         self.dialog=Dialog:newDialogSystem() --dialog system
+        self.particles=Enemies.particleSystems.death:clone() --particle system        
+        self.particleEmissionCount=100
 
         --enemy's current state metatable
         self.state={}
@@ -1507,6 +1550,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
 
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
@@ -1521,7 +1565,6 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
 
         self:updateHealth() --update healthbar
 
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -1682,7 +1725,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.particleSystems.fireball=SpecialAttacks.particleSystems.fireball:clone()
         self.particleSystems.fireball:setSpeed(20,60)        
         self.particleSystems.disablingFireball=SpecialAttacks.particleSystems.disablingFireball:clone()
-        self.particleSystems.disablingFireball:setSpeed(20,60)        
+        self.particleSystems.disablingFireball:setSpeed(20,60)
+        self.particleSystems.death=Enemies.particleSystems.death:clone()
 
         --used to select initial attack and protection type
         local attackStyles={'physical','magical'}
@@ -1720,6 +1764,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
     function enemy:update() 
         self.dialog:update() --update dialog
+        if self.state.willDie then return self:die() end
+
         --update particle systems
         for i,p in pairs(self.particleSystems) do p:update(dt) end 
 
@@ -1737,8 +1783,6 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         if self.state.wait then return end --wait for transitions/animations before starting AI
 
         self:updateHealth() --update healthbar
-
-        if self.state.willDie then return self:die() end
 
         if Player.health.current==0 then self:wanderingAI() return end
 
@@ -1858,16 +1902,29 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         if Player.combatData.currentEnemy==self then 
             Player.combatData.currentEnemy=nil 
         end 
+        enemy.state.isTargetted=false
 
         self.protectionMagics:deactivate() 
         self.collider:destroy()
+        self.particleSystems.death:emit(200)
+        
+        enemy.update=function(enemy) 
+            --update particle systems
+            for i,p in pairs(self.particleSystems) do p:update(dt) end 
+            enemy.dialog:update()
+            if enemy.particleSystems.death:getCount()==0 then 
+                BossRoom:endBossBattle()
 
-        --TODO-------------
-        --end the game I guess
-        BossRoom:endBossBattle()
-        --TODO-------------
+                return false --return false to remove entity from game
+            end
+        end
 
-        return false --return false to remove entity from game
+        enemy.draw=function(enemy)            
+            love.graphics.draw( --draw death explosion particles
+                enemy.particleSystems.death,
+                enemy.xPos,enemy.yPos-20
+            )
+        end
     end
 
     enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
