@@ -227,9 +227,10 @@ function PlayState:startBossBattle()
 
     --Start boss AI after 2s
     local afterFn=function() 
-        TimerState:after(2,function() BossRoom.boss.state.wait=false end) 
+        TimerState:after(1.5,function() BossRoom.boss.state.wait=false end) 
         Clock:setMode('boss') --set clock to count up 
         Clock:start()
+        for i,c in pairs(BossRoom.lavaColliders) do c:setSensor(false) end 
     end
     FadeState:fadeIn(0,afterFn)
 end

@@ -43,6 +43,7 @@ function BossRoom:load()
     for i,c in pairs(self.lavaColliders) do 
         c:setCollisionClass('lava')
         c:setType('static')
+        c:setSensor(true)
     end
     self.lavaColliderKnockbackAngles={top=0.5*math.pi,bot=-0.5*math.pi,left=0,right=math.pi}
     self.lavaAttackOnCooldown={top=false,bot=false,left=false,right=false}
