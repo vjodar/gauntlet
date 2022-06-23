@@ -1898,6 +1898,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
     end
 
     function enemy:die()
+        self.isBattleOver=true
+
         --if player is still targeting enemy at this point, stop targeting it
         if Player.combatData.currentEnemy==self then 
             Player.combatData.currentEnemy=nil 
@@ -1907,12 +1909,15 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.protectionMagics:deactivate() 
         self.collider:destroy()
         self.particleSystems.death:emit(200)
+
+        camTarget=enemy --pan camera to boss
         
         enemy.update=function(enemy) 
             --update particle systems
             for i,p in pairs(self.particleSystems) do p:update(dt) end 
             enemy.dialog:update()
             if enemy.particleSystems.death:getCount()==0 then 
+                camTarget=Player --pan camera back to player
                 BossRoom:endBossBattle()
 
                 return false --return false to remove entity from game

@@ -493,7 +493,6 @@ function BossRoom:activateFloorTiles()
 end
 
 function BossRoom:endBossBattle()
-    self.isBattleOver=true
     Player.protectionMagics:deactivate()
     Clock:pause()
     FadeState:fadeOut(0.5,function() EndScreenState:win() end)

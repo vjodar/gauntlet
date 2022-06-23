@@ -777,13 +777,8 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
         self.moveToPlayer=false --travel along initial angle, after 2s, move to player
         TimerState:after(1,function() self.moveToPlayer=true end)
 
-        --after some time from spawning, destroy pillar
-        TimerState:after(
-            love.math.random(10,15), --lifespan is 10-15s
-            function() 
-                self.willDie=true
-            end
-        )
+        --after 10-15s from spawning, destroy pillar
+        TimerState:after(love.math.random(10,15),function() self:die() end)
 
         self.shadow=Shadows:newShadow('tornado')
 
@@ -799,18 +794,6 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
             math.cos(self.angle)*self.moveSpeed,
             math.sin(self.angle)*self.moveSpeed
         )
-
-        if self.willDie then 
-            --slow down speed over time
-            self.moveSpeed=self.moveSpeed-45*dt
-
-            --once all particles are destroyed, remove the pillar itself from game
-            if self.particles:getCount()==0 then 
-                self.collider:destroy()
-                return false 
-            end
-            return
-        end
 
         --emit 10 particles ~60 times per second
         self.emissionTimer=self.emissionTimer+dt 
@@ -848,12 +831,34 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
         end
 
         --if player or boss is dead, flame pillar dies
-        if Player.health.current==0 or BossRoom.isBattleOver then self.willDie=true end
+        if Player.health.current==0 or BossRoom.isBattleOver then self:die() end
     end
 
     function pillar:draw()
         self.shadow:draw(self.xPos,self.yPos)
         love.graphics.draw(self.particles,self.xPos,self.yPos)
+    end
+
+    function pillar:die() --change update to death update
+        pillar.update=function()            
+            self.xPos,self.yPos=self.collider:getPosition()
+            self.particles:update(dt)
+
+            --travel in the direction of angle
+            self.collider:applyForce(
+                math.cos(self.angle)*self.moveSpeed,
+                math.sin(self.angle)*self.moveSpeed
+            )
+
+            --slow down speed over time
+            self.moveSpeed=self.moveSpeed-45*dt
+
+            --once all particles are destroyed, remove the pillar itself from game
+            if self.particles:getCount()==0 then 
+                self.collider:destroy()
+                return false 
+            end
+        end
     end
 
     pillar:load()

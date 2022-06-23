@@ -100,7 +100,7 @@ function love.draw()
     for i,state in pairs(gameStates) do state:draw() end 
 end
 
-function love.keyreleased(_key) releasedKey=_key end 
+function love.keyreleased(_key) releasedKey=_key end
 
 --resizes display, enters/exits fullscreen, rescales game assets appropriately
 function changeDisplaySettings(_w,_h,_isFullscreen)
