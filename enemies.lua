@@ -1861,6 +1861,17 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         end
     end
 
+    function enemy:updateHealth()
+        if self.health.current<self.health.currentShown then 
+            self.health.timer=self.health.timer+dt 
+            if self.health.timer>self.health.moveRate then 
+                self.health.currentShown=self.health.currentShown-1
+                self.health.timer=0
+            end
+            if self.health.current==0 then self.state.willDie=true end 
+        end
+    end
+
     function enemy:takeDamage(_attackType,_damageType,_knockback,_angle,_val) 
         local modifiedDamage=_val 
         
@@ -1931,8 +1942,6 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             )
         end
     end
-
-    enemy.updateHealth=Enemies.sharedEnemyFunctions.updateHealthFunction
     enemy.move=Enemies.sharedEnemyFunctions.move
     enemy.setNewMoveTarget=Enemies.sharedEnemyFunctions.setNewMoveTarget
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI

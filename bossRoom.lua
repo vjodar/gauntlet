@@ -377,7 +377,11 @@ function BossRoom:drawFloorTiles() --draw all floor tiles
     end
 end
 
-function BossRoom:updatePerimeterLava()
+function BossRoom:updatePerimeterLava()    
+    if self.boss==nil then return end --if no boss, return
+    if self.boss.health.current==0 then return end --if boss is dead, return
+    if Player.health.current==0 then return end --is player is dead, return
+
     for i,c in pairs(self.lavaColliders) do
         if not self.lavaAttackOnCooldown[i]
         and c:isTouching(Player.collider:getBody())
