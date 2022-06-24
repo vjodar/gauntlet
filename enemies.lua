@@ -1873,6 +1873,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
     end
 
     function enemy:takeDamage(_attackType,_damageType,_knockback,_angle,_val) 
+        if Player.state.isDead then return end --don't take damage from dead player
         local modifiedDamage=_val 
         
         --if successfully protected, damage is 0, return 
@@ -1910,6 +1911,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
     function enemy:die()
         self.isBattleOver=true
+        Player.state.invincible=true
 
         --if player is still targeting enemy at this point, stop targeting it
         if Player.combatData.currentEnemy==self then 

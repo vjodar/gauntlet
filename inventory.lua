@@ -135,7 +135,7 @@ end
 function Inventory:update()
     if self.state.transitioning then 
         self:move()
-    elseif acceptInput and releasedKey==controls.btnStart then 
+    elseif acceptInput and Controls.releasedInputs.btnStart then 
         self.state.transitioning=true 
     end
 end

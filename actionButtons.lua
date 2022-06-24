@@ -83,11 +83,11 @@ function ActionButtons:addActionButtonWeapons()
 
         button.state.pressedFlag=0 --default to not being pressed
         if acceptInput then
-            if love.keyboard.isDown(controls.btnUp) then 
+            if Controls.currentInputs.btnUp then 
                 button.state.pressedFlag=1
             end 
 
-            if button.state.acceptInput and releasedKey==controls.btnUp then
+            if button.state.acceptInput and Controls.releasedInputs.btnUp then
                 button.currentAnim:resume() --resume animation to go to next icon
                 button.state.acceptInput=false --won't accept input until animation is done
 
@@ -193,7 +193,7 @@ function ActionButtons:addActionButtonSupplies()
 
         button.state.pressedFlag=0 --deafult to not pressed
         if acceptInput then --if gamestate and button are accepting input 
-            if love.keyboard.isDown(controls.btnLeft) then 
+            if Controls.currentInputs.btnLeft then 
                 button.state.pressedFlag=1
                 if button.state.acceptInput then --only increase duration when button is accepting input
                     button.state.buttonDuration=button.state.buttonDuration+dt 
@@ -235,7 +235,7 @@ function ActionButtons:addActionButtonSupplies()
                 TimerState:after(0.3,function() button.state.holdOnCooldown=false end)
             end
 
-            if releasedKey==controls.btnLeft then
+            if Controls.releasedInputs.btnLeft then
                 if button.state.acceptInput and button.state.buttonDuration<0.3 then --button tap
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.state.acceptInput=false --won't accept input until animation is done
@@ -366,7 +366,7 @@ function ActionButtons:addActionButtonProtectionMagics()
 
         button.state.pressedFlag=0 --default to not pressed
         if acceptInput then 
-            if love.keyboard.isDown(controls.btnRight) then 
+            if Controls.currentInputs.btnRight then 
                 button.state.pressedFlag=1
                 if button.state.acceptInput then --only increase duration when button is pressed
                     button.state.buttonDuration=button.state.buttonDuration+dt 
@@ -402,7 +402,7 @@ function ActionButtons:addActionButtonProtectionMagics()
                 button.state.holdOnCooldown=true
             end
 
-            if releasedKey==controls.btnRight  then
+            if Controls.releasedInputs.btnRight  then
                 if button.state.acceptInput and button.state.buttonDuration<0.3 then --button TAP
                     button.currentAnim:resume() --resume animation to go to next icon
                     button.state.acceptInput=false --won't accept input until animation is done
@@ -516,7 +516,7 @@ function ActionButtons:addActionButtonCombatInteract()
 
         button.state.pressedFlag=0 --default to not pressed
         if acceptInput then 
-            if love.keyboard.isDown(controls.btnDown) then 
+            if Controls.currentInputs.btnDown then 
                 button.state.pressedFlag=1            
                 button.state.buttonDuration=button.state.buttonDuration+dt
 
@@ -539,7 +539,7 @@ function ActionButtons:addActionButtonCombatInteract()
                 end
             end 
 
-            if releasedKey==controls.btnDown then 
+            if Controls.releasedInputs.btnDown then 
                 if button.state.buttonDuration<0.3 then --button TAP
                     --find a combat target for the player, is possible
                     Player.combatData.currentEnemy=self:getCombatTarget()
@@ -707,7 +707,7 @@ function ActionButtons:addMenuAccept()
     function button:update()
         self.pressedFlag=0 --default to not pressed
         if acceptInput then 
-            if love.keyboard.isDown(controls.btnDown) then self.pressedFlag=1 end
+            if Controls.currentInputs.btnDown then self.pressedFlag=1 end
         end
     end
 
@@ -744,7 +744,7 @@ function ActionButtons:addMenuDecline()
     function button:update()
         self.pressedFlag=0 --default to not pressed
         if acceptInput then 
-            if love.keyboard.isDown(controls.btnRight) then self.pressedFlag=1 end
+            if Controls.currentInputs.btnRight then self.pressedFlag=1 end
         end
     end
 

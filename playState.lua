@@ -142,7 +142,7 @@ function PlayState:startDungeonPhase()
 
     --move the player to the starting room
     local playerStartX=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256)
-    local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
+    local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(90,184)
     Player.collider:setPosition(playerStartX,playerStartY)
 
     --set camera target to be the player's position

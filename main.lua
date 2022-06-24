@@ -1,3 +1,4 @@
+require 'controls'
 require 'timerState'
 require 'playState'
 require 'camPanState'
@@ -41,45 +42,24 @@ function love.load()
     gameStates={} --state stack
     acceptInput=false --flag to restrict inputs to one state at a time
 
-    --releasedKey stores keys released from love.keyreleased callback
-    --releasedKeyPrev stores the released key from the last frame
-    --these are used to enable button pressing and holding functionality
-    --while defining behavior in appropriate class/object instead of in callback
-    releasedKey,releasedKeyPrev="",""
-
-    --global table of controls. Defaults to keyboard control values
-    controls={ 
-        --directions
-        dirUp='w',
-        dirDown='s',
-        dirLeft='a',
-        dirRight='d',
-        --buttons
-        btnUp='kp8',
-        btnDown='kp5',
-        btnLeft='kp4',
-        btnRight='kp6',
-        btnStart='space'
-    }
-
-    table.insert(gameStates,TimerState) --timer state is always first on gamestates stack
-
-    --Initial game state 
-    table.insert(gameStates,PlayState)
-
     --Initialize all states in gamestates that need loading
+    Controls:load()
     TimerState:load()
     FadeState:load()
     PlayerTransitionState:load()
     PlayState:load()
     CraftingMenuState:load()
+
+    table.insert(gameStates,TimerState) --timer state is always first on gamestates stack
+
+    --Initial game state 
+    table.insert(gameStates,PlayState)
 end
 
 function love.update(_dt)
     dt=_dt --update delta time
-    --releasedKey only stores released keys for 1 frame
-    if releasedKey==releasedKeyPrev then releasedKey="" end
-    releasedKeyPrev=releasedKey --update releasedKeyPrev
+
+    Controls:update()
 
     for i,state in pairs(gameStates) do
         --input should only be accepted by gamestate on top of stack (last in table)
@@ -87,20 +67,11 @@ function love.update(_dt)
         --run each state in gameStates, remove any that return false
         if not state:update()==true then table.remove(gameStates,i) end 
     end
-
-    --testing----------------------
-    
-    if releasedKey=='escape' then love.event.quit() end --easy close for devs.
-    if releasedKey=='backspace' then love.load() end --easy restart for devs.
-    
-    --testing----------------------
 end
 
 function love.draw()
     for i,state in pairs(gameStates) do state:draw() end 
 end
-
-function love.keyreleased(_key) releasedKey=_key end
 
 --resizes display, enters/exits fullscreen, rescales game assets appropriately
 function changeDisplaySettings(_w,_h,_isFullscreen)

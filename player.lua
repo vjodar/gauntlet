@@ -213,6 +213,7 @@ function Player:load()
     self.state.isDead=false 
     self.state.isNearNode=false 
     self.state.protectionActivated=false --true when protection magics activated
+    self.state.invincible=false
 
     self.combatData={} --combat related data
     self.combatData.inCombat=false 
@@ -379,21 +380,21 @@ function Player:move()
     self.xVel,self.yVel=0,0
     local target={x=self.xPos,y=self.yPos}
 
-    if love.keyboard.isDown(controls.dirLeft) then
+    if Controls.currentInputs.dirLeft then
         target.x=target.x-1
         self.state.facing='left'
         self.state.moving=true
     end
-    if love.keyboard.isDown(controls.dirRight) then
+    if Controls.currentInputs.dirRight then
         target.x=target.x+1
         self.state.facing='right'
         self.state.moving=true 
     end
-    if love.keyboard.isDown(controls.dirUp) then
+    if Controls.currentInputs.dirUp then
         target.y=target.y-1
         self.state.moving=true 
     end
-    if love.keyboard.isDown(controls.dirDown) then
+    if Controls.currentInputs.dirDown then
         target.y=target.y+1
         self.state.moving=true 
     end
@@ -424,7 +425,7 @@ function Player:queryInteractables()
         --set combatInteract button state to update sprite 
         ActionButtons.combatInteract:setNodeNearPlayer(true)
 
-        if love.keyboard.isDown(controls.btnDown) then 
+        if Controls.currentInputs.btnDown then 
             --face player toward that node
             if nearbyNode.xPos<self.xPos then self.state.facing='left' 
             else self.state.facing='right' end
@@ -721,6 +722,7 @@ end
 --player takes some damage depending on the attackType(melee or projectile),
 --damageType(physical or magical), knockback, and angle of the hit.
 function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
+    if self.state.invincible then return end --don't take damage when invincible
     if self.state.isDead then return end --don't take damage when already dead
     if self.state.protectionActivated 
     and ActionButtons.protectionMagics.state.currentSpell==_damageType 
