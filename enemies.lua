@@ -1751,9 +1751,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             moveRate=0.005, --how frequent health will decrease
         }
 
-        --testing-----------------------
+        --boss becomes active after 0.5s to allow player to fall into room.
         TimerState:after(0.5,function() self.state.attackOnCooldown=false end)
-        --testing-------------------------
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
@@ -1765,14 +1764,14 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
     function enemy:update() 
         self.dialog:update() --update dialog
         if self.state.willDie then return self:die() end
-
+        
         --update particle systems
         for i,p in pairs(self.particleSystems) do p:update(dt) end 
-
+        
         --update vectors
         self.xPos, self.yPos=self.collider:getPosition()
         self.xVel, self.yVel=self.collider:getLinearVelocity()
-
+        
         --update animation
         self.currentAnim:update(dt)
 
@@ -1781,7 +1780,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         end
 
         if self.state.wait then return end --wait for transitions/animations before starting AI
-
+        
         self:updateHealth() --update healthbar
 
         if Player.health.current==0 then self:wanderingAI() return end
@@ -1868,7 +1867,6 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
                 self.health.currentShown=self.health.currentShown-1
                 self.health.timer=0
             end
-            if self.health.current==0 then self.state.willDie=true end 
         end
     end
 
@@ -1892,6 +1890,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         --apply reduced damage to effectively increase total health (to 1000hp)
         modifiedDamage=modifiedDamage/5
         self.health.current=math.max(self.health.current-modifiedDamage,0)
+        if self.health.current<=0.5 then self.state.willDie=true end 
 
         --apply knockback
         self.collider:applyLinearImpulse(
@@ -1922,13 +1921,12 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.protectionMagics:deactivate() 
         self.collider:destroy()
         self.particleSystems.death:emit(200)
-
-        camTarget=enemy --pan camera to boss
         
         enemy.update=function(enemy) 
             --update particle systems
             for i,p in pairs(self.particleSystems) do p:update(dt) end 
             enemy.dialog:update()
+            camTarget=enemy --pan to boss during explosion
             if enemy.particleSystems.death:getCount()==0 then 
                 camTarget=Player --pan camera back to player
                 BossRoom:endBossBattle()

@@ -103,11 +103,6 @@ function PlayState:drawDungeonPhase() --draw funtion of the gathering/crafting p
     cam:detach()
     
     Hud:draw() --draw hud 
-
-    --testing--------------------------
-    -- love.graphics.print(love.timer:getFPS(),0,0,nil,6)
-    -- love.graphics.print(#TimerState.timers,0,30,nil,3)
-    --testing--------------------------
 end
 
 function PlayState:updateBossBattle()
@@ -128,11 +123,6 @@ function PlayState:drawBossBattle()
         UI:draw() --draw ui elements (dialog,healthbars,etc.)
     cam:detach()
     Hud:draw() --draw HUD outside camera
-
-    -- --testing--------------------------
-    -- love.graphics.print(love.timer:getFPS(),0,0,nil,6)
-    -- love.graphics.print(#TimerState.timers,0,40,nil,6)
-    -- --testing--------------------------
 end
 
 function PlayState:startDungeonPhase()
@@ -220,12 +210,12 @@ function PlayState:startBossBattle()
     Player.combatData.aggroRange={x=800,y=600} 
 
     --spawn boss on the next frame (must allow entitiesTable to clear)
-    TimerState:after(0.001,function() Enemies.enemySpawner.t4[1](410,300) end)
+    TimerState:after(0.05,function() Enemies.enemySpawner.t4[1](410,300) end)
 
     Player.collider:setPosition(424,370)
     cam:lookAt(Player.collider:getPosition())
 
-    --Start boss AI after 2s
+    --Start boss AI after 1.5s
     local afterFn=function() 
         TimerState:after(1.5,function() BossRoom.boss.state.wait=false end) 
         Clock:setMode('boss') --set clock to count up 

@@ -40,10 +40,15 @@ function Controls:load()
         ['d']='dirRight',
 
         --buttons
-        ['kp8']='btnUp',
-        ['kp5']='btnDown',
-        ['kp4']='btnLeft',
-        ['kp6']='btnRight',
+        -- ['kp8']='btnUp',
+        -- ['kp5']='btnDown',
+        -- ['kp4']='btnLeft',
+        -- ['kp6']='btnRight',
+        -- ['space']='btnStart',
+        ['up']='btnUp',
+        ['down']='btnDown',
+        ['left']='btnLeft',
+        ['right']='btnRight',
         ['space']='btnStart',
     }
 end
@@ -69,6 +74,6 @@ end
 function love.keyreleased(_k)
     if _k=='escape' then love.event.quit() end --easy close for devs.
     if _k=='return' then love.load() end --easy restart for devs.
-    -- if _k=='p' then Player:takeDamage('melee','pure',0,0,999) end     
+    -- if _k=='p' then Player:takeDamage('melee','pure',0,0,999) end
 end
 --testing----------------------
