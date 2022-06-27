@@ -26,12 +26,19 @@ function love.load()
     --set pixelated look
     love.graphics.setDefaultFilter('nearest','nearest')
 
-    --set display resolution to be as large as possible while still fitting
-    --in the users monitor, in 4x3 aspect ratio, and in windowed mode
-    local desktopW,desktopH=love.window.getDesktopDimensions()
-    local nearestHeight=math.floor(desktopH/300)*300
-    local nearestWidth=nearestHeight*(4/3)
-    changeDisplaySettings(nearestWidth,nearestHeight,false)
+    -- --set display resolution to be as large as possible while still fitting
+    -- --in the users monitor, in 4x3 aspect ratio, and in windowed mode
+    -- local desktopW,desktopH=love.window.getDesktopDimensions()
+    -- local nearestHeight=math.floor(desktopH/300)*300
+    -- local nearestWidth=nearestHeight*(4/3)
+    -- changeDisplaySettings(nearestWidth,nearestHeight,false)
+    
+    --resizing and rescaling game to match new display settings.
+    WINDOW_WIDTH=love.graphics.getWidth()
+    WINDOW_HEIGHT=love.graphics.getHeight()
+    WINDOWSCALE_X=WINDOW_WIDTH/400 --1x scale per 400px width
+    WINDOWSCALE_Y=WINDOW_HEIGHT/300 --1x scale per 300px width
+    if cam~=nil then cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5)) end
     
     --libraries
     wf=require 'libraries/windfield'
