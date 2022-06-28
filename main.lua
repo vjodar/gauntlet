@@ -38,7 +38,6 @@ function love.load()
     WINDOW_HEIGHT=love.graphics.getHeight()
     WINDOWSCALE_X=WINDOW_WIDTH/400 --1x scale per 400px width
     WINDOWSCALE_Y=WINDOW_HEIGHT/300 --1x scale per 300px width
-    if cam~=nil then cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5)) end
     
     --libraries
     wf=require 'libraries/windfield'

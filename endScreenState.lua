@@ -64,7 +64,7 @@ function EndScreenState:restartOrMainMenu()
         end
         if Controls.currentInputs.btnRight then --main menu
             local afterFn=function()
-                love.event.quit()
+                love.load()
             end
             FadeState:fadeOut(1,afterFn)
             return false 
