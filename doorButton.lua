@@ -22,22 +22,20 @@ end
 --creates and returns a new doorButton object at position (_xPos,_yPos)
 function DoorButton:newDoorButton(_xPos,_yPos,_name)
     local button={}
-
-    button.xPos=_xPos 
-    button.yPos=_yPos
+    
     button.name=_name 
-    button.pressed=false --button state
-    button.deleteMe=false --when true, remove button from parent room
 
     --physics collider
     if button.name=='doorButtonTop' or button.name=='doorButtonBottom' then 
-        button.collider=world:newBSGRectangleCollider(button.xPos,button.yPos,12,19,3)
+        button.collider=world:newBSGRectangleCollider(_xPos,_yPos,12,19,3)
     elseif button.name=='doorButtonLeft' or button.name=='doorButtonRight' then
-        button.collider=world:newBSGRectangleCollider(button.xPos-6,button.yPos-1,12,14,4)
+        button.collider=world:newBSGRectangleCollider(_xPos-6,_yPos-1,12,14,4)
     end
     button.collider:setType('static')
     button.collider:setCollisionClass('doorButton')
     button.collider:setObject(button)
+
+    button.xPos,button.yPos=button.collider:getPosition()
 
     --sprite and animations
     if button.name=='doorButtonTop' or button.name=='doorButtonBottom' then 
@@ -62,6 +60,10 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
         )
     end
     button.currentAnim:pause() --immediately pause animation
+
+    button.pressed=false --button state
+    button.deleteMe=false --when true, remove button from parent room
+    button.isNearPlayer=false --true when near player
     
     function button:update()
         button.currentAnim:update(dt)
@@ -71,14 +73,21 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
             button.collider:destroy()
             return false 
         end 
+
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-button.xPos)<=24
+        and math.abs(Player.yPos-button.yPos)<=24
+        then button.isNearPlayer=true else button.isNearPlayer=false end
     end
 
     function button:draw()
-        if button.name=='doorButtonRight' then 
+        if button.name=='doorButtonLeft' then 
             --flip sprite
-            button.currentAnim:draw(button.spriteSheet,button.xPos,button.yPos,nil,-1,1)
+            button.currentAnim:draw(button.spriteSheet,button.xPos,button.yPos-7)
+        elseif button.name=='doorButtonRight' then 
+            button.currentAnim:draw(button.spriteSheet,button.xPos,button.yPos-7,nil,-1,1)
         else
-            button.currentAnim:draw(button.spriteSheet,button.xPos,button.yPos)
+            button.currentAnim:draw(button.spriteSheet,button.xPos-6,button.yPos-10)
         end 
     end
 
@@ -88,6 +97,15 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
     function button:nodeInteract()
         button.pressed=true
         button.collider:setCollisionClass('doorButtonActivated')
+    end
+
+    function button:drawUIelements()    
+        --when player is near button and button isn't yet pressed, draw name on ui
+        if button.isNearPlayer then
+            love.graphics.printf(
+                "button",fonts.white,button.xPos-100,button.yPos-20,200,'center'
+            )
+        end
     end
 
     return button 

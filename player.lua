@@ -311,9 +311,8 @@ function Player:update()
     for i,p in pairs(self.particleSystems) do p:update(dt) end --update particle systems
 end
 
-function Player:draw(_noShadow)
-    --draw shadow before sprite
-    if not _noShadow then self.shadow:draw(self.xPos,self.yPos) end
+function Player:draw()
+    self.shadow:draw(self.xPos,self.yPos) --draw shadow before sprite    
     
     --draw the appropriate current animation for each armor piece
     self.currentAnim:draw(

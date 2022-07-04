@@ -12,6 +12,7 @@ function PlayState:load()
         gray=love.graphics.newImageFont("assets/fonts/font_gray.png",glyphs), --physical damage
         blue=love.graphics.newImageFont("assets/fonts/font_blue.png",glyphs), --magical damage
         red=love.graphics.newImageFont("assets/fonts/font_red.png",glyphs), --pure damage
+        white=love.graphics.newImageFont("assets/fonts/font_white.png",glyphs), --ui text
     }
     love.graphics.setFont(fonts.yellow)
 
@@ -105,6 +106,19 @@ function PlayState:drawDungeonPhase() --draw funtion of the gathering/crafting p
     Hud:draw() --draw hud 
 end
 
+--draw function for dungeon phase but when player is falling into the dungeon
+--entities are drawn last so that player is drawn after everything, but can 
+--still fall 'behind' crafting nodes.
+function PlayState:drawDungeonPhasePlayerFalling()
+    cam:attach()    
+        Dungeon:drawFloorObjects()
+        Dungeon:drawRooms() 
+        Dungeon:drawForeground() 
+        Entities:draw() 
+    cam:detach()
+    Hud:draw()
+end
+
 function PlayState:updateBossBattle()
     world:update(dt) --update physics
     BossRoom:update() --update boss room
@@ -128,19 +142,22 @@ end
 function PlayState:startDungeonPhase()
     --set associated update and draw functions
     self._update=self.updateDungeonPhase
-    self._draw=self.drawDungeonPhase
+    self._draw=self.drawDungeonPhasePlayerFalling
 
     --move the player to the starting room
-    local playerStartX=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(64,256)
-    local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(90,184)
+    local playerStartX=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(80,304)
+    local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(74,248)
     Player.collider:setPosition(playerStartX,playerStartY)
 
     --set camera target to be the player's position
     cam:lookAt(playerStartX,playerStartY) 
     camTarget=Player
 
-    --fade in, start clock after fade in complete
-    local afterFn=function() Clock:start() end 
+    --fade in. Once complete, return to normal dungeon phase draw, start clock.
+    local afterFn=function() 
+        self._draw=self.drawDungeonPhase
+        Clock:start() 
+    end 
     FadeState:fadeIn()
     PlayerTransitionState:enterRoom(Player,afterFn)
 
@@ -168,6 +185,12 @@ function PlayState:startDungeonPhase()
     -- Enemies.enemySpawner.t2[3](randomPoints())
     -- Enemies.enemySpawner.t3[1](randomPoints())
     -- Enemies.enemySpawner.t3[2](randomPoints())
+
+    ResourceNodes.nodeSpawnFunctions[1](randomPoints()) --tree
+    ResourceNodes.nodeSpawnFunctions[2](randomPoints()) --rock
+    ResourceNodes.nodeSpawnFunctions[3](randomPoints()) --vine
+    ResourceNodes.nodeSpawnFunctions[4](randomPoints()) --fungi
+    ResourceNodes.nodeSpawnFunctions[5](randomPoints()) --fishing hole
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')

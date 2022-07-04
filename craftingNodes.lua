@@ -146,6 +146,33 @@ function CraftingNodes:load()
         sawmill='I need some Wood to saw.',
         spinning_wheel='I need some plant Fiber to spin.'
     }
+
+    self.uiData={
+        furnace={
+            uiRangeX=24,
+            uiRangeY=10,
+            uiName="furnace",
+            uiOffset=36
+        },
+        grill={
+            uiRangeX=20,
+            uiRangeY=10,
+            uiName="grill",
+            uiOffset=28
+        },
+        sawmill={
+            uiRangeX=24,
+            uiRangeY=8,
+            uiName="sawmill",
+            uiOffset=26
+        },
+        spinning_wheel={
+            uiRangeX=22,
+            uiRangeY=8,
+            uiName="spinning wheel",
+            uiOffset=30
+        }
+    }
 end
 
 function CraftingNodes:spawnCraftingNode(_type,_x,_y)
@@ -195,10 +222,17 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
         self.particleEmissionRate=CraftingNodes.particleEmissionRates[_type]
         self.particleTimer=0
 
+        --uiElements data
+        self.uiRangeX=CraftingNodes.uiData[_type].uiRangeX
+        self.uiRangeY=CraftingNodes.uiData[_type].uiRangeY
+        self.uiName=CraftingNodes.uiData[_type].uiName
+        self.uiOffset=CraftingNodes.uiData[_type].uiOffset
+
         --metatable
         self.state={}
         self.state.craftProgress=0
         self.state.craftProgressPrev=0
+        self.state.isNearPlayer=false 
 
         --insert into entities table to have dynamic draw order
         table.insert(Entities.entitiesTable,node) 
@@ -248,6 +282,11 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
 
         --update crafting progress
         self.state.craftProgressPrev=self.state.craftProgress
+
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-self.xPos)<=self.uiRangeX
+        and math.abs(Player.yPos-self.yPos)<=self.uiRangeY
+        then self.state.isNearPlayer=true else self.state.isNearPlayer=false end
     end
 
     function node:draw()
@@ -277,6 +316,16 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
                 --after 1s, can add more dialogs
                 TimerState:after(1,function() self.dialogBoolean=true end)
             end
+        end
+    end   
+
+    function node:drawUIelements()        
+        if self.state.isNearPlayer then --when player is near node, draw name
+            love.graphics.printf(
+                self.uiName, fonts.white,
+                self.xPos-100,self.yPos-self.uiOffset,
+                200,'center'
+            )
         end
     end
 
@@ -313,6 +362,8 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
         --particle system
         self.particles=CraftingNodes.particleSystems.crafting_table 
 
+        self.isNearPlayer=false --used for drawing UI elements
+
         --inset into entitiesTable for dynamic draw and update order
         table.insert(Entities.entitiesTable,node)
 
@@ -321,6 +372,11 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
 
     function node:update()
         self.particles:update(dt) --update particle system
+
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-self.xPos)<=28
+        and math.abs(Player.yPos-self.yPos)<=12
+        then self.isNearPlayer=true else self.isNearPlayer=false end
     end
 
     function node:draw()
@@ -332,6 +388,15 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
     function node:nodeInteract()
         table.insert(gameStates,CraftingMenuState)
         CraftingMenuState:openCraftingMenu(Player.xPos,Player.yPos)
+    end
+
+    function node:drawUIelements()        
+        if self.isNearPlayer then --when player is near node, draw name
+            love.graphics.printf(
+                "crafting table",fonts.white,
+                self.xPos-100,self.yPos-30,200,'center'
+            )
+        end
     end
 
     node:load()

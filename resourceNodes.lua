@@ -62,6 +62,13 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
         self.particles:setEmissionArea('ellipse',3,5) 
         self.particles:setRotation(0,math.pi*2)
 
+        self.uiData={
+            isNearPlayer=false, --used to display name on UI when near player
+            uiRangeX=20,
+            uiRangeY=12,
+            uiOffset=34
+        }
+
         --node state metatable
         self.state={}
         self.state.resources=3 --available resources to give
@@ -136,6 +143,11 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
 
         --update harvestProgressPrev
         self.state.harvestProgressPrev=self.state.harvestProgress
+        
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-self.xPos)<=self.uiData.uiRangeX
+        and math.abs(Player.yPos-self.yPos)<=self.uiData.uiRangeY
+        then self.uiData.isNearPlayer=true else self.uiData.isNearPlayer=false end
     end
 
     function node:draw() 
@@ -176,6 +188,16 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
         end
     end
 
+    function node:drawUIelements()    
+        --when player is near, draw name on UI
+        if self.uiData.isNearPlayer and not self.state.depleted then
+            love.graphics.printf(
+                "tree",fonts.white,
+                self.xPos-100,self.yPos-self.uiData.uiOffset,200,'center'
+            )
+        end
+    end
+
     node:load()
 end 
 
@@ -186,7 +208,7 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         --first, check if the spawn coordinates within 16px above an innerWall.
         --if so, shift the spawn coordinates up by 20px.
         local tempX,tempY=_x,_y
-        if #world:queryRectangleArea(tempX-7,tempY,14,16,{'innerWall'})>0 then 
+        if #world:queryRectangleArea(tempX,tempY,16,16,{'innerWall'})>0 then 
             tempY=tempY-20
         end
 
@@ -214,6 +236,13 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         self.particles:setDirection(4.7) --particles will shoot upward
         self.particles:setSpread(1.5) --particles will spread 90degrees
         self.particles:setRotation(0,2*math.pi) --particles will be rotated randomly
+
+        self.uiData={
+            isNearPlayer=false, --used to display name on UI when near player
+            uiRangeX=22,
+            uiRangeY=12,
+            uiOffset=22
+        }
 
         --node state metatable
         self.state={}
@@ -289,6 +318,11 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
 
         --update harvestProgressPrev
         self.state.harvestProgressPrev=self.state.harvestProgress
+        
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-self.xPos)<=self.uiData.uiRangeX
+        and math.abs(Player.yPos-self.yPos)<=self.uiData.uiRangeY
+        then self.uiData.isNearPlayer=true else self.uiData.isNearPlayer=false end
     end
 
     function node:draw() 
@@ -331,6 +365,16 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         end
     end
 
+    function node:drawUIelements()    
+        --when player is near, draw name on UI
+        if self.uiData.isNearPlayer and not self.state.depleted then
+            love.graphics.printf(
+                "rock",fonts.white,
+                self.xPos-100,self.yPos-self.uiData.uiOffset,200,'center'
+            )
+        end
+    end
+
     node:load()
 end 
 
@@ -361,6 +405,13 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
         self.particles:setEmissionArea('uniform',8,16) 
         self.particles:setRotation(0,math.pi*2)
         self.particles:setRelativeRotation(true) --particles will rotate as they speed up
+
+        self.uiData={
+            isNearPlayer=false, --used to display name on UI when near player
+            uiRangeX=22,
+            uiRangeY=24,
+            uiOffset=24
+        }
 
         --node state metatable
         self.state={}
@@ -407,6 +458,11 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
 
         --update harvestProgressPrev
         self.state.harvestProgressPrev=self.state.harvestProgress
+        
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-self.xPos)<=self.uiData.uiRangeX
+        and math.abs(Player.yPos-self.yPos)<=self.uiData.uiRangeY
+        then self.uiData.isNearPlayer=true else self.uiData.isNearPlayer=false end
     end
 
     function node:draw() 
@@ -434,6 +490,16 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
         -- print(self.state.harvestProgress)
     end
 
+    function node:drawUIelements()    
+        --when player is near, draw name on UI
+        if self.uiData.isNearPlayer and not self.state.depleted then
+            love.graphics.printf(
+                "vine",fonts.white,
+                self.xPos-100,self.yPos-self.uiData.uiOffset,200,'center'
+            )
+        end
+    end
+
     node:load()
 end 
 
@@ -444,7 +510,7 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         --first, check if the spawn coordinates within 16px above an innerWall.
         --if so, shift the spawn coordinates up by 20px.
         local tempX,tempY=_x,_y
-        if #world:queryRectangleArea(tempX-7,tempY,14,24,{'innerWall'})>0 then 
+        if #world:queryRectangleArea(tempX,tempY,14,24,{'innerWall'})>0 then 
             tempY=tempY-20
         end
 
@@ -471,6 +537,13 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         self.particles:setEmissionArea('uniform',8,7) --particles will spawn throughout sprite
         self.particles:setRotation(0,math.pi*2) --360 degree rotation
         self.particles:setRelativeRotation(true) --particles will rotate as they speed up
+
+        self.uiData={
+            isNearPlayer=false, --used to display name on UI when near player
+            uiRangeX=20,
+            uiRangeY=12,
+            uiOffset=24
+        }
 
         --node state metatable
         self.state={}
@@ -527,6 +600,11 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
 
         --update harvestProgressPrev
         self.state.harvestProgressPrev=self.state.harvestProgress
+        
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-self.xPos)<=self.uiData.uiRangeX
+        and math.abs(Player.yPos-self.yPos)<=self.uiData.uiRangeY
+        then self.uiData.isNearPlayer=true else self.uiData.isNearPlayer=false end
     end
 
     function node:draw() 
@@ -556,6 +634,16 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         self.state.harvestProgress=self.state.harvestProgress+dt
     end
 
+    function node:drawUIelements()    
+        --when player is near, draw name on UI
+        if self.uiData.isNearPlayer and not self.state.depleted then
+            love.graphics.printf(
+                "fungi",fonts.white,
+                self.xPos-100,self.yPos-self.uiData.uiOffset,200,'center'
+            )
+        end
+    end
+
     node:load()
 end 
 
@@ -566,7 +654,7 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         --first, check if the spawn coordinates within 16px above an innerWall.
         --if so, shift the spawn coordinates up by 20px.
         local tempX,tempY=_x,_y
-        if #world:queryRectangleArea(tempX-3,tempY,6,28,{'innerWall'})>0 then 
+        if #world:queryRectangleArea(tempX,tempY,16,28,{'innerWall'})>0 then 
             tempY=tempY-28
         end
 
@@ -601,6 +689,13 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         self.particles:setEmissionArea('uniform',4,4) --particles will spawn throughout sprite
         self.particles:setRotation(0,math.pi*2) --360 degree rotation
         self.particles:setRelativeRotation(true) --particles will rotate as they speed up
+
+        self.uiData={
+            isNearPlayer=false, --used to display name on UI when near player
+            uiRangeX=20,
+            uiRangeY=12,
+            uiOffset=24
+        }
 
         --node state metatable
         self.state={}
@@ -673,6 +768,11 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
 
         --update harvestProgressPrev
         self.state.harvestProgressPrev=self.state.harvestProgress
+        
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-self.xPos)<=self.uiData.uiRangeX
+        and math.abs(Player.yPos-self.yPos)<=self.uiData.uiRangeY
+        then self.uiData.isNearPlayer=true else self.uiData.isNearPlayer=false end
     end
 
     function node:draw() 
@@ -697,6 +797,16 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
 
     function node:nodeInteract()
         self.state.harvestProgress=self.state.harvestProgress+dt
+    end
+
+    function node:drawUIelements()
+        --when player is near, draw name on UI
+        if self.uiData.isNearPlayer and not self.state.depleted then
+            love.graphics.printf(
+                "fishing hole",fonts.white,
+                self.xPos-100,self.yPos-self.uiData.uiOffset,200,'center'
+            )
+        end
     end
 
     node:load()

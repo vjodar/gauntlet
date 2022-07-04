@@ -925,11 +925,17 @@ function Rooms:spawnLadder(_room)
         self.collider:setFixedRotation(true)
         self.collider:setCollisionClass('ladder')
         self.collider:setObject(self) --attach collider to this object
+        self.isNearPlayer=false --true when player is close to ladder
 
         table.insert(Entities.entitiesTable,self)
     end
 
-    function ladder:update() end
+    function ladder:update()
+        --check if node is near the player in order to draw name on UI
+        if math.abs(Player.xPos-self.xPos)<=20
+        and math.abs(Player.yPos-self.yPos)<=12
+        then self.isNearPlayer=true else self.isNearPlayer=false end        
+    end
 
     function ladder:draw()
         love.graphics.draw(self.sprite,self.xPos-8,self.yPos-8)
@@ -942,6 +948,15 @@ function Rooms:spawnLadder(_room)
         end
         Clock:pause()
         FadeState:fadeOut(1,afterFn)
+    end
+
+    function ladder:drawUIelements()
+        if self.isNearPlayer then
+            love.graphics.printf(
+                "descending ladder",fonts.white,
+                self.xPos-100,self.yPos-24,200,'center'
+            )
+        end
     end
 
     ladder:load()

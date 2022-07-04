@@ -8,10 +8,7 @@ function PlayerTransitionState:load()
 end
 
 function PlayerTransitionState:update() return self:_upd() end
-function PlayerTransitionState:draw() 
-    --draw actor above everything else (to prevent clipping)
-    cam:attach() self.actor:draw('noShadow') cam:detach() 
-end 
+function PlayerTransitionState:draw() end 
 
 function PlayerTransitionState:enterRoom(_actor,_afterFn)
     self._upd=self.enterRoomUpd

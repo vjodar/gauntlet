@@ -176,8 +176,18 @@ function CraftingMenuState:load()
 end
 
 function CraftingMenuState:update()
+    self.xPos,self.yPos=cam:position() --update position
+
     Inventory:open() --open HUD inventory to show players their items.    
     ActionButtons:update() --update the menu actionButtons
+
+    --if player presses exit button or player took damage, exit crafting menu
+    if Controls.releasedInputs.btnRight 
+    or Player.health.current~=self.playerHealth 
+    then
+        ActionButtons:setMenuMode(false) --back to regular action buttons
+        return false  --exit crafting menu
+    end 
 
     --gameState must be accepting input and the player must have released the
     --'open crafting menu' button before inputs regarding crafting will be taken
@@ -215,11 +225,6 @@ function CraftingMenuState:update()
                 self.cursor.xPos=self.cursor.xPos-19
             end
         end
-
-        if Controls.releasedInputs.btnRight then
-            ActionButtons:setMenuMode(false) --back to regular action buttons
-            return false  --exit crafting menu
-        end 
     end
 
     --just to ensure the player releases the 'open crafting menu' button before proceeding
@@ -254,6 +259,10 @@ function CraftingMenuState:draw()
         )
     end
 
+    --draw 'accept' and 'exit' text
+    love.graphics.printf("EXIT",cam.x,cam.y+103,160,'right')
+    love.graphics.printf("ACCEPT",cam.x,cam.y+123,140,'right')
+
     cam:detach()
     
     Hud:draw() --draw HUD again to keep it on top of menu
@@ -281,6 +290,9 @@ function CraftingMenuState:openCraftingMenu(_x,_y)
     }
 
     self.alpha=0
+
+    --used to know if player took damage while using the crafting menu
+    self.playerHealth=Player.health.current
 
     TimerState:tweenVal(self,'alpha',0.7,0.2)
 
