@@ -26,6 +26,9 @@ function love.load()
     --set pixelated look
     love.graphics.setDefaultFilter('nearest','nearest')
 
+    --Commenting out for current, primary build (for web). Will create secondary
+    --branches for binaries (Windows/Max/Linux) which will have the ability to 
+    --change resolution. 
     -- --set display resolution to be as large as possible while still fitting
     -- --in the users monitor, in 4x3 aspect ratio, and in windowed mode
     -- local desktopW,desktopH=love.window.getDesktopDimensions()
