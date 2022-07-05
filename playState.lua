@@ -115,6 +115,7 @@ function PlayState:drawDungeonPhasePlayerFalling()
         Dungeon:drawRooms() 
         Dungeon:drawForeground() 
         Entities:draw() 
+        UI:draw() --draw ui elements
     cam:detach()
     Hud:draw()
 end
@@ -186,11 +187,11 @@ function PlayState:startDungeonPhase()
     -- Enemies.enemySpawner.t3[1](randomPoints())
     -- Enemies.enemySpawner.t3[2](randomPoints())
 
-    ResourceNodes.nodeSpawnFunctions[1](randomPoints()) --tree
-    ResourceNodes.nodeSpawnFunctions[2](randomPoints()) --rock
-    ResourceNodes.nodeSpawnFunctions[3](randomPoints()) --vine
-    ResourceNodes.nodeSpawnFunctions[4](randomPoints()) --fungi
-    ResourceNodes.nodeSpawnFunctions[5](randomPoints()) --fishing hole
+    -- ResourceNodes.nodeSpawnFunctions[1](randomPoints()) --tree
+    -- ResourceNodes.nodeSpawnFunctions[2](randomPoints()) --rock
+    -- ResourceNodes.nodeSpawnFunctions[3](randomPoints()) --vine
+    -- ResourceNodes.nodeSpawnFunctions[4](randomPoints()) --fungi
+    -- ResourceNodes.nodeSpawnFunctions[5](randomPoints()) --fishing hole
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')

@@ -247,6 +247,12 @@ function Player:update()
     self.xPos, self.yPos=self.collider:getPosition()
     self.xVel, self.yVel=self.collider:getLinearVelocity()
 
+    self.currentAnim:update(dt) --update animation 
+    self.animations.bow:update(dt)
+    self.animations.staff:update(dt)
+    self.dialog:update() --update dialog system
+    for i,p in pairs(self.particleSystems) do p:update(dt) end --update particle systems
+
     --player is falling (entering a room), change animation and return
     if self.state.falling then self.currentAnim=self.animations.falling return end
     
@@ -303,12 +309,6 @@ function Player:update()
             self:updateMana(self.combatData.magicBonus-(5/3))
         end
     end
-
-    self.currentAnim:update(dt) --update animation 
-    self.animations.bow:update(dt)
-    self.animations.staff:update(dt)
-    self.dialog:update() --update dialog system
-    for i,p in pairs(self.particleSystems) do p:update(dt) end --update particle systems
 end
 
 function Player:draw()

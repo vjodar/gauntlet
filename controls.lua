@@ -72,7 +72,7 @@ end
 
 --testing----------------------    
 function love.keyreleased(_k)
-    if _k=='escape' then love.event.quit() end --easy close for devs.
+    -- if _k=='escape' then love.event.quit() end --easy close for devs.
     if _k=='return' then love.load() end --easy restart for devs.
     -- if _k=='p' then Player:takeDamage('melee','pure',0,0,999) end
 end
