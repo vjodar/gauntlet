@@ -23,6 +23,7 @@ Sounds.newSound=function(_names,_repeatDelay)
         if self.willRepeat and self.onCooldown then return end 
         for i,source in pairs(self.sources) do 
             if _pitch then source:setPitch(_pitch) end
+            source:stop()
             source:play() 
         end 
         if self.willRepeat then 
@@ -47,12 +48,23 @@ Sounds.falling=function() return Sounds.newSound({'falling'}) end --falling into
 Sounds.landing=function() return Sounds.newSound({'landing'}) end --landing in room
 
 --magics
+Sounds.protection_deactivate=function() return Sounds.newSound({'protection_deactivate'}) end 
+Sounds.protection_activate_magical=function() return Sounds.newSound({'protection_activate_magical'}) end 
+Sounds.protection_activate_physical=function() return Sounds.newSound({'protection_activate_physical'}) end 
 Sounds.protect_physical=function() return Sounds.newSound({'protect_physical'}) end
 
 --nodes sounds
 Sounds.pickaxe=function() return Sounds.newSound({'pickaxe'}) end
 Sounds.hatchet=function() return Sounds.newSound({'hatchet'}) end
 Sounds.splash=function() return Sounds.newSound({'splash'}) end --fishing hole splashing
+Sounds.harvest_vine=function() return Sounds.newSound({'harvest_plant'},0.35) end
+Sounds.harvest_fungi=function() return Sounds.newSound({'harvest_plant'},0.4) end
+Sounds.vine=function() return Sounds.newSound({'vine'}) end
+
+--weapon sounds
+Sounds.charge_staff_t1=function() return Sounds.newSound({'charge_staff_t1'}) end 
+Sounds.charge_staff_t2=function() return Sounds.newSound({'charge_staff_t2'}) end 
+Sounds.charge_staff_t3=function() return Sounds.newSound({'charge_staff_t3'}) end 
 
 --projectile sounds
 Sounds.launch_bow_t0=function() return Sounds.newSound({'launch_stone'}) end

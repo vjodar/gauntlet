@@ -1901,10 +1901,9 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.state.attacksTaken=self.state.attacksTaken+1
         if self.state.attacksTaken==5 then 
             self.state.attacksTaken=0
-            self.protectionMagics:deactivate()
             local opposite={physical='magical',magical='physical'}
             self.state.currentProtectionMagic=opposite[self.state.currentProtectionMagic]
-            self.protectionMagics:activate(self.state.currentProtectionMagic)
+            self.protectionMagics:switchTo(self.state.currentProtectionMagic)
         end
     end
 

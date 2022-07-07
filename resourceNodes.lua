@@ -432,7 +432,12 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
         self.state.depleted=false 
         self.state.harvestProgress=0
         self.state.harvestProgressPrev=self.state.harvestProgress 
-        self.state.beingHarvested=false 
+        self.state.beingHarvested=false
+
+        self.sfxPlayer={
+            harvest=Sounds.harvest_vine(), --when player is harvesting
+            vine=Sounds.vine(), --when vine is spawned
+        }
 
         table.insert(Entities.entitiesTable,self)
     end
@@ -440,6 +445,8 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
     function node:update() 
         if self.state.harvestProgressPrev~=self.state.harvestProgress then 
             self.state.beingHarvested=true 
+            local pitch=love.math.random(8,13)*0.1
+            self.sfxPlayer.harvest:play(pitch)
         else
             self.state.beingHarvested=false
         end
@@ -455,6 +462,10 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
             end 
             self.state.harvestProgress=0
             self.particles:emit(10) --emit particles
+
+            local pitch=love.math.random(8,13)*0.1
+            self.sfxPlayer.harvest:stop() --stop harvest sfx
+            self.sfxPlayer.vine:play(pitch) --play vine sfx
 
             --after spawning item, reduce available resources by 1
             --update depleted state when resources are 0
@@ -566,6 +577,10 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
 
+        self.sfxPlayer={
+            harvest=Sounds.harvest_fungi()
+        }
+
         --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
 
@@ -577,7 +592,9 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
     function node:update() 
 
         if self.state.harvestProgressPrev~=self.state.harvestProgress then 
-            self.state.beingHarvested=true 
+            self.state.beingHarvested=true
+            local pitch=love.math.random(8,13)*0.1 
+            self.sfxPlayer.harvest:play(pitch)
         else
             self.state.beingHarvested=false
         end
@@ -775,8 +792,9 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
             self.state.particleWait=true
             TimerState:after(0.3,function() self.state.particleWait=false end)
             
+            local pitch=love.math.random(5,15)*0.1
             self.sfxPlayer.splash:stop()
-            self.sfxPlayer.splash:play()
+            self.sfxPlayer.splash:play(pitch)
         end 
 
         self.particles:update(dt) --update particles

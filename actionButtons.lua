@@ -417,10 +417,11 @@ function ActionButtons:addActionButtonProtectionMagics()
                         --if player is currently protecting, deactivate
                         --previous protection type and activate current one
                         if Player.state.protectionActivated then 
-                            Player.protectionMagics:deactivate()
-                            Player.protectionMagics:activate(
-                                button.state.currentSpell,Player
-                            )
+                            -- Player.protectionMagics:deactivate()
+                            -- Player.protectionMagics:activate(
+                            --     button.state.currentSpell
+                            -- )
+                            Player.protectionMagics:switchTo(button.state.currentSpell)
                         end
                     end)
                     button.state.buttonDuration=0 --reset buttonDuration

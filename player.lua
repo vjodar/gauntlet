@@ -244,6 +244,15 @@ function Player:load()
         falling=Sounds.falling(),
         landing=Sounds.landing(),
         protect_physical=Sounds.protect_physical(),
+
+        charge_staff_t0=Sounds.charge_staff_t1(),
+        charge_staff_t1=Sounds.charge_staff_t1(),
+        charge_staff_t2=Sounds.charge_staff_t2(),
+        charge_staff_t3=Sounds.charge_staff_t3(),
+        charge_bow_t0=Sounds.charge_staff_t1(),
+        charge_bow_t1=Sounds.charge_staff_t1(),
+        charge_bowf_t2=Sounds.charge_staff_t2(),
+        charge_bow_t3=Sounds.charge_staff_t3(),
     }
 
     table.insert(Entities.entitiesTable,self)
@@ -677,7 +686,9 @@ function Player:fightEnemy()
             self.combatData.attackOnCooldown=false
         end)
 
-        self.animations[ActionButtons.weapons.state.currentWeapon]:resume()   
+        self.animations[ActionButtons.weapons.state.currentWeapon]:resume() 
+        self.sfxPlayer['charge_'..self.equippedWeapon]:stop()  
+        self.sfxPlayer['charge_'..self.equippedWeapon]:play()  
     end
 end
 

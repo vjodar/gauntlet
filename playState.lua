@@ -188,8 +188,8 @@ function PlayState:startDungeonPhase()
 
     ResourceNodes.nodeSpawnFunctions[1](randomPoints()) --tree
     ResourceNodes.nodeSpawnFunctions[2](randomPoints()) --rock
-    -- ResourceNodes.nodeSpawnFunctions[3](randomPoints()) --vine
-    -- ResourceNodes.nodeSpawnFunctions[4](randomPoints()) --fungi
+    ResourceNodes.nodeSpawnFunctions[3](randomPoints()) --vine
+    ResourceNodes.nodeSpawnFunctions[4](randomPoints()) --fungi
     ResourceNodes.nodeSpawnFunctions[5](randomPoints()) --fishing hole
 
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
