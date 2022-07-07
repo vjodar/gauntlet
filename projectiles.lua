@@ -128,6 +128,10 @@ function Projectiles:launch(_xPos,_yPos,_type,_target,_damageBonus)
         self.damage=Projectiles.damageValues[_type]
         self.damageType=Projectiles.damageTypes[_type]
         self.damageBonus=_damageBonus or 0
+        self.sfxPlayer={
+            launch=Sounds['launch_'.._type](),
+            collide=Sounds.collision_physical(),
+        }
 
         --how quickly the sprite will lower to the ground after being launched
         --the closer the distance to the target and the more negative the yOffset,
@@ -137,7 +141,10 @@ function Projectiles:launch(_xPos,_yPos,_type,_target,_damageBonus)
             ((self.target.xPos-self.xPos)^2+(self.target.yPos-self.yPos)^2)^0.5
         )
 
-        self.shadow=Shadows:newShadow('projectile_'.._type) --shadow (NOT FOLLOWING STANDARDS!)
+        self.shadow=Shadows:newShadow('projectile_'.._type) --shadow
+
+        local pitch=love.math.random(9,25)*0.1
+        self.sfxPlayer.launch:play() --play initial sfx
 
         table.insert(Entities.entitiesTable,p) --insert into projectiles table
     end
@@ -182,6 +189,8 @@ function Projectiles:launch(_xPos,_yPos,_type,_target,_damageBonus)
                 'projectile',self.damageType,self.knockback,self.angle,
                 self.damage+self.damageBonus --add damage bonus
             )
+            local newPitch=love.math.random(9,25)*0.1 --0.9 to 2.5
+            self.sfxPlayer.collide:play(newPitch) --play collision sfx
             return false --remove projectile from game
         end
     end

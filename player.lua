@@ -239,6 +239,13 @@ function Player:load()
         current=100
     }
 
+    self.sfxPlayer={
+        footsteps=Sounds.footsteps(),
+        falling=Sounds.falling(),
+        landing=Sounds.landing(),
+        protect_physical=Sounds.protect_physical(),
+    }
+
     table.insert(Entities.entitiesTable,self)
 end
 
@@ -254,7 +261,10 @@ function Player:update()
     for i,p in pairs(self.particleSystems) do p:update(dt) end --update particle systems
 
     --player is falling (entering a room), change animation and return
-    if self.state.falling then self.currentAnim=self.animations.falling return end
+    if self.state.falling then 
+        self.currentAnim=self.animations.falling 
+        return 
+    end
     
     --default movement states to idle
     self.state.moving=false 
@@ -402,6 +412,9 @@ function Player:move()
         local angle=math.atan2((target.y-self.yPos),(target.x-self.xPos))
         if target.x~=self.xPos then self.xVel=(math.cos(angle)*self.moveSpeed) end 
         if target.y~=self.yPos then self.yVel=(math.sin(angle)*self.moveSpeed) end
+
+        local pitch=love.math.random(5,20)*0.1 --0.5 to 1.5
+        self.sfxPlayer.footsteps:play(pitch) --play footsteps sfx
     end
 
     --apply movement force to collider
@@ -732,6 +745,10 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
             )  
         end
         self.dialog:damage(0,_damageType)
+
+        local pitch=love.math.random(10,12)*0.1
+        self.sfxPlayer['protect_'.._damageType]:stop() 
+        self.sfxPlayer['protect_'.._damageType]:play(pitch) --play physical protection sfx
     else 
         local modifiedDamage=_val 
         --reduce damage by player's armor/damage resistance

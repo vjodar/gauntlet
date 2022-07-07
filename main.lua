@@ -21,6 +21,7 @@ require 'bossRoom'
 require 'fadeState'
 require 'playerTransitionState'
 require 'endScreenState'
+require 'sounds'
 
 function love.load()
     --set pixelated look

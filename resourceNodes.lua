@@ -78,6 +78,10 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
         self.state.beingHarvested=false 
         self.state.particleWait=false --used to wait some time between particle emissions
 
+        self.sfxPlayer={
+            hatchet=Sounds.hatchet()
+        }
+
         --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
 
@@ -131,9 +135,11 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
                 TimerState:after(0.17,function() self.spriteShake=0 end)
             end
             self.particles:emit(5) --shoot out particles
-            --wait 0.4s before emitting more particles
+            --wait 0.3s before emitting more particles
             self.state.particleWait=true
-            TimerState:after(0.4,function() self.state.particleWait=false end)
+            TimerState:after(0.3,function() self.state.particleWait=false end)
+            local picth=love.math.random(8,13)*0.1
+            self.sfxPlayer.hatchet:play(pitch) --play hatchet hit sfx
         end
 
         --once depleted, change collision class to prevent further harvesting
@@ -253,6 +259,11 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         self.state.beingHarvested=false 
         self.state.particleWait=false --used to wait some time between particle emissions
 
+        self.sfxPlayer={
+            pickaxe=Sounds.pickaxe(),
+            deplete=Sounds.pickaxe()
+        }
+
         --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
 
@@ -308,7 +319,9 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
             self.particles:emit(4) --emit particles
             --wait 0.4s before emitting more particles
             self.state.particleWait=true
-            TimerState:after(0.4,function() self.state.particleWait=false end)
+            TimerState:after(0.3,function() self.state.particleWait=false end)
+            local pitch=love.math.random(9,11)*0.1
+            self.sfxPlayer.pickaxe:play(pitch)
         end
 
         --once depleted, change collision class to prevent further harvesting
@@ -706,6 +719,10 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         self.state.beingHarvested=false 
         self.state.particleWait=false --used to wait some interval of time between particle emissions
 
+        self.sfxPlayer={
+            splash=Sounds.splash()
+        }
+
         --insert into entities table to allow dynamic draw order
         table.insert(Entities.entitiesTable,self)
 
@@ -754,9 +771,12 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
             and self.state.particleWait==false 
         then 
             self.particles:emit(5)
-            --wait 0.4s before emitting more particles
+            --wait 0.3s before emitting more particles
             self.state.particleWait=true
-            TimerState:after(0.4,function() self.state.particleWait=false end)
+            TimerState:after(0.3,function() self.state.particleWait=false end)
+            
+            self.sfxPlayer.splash:stop()
+            self.sfxPlayer.splash:play()
         end 
 
         self.particles:update(dt) --update particles
