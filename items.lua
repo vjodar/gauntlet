@@ -104,6 +104,13 @@ function Items:spawn_item(_x,_y,_name)
         self.collider:setLinearVelocity(self.xVel,self.yVel) --launch item from node
         --after 1s from spawning, item becomes collectable
         TimerState:after(1,function() self.isCollectable=true end)
+
+        self.sfx={
+            item=Sounds.item()
+        }
+
+        local pitch=love.math.random(5,15)*0.1
+        self.sfx.item:play(pitch)
         
         table.insert(Entities.entitiesTable,self)
     end 
@@ -151,6 +158,8 @@ function Items:spawn_item(_x,_y,_name)
             self.removeEntity=true
             --add item to player's inventory
             Player:addToInventory(self.name,1)
+            local pitch=love.math.random(5,15)*0.1
+            self.sfx.item:play(pitch) --play pickup sfx
         end
     end
 

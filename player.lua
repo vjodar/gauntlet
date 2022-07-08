@@ -87,8 +87,7 @@ function Player:load()
         falling=anim8.newAnimation(self.grids.armor(9,1), 1),
         dying=anim8.newAnimation(self.grids.armor('10-13',1),0.2,
             function() 
-                self.animations.dying:pauseAtEnd()                 
-                self.protectionMagics:deactivate()
+                self.animations.dying:pauseAtEnd()
                 self:releaseItems()
             end
         ),
@@ -239,11 +238,12 @@ function Player:load()
         current=100
     }
 
-    self.sfxPlayer={
+    self.sfx={
         footsteps=Sounds.footsteps(),
         falling=Sounds.falling(),
         landing=Sounds.landing(),
-        protect_physical=Sounds.protect_physical(),
+        protect_physical=Sounds.protectPhysical(), --protect against physical
+        protect_magical=Sounds.protectMagical(), --protect against magical
 
         charge_staff_t0=Sounds.charge_staff_t1(),
         charge_staff_t1=Sounds.charge_staff_t1(),
@@ -253,6 +253,8 @@ function Player:load()
         charge_bow_t1=Sounds.charge_staff_t1(),
         charge_bowf_t2=Sounds.charge_staff_t2(),
         charge_bow_t3=Sounds.charge_staff_t3(),
+
+        takeDamage=Sounds.hit(),
     }
 
     table.insert(Entities.entitiesTable,self)
@@ -423,7 +425,7 @@ function Player:move()
         if target.y~=self.yPos then self.yVel=(math.sin(angle)*self.moveSpeed) end
 
         local pitch=love.math.random(5,20)*0.1 --0.5 to 1.5
-        self.sfxPlayer.footsteps:play(pitch) --play footsteps sfx
+        self.sfx.footsteps:play(pitch) --play footsteps sfx
     end
 
     --apply movement force to collider
@@ -687,8 +689,8 @@ function Player:fightEnemy()
         end)
 
         self.animations[ActionButtons.weapons.state.currentWeapon]:resume() 
-        self.sfxPlayer['charge_'..self.equippedWeapon]:stop()  
-        self.sfxPlayer['charge_'..self.equippedWeapon]:play()  
+        self.sfx['charge_'..self.equippedWeapon]:stop()  
+        self.sfx['charge_'..self.equippedWeapon]:play()  
     end
 end
 
@@ -758,8 +760,8 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
         self.dialog:damage(0,_damageType)
 
         local pitch=love.math.random(10,12)*0.1
-        self.sfxPlayer['protect_'.._damageType]:stop() 
-        self.sfxPlayer['protect_'.._damageType]:play(pitch) --play physical protection sfx
+        self.sfx['protect_'.._damageType]:stop() 
+        self.sfx['protect_'.._damageType]:play(pitch) --play physical protection sfx
     else 
         local modifiedDamage=_val 
         --reduce damage by player's armor/damage resistance
@@ -772,7 +774,10 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
         self:updateHealth(-modifiedDamage)
         self.collider:applyLinearImpulse( --apply knockback
             math.cos(_angle)*_knockback,math.sin(_angle)*_knockback
-        )   
+        )
+
+        local pitch=love.math.random(8,20)*0.1
+        self.sfx.takeDamage:play(pitch)
     end 
 end
 
@@ -789,7 +794,7 @@ function Player:die()
     self.currentAnim=self.animations.dying
     self.combatData.inCombat=false 
     camTarget=self 
-    self.protectionMagics:deactivate()
+    self.protectionMagics:deactivate('noSound')
     Clock:pause()
     FadeState:fadeOut(0.5,function() EndScreenState:lose() end)
 end

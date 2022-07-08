@@ -39,6 +39,10 @@ Sounds.newSound=function(_names,_repeatDelay)
         for i,source in pairs(self.sources) do source:stop() end 
     end
 
+    function sound:setPitch(_pitch) --set's new base pitch
+        for i,source in pairs(self.sources) do source:setPitch(_pitch) end 
+    end
+    
     return sound 
 end
 
@@ -51,7 +55,8 @@ Sounds.landing=function() return Sounds.newSound({'landing'}) end --landing in r
 Sounds.protection_deactivate=function() return Sounds.newSound({'protection_deactivate'}) end 
 Sounds.protection_activate_magical=function() return Sounds.newSound({'protection_activate_magical'}) end 
 Sounds.protection_activate_physical=function() return Sounds.newSound({'protection_activate_physical'}) end 
-Sounds.protect_physical=function() return Sounds.newSound({'protect_physical'}) end
+Sounds.protectPhysical=function() return Sounds.newSound({'protect_physical'}) end
+Sounds.protectMagical=function() return Sounds.newSound({'protect_magical'}) end
 
 --nodes sounds
 Sounds.pickaxe=function() return Sounds.newSound({'pickaxe'}) end
@@ -61,20 +66,25 @@ Sounds.harvest_vine=function() return Sounds.newSound({'harvest_plant'},0.35) en
 Sounds.harvest_fungi=function() return Sounds.newSound({'harvest_plant'},0.4) end
 Sounds.vine=function() return Sounds.newSound({'vine'}) end
 
+--item sounds
+Sounds.item=function() return Sounds.newSound({'item'}) end
+
 --weapon sounds
 Sounds.charge_staff_t1=function() return Sounds.newSound({'charge_staff_t1'}) end 
 Sounds.charge_staff_t2=function() return Sounds.newSound({'charge_staff_t2'}) end 
 Sounds.charge_staff_t3=function() return Sounds.newSound({'charge_staff_t3'}) end 
 
 --projectile sounds
+Sounds.hit=function() return Sounds.newSound({'collision_physical'}) end
 Sounds.launch_bow_t0=function() return Sounds.newSound({'launch_stone'}) end
-Sounds.launch_staff_t0=Sounds.launch_bow_t0
 Sounds.launch_bow_t1=function() return Sounds.newSound({'launch_stone'}) end
-Sounds.launch_staff_t1=function() return Sounds.newSound({'staff_t1'}) end
 Sounds.launch_bow_t2=function() return Sounds.newSound({'launch_stone'}) end
-Sounds.launch_staff_t2=function() return Sounds.newSound({'staff_t2'}) end
 Sounds.launch_bow_t3=function() return Sounds.newSound({'launch_stone'}) end
+Sounds.launch_staff_t0=Sounds.launch_bow_t0
+Sounds.launch_staff_t1=function() return Sounds.newSound({'staff_t1'}) end
+Sounds.launch_staff_t2=function() return Sounds.newSound({'staff_t2'}) end
 Sounds.launch_staff_t3=function() return Sounds.newSound({'staff_t3'}) end
-Sounds.collision_physical=function() 
-    return Sounds.newSound({'collision_physical'})
-end
+Sounds.launch_orc_t2=function() return Sounds.newSound({'staff_t1'}) end
+Sounds.launch_orc_t3=function() return Sounds.newSound({'staff_t1'}) end
+Sounds.launch_mage_t2=function() return Sounds.newSound({'staff_t1'}) end
+Sounds.launch_demon_t3=function() return Sounds.newSound({'staff_t1'}) end

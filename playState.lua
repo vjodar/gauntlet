@@ -186,13 +186,13 @@ function PlayState:startDungeonPhase()
     -- Enemies.enemySpawner.t3[1](randomPoints())
     -- Enemies.enemySpawner.t3[2](randomPoints())
 
-    ResourceNodes.nodeSpawnFunctions[1](randomPoints()) --tree
-    ResourceNodes.nodeSpawnFunctions[2](randomPoints()) --rock
-    ResourceNodes.nodeSpawnFunctions[3](randomPoints()) --vine
-    ResourceNodes.nodeSpawnFunctions[4](randomPoints()) --fungi
-    ResourceNodes.nodeSpawnFunctions[5](randomPoints()) --fishing hole
+    -- ResourceNodes.nodeSpawnFunctions[1](randomPoints()) --tree
+    -- ResourceNodes.nodeSpawnFunctions[2](randomPoints()) --rock
+    -- ResourceNodes.nodeSpawnFunctions[3](randomPoints()) --vine
+    -- ResourceNodes.nodeSpawnFunctions[4](randomPoints()) --fungi
+    -- ResourceNodes.nodeSpawnFunctions[5](randomPoints()) --fishing hole
 
-    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
+    Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t2')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
@@ -218,8 +218,10 @@ function PlayState:startBossBattle()
 
     Dungeon:closeDungeon() --delete dungeon rooms and entities
 
-    --if player has active protection magics, deactivate
-    if Player.state.protectionActivated then Player.protectionMagics:deactivate() end
+    --if player has active protection magics, silently deactivate
+    if Player.state.protectionActivated then 
+        Player.protectionMagics:deactivate('noSound') 
+    end
 
     --remove shapes associated with weapon and magic sprites
     Player.collider:removeShape('left')

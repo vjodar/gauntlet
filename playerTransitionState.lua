@@ -19,7 +19,7 @@ function PlayerTransitionState:enterRoom(_actor,_afterFn)
     self.actor.yOffset=self.actor.yOffsetBase+300
     self.actor.state.falling=true 
     self.actor.shadow:changeScale(0)
-    self.actor.sfxPlayer.falling:play() --play falling sfx
+    self.actor.sfx.falling:play() --play falling sfx
 
     table.insert(gameStates,self)
 end
@@ -29,7 +29,7 @@ function PlayerTransitionState:enterRoomUpd() --update function for enterRoom
         self.actor.yOffset=self.actor.yOffsetBase
         self.actor.state.falling=false 
         self.actor.shadow:changeScale(1)
-        self.actor.sfxPlayer.landing:play() --play landing sfx
+        self.actor.sfx.landing:play() --play landing sfx
         self.afterFn()
         return false 
     end 

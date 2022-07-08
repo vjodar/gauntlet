@@ -46,15 +46,20 @@ function ProtectionMagics:newProtectionMagicSystem(_entity)
     magics.symbolPositions={0,math.pi*0.5,math.pi,math.pi*1.5}
     magics.currentSymbols={} --stores the current set of floating symbols
     
-    magics.sfxPlayer={        
+    magics.sfx={        
         deactivate=Sounds.protection_deactivate(),
         activate_magical=Sounds.protection_activate_magical(),
         activate_physical=Sounds.protection_activate_physical(),
     }
 
+    if magics.entity.name=='boss' then --set lower pitch for boss
+        magics.sfx.activate_magical:setPitch(0.5)
+        magics.sfx.activate_physical:setPitch(0.7)
+    end
+
     --spawns a set of four floating symbols of either physical or magical type
     --that will float around a given object (like the player)    
-    function magics:activate(_type)
+    function magics:activate(_type,_noSound)
         for i=1,4 do --spawn floating symbols
             local symbol={}
             
@@ -103,8 +108,9 @@ function ProtectionMagics:newProtectionMagicSystem(_entity)
 
         self.entity.state.protectionActivated=true
 
-        self.sfxPlayer['activate_'.._type]:stop()
-        self.sfxPlayer['activate_'.._type]:play()
+        if _noSound then return end
+        self.sfx['activate_'.._type]:stop()
+        self.sfx['activate_'.._type]:play()
     end
 
     --deactivates the current set of symbols and removes them from the game.
@@ -112,8 +118,8 @@ function ProtectionMagics:newProtectionMagicSystem(_entity)
         for i,symbol in pairs(self.currentSymbols) do symbol:die() end 
         self.entity.state.protectionActivated=false
         if _noSound then return end 
-        self.sfxPlayer.deactivate:stop()
-        self.sfxPlayer.deactivate:play()
+        self.sfx.deactivate:stop()
+        self.sfx.deactivate:play()
     end
 
     function magics:switchTo(_spell)

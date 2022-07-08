@@ -1735,7 +1735,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         --create protection magics
         self.protectionMagics=ProtectionMagics:newProtectionMagicSystem(self)
         self.state.currentProtectionMagic=chooseStyle
-        self.protectionMagics:activate(self.state.currentProtectionMagic)
+        self.protectionMagics:activate(self.state.currentProtectionMagic,'noSound')
 
         --select attack style opposite of current protection magic
         self.state.currentAttack=chooseStyle
@@ -1917,7 +1917,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         end 
         enemy.state.isTargetted=false
 
-        self.protectionMagics:deactivate() 
+        self.protectionMagics:deactivate('noSound') 
         self.collider:destroy()
         self.particleSystems.death:emit(200)
         

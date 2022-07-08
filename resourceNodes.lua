@@ -78,7 +78,7 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
         self.state.beingHarvested=false 
         self.state.particleWait=false --used to wait some time between particle emissions
 
-        self.sfxPlayer={
+        self.sfx={
             hatchet=Sounds.hatchet()
         }
 
@@ -139,7 +139,7 @@ ResourceNodes.nodeSpawnFunctions[1]=function(_x,_y) --spawn Tree
             self.state.particleWait=true
             TimerState:after(0.3,function() self.state.particleWait=false end)
             local picth=love.math.random(8,13)*0.1
-            self.sfxPlayer.hatchet:play(pitch) --play hatchet hit sfx
+            self.sfx.hatchet:play(pitch) --play hatchet hit sfx
         end
 
         --once depleted, change collision class to prevent further harvesting
@@ -259,7 +259,7 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
         self.state.beingHarvested=false 
         self.state.particleWait=false --used to wait some time between particle emissions
 
-        self.sfxPlayer={
+        self.sfx={
             pickaxe=Sounds.pickaxe(),
             deplete=Sounds.pickaxe()
         }
@@ -321,7 +321,7 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
             self.state.particleWait=true
             TimerState:after(0.3,function() self.state.particleWait=false end)
             local pitch=love.math.random(9,11)*0.1
-            self.sfxPlayer.pickaxe:play(pitch)
+            self.sfx.pickaxe:play(pitch)
         end
 
         --once depleted, change collision class to prevent further harvesting
@@ -434,7 +434,7 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
         self.state.harvestProgressPrev=self.state.harvestProgress 
         self.state.beingHarvested=false
 
-        self.sfxPlayer={
+        self.sfx={
             harvest=Sounds.harvest_vine(), --when player is harvesting
             vine=Sounds.vine(), --when vine is spawned
         }
@@ -446,7 +446,7 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
         if self.state.harvestProgressPrev~=self.state.harvestProgress then 
             self.state.beingHarvested=true 
             local pitch=love.math.random(8,13)*0.1
-            self.sfxPlayer.harvest:play(pitch)
+            self.sfx.harvest:play(pitch)
         else
             self.state.beingHarvested=false
         end
@@ -464,8 +464,8 @@ ResourceNodes.nodeSpawnFunctions[3]=function(_x,_y) --spawn Vine
             self.particles:emit(10) --emit particles
 
             local pitch=love.math.random(8,13)*0.1
-            self.sfxPlayer.harvest:stop() --stop harvest sfx
-            self.sfxPlayer.vine:play(pitch) --play vine sfx
+            self.sfx.harvest:stop() --stop harvest sfx
+            self.sfx.vine:play(pitch) --play vine sfx
 
             --after spawning item, reduce available resources by 1
             --update depleted state when resources are 0
@@ -577,7 +577,7 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         self.state.harvestProgressPrev=self.state.harvestProgress
         self.state.beingHarvested=false 
 
-        self.sfxPlayer={
+        self.sfx={
             harvest=Sounds.harvest_fungi()
         }
 
@@ -594,7 +594,7 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         if self.state.harvestProgressPrev~=self.state.harvestProgress then 
             self.state.beingHarvested=true
             local pitch=love.math.random(8,13)*0.1 
-            self.sfxPlayer.harvest:play(pitch)
+            self.sfx.harvest:play(pitch)
         else
             self.state.beingHarvested=false
         end
@@ -736,7 +736,7 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         self.state.beingHarvested=false 
         self.state.particleWait=false --used to wait some interval of time between particle emissions
 
-        self.sfxPlayer={
+        self.sfx={
             splash=Sounds.splash()
         }
 
@@ -793,8 +793,8 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
             TimerState:after(0.3,function() self.state.particleWait=false end)
             
             local pitch=love.math.random(5,15)*0.1
-            self.sfxPlayer.splash:stop()
-            self.sfxPlayer.splash:play(pitch)
+            self.sfx.splash:stop()
+            self.sfx.splash:play(pitch)
         end 
 
         self.particles:update(dt) --update particles
