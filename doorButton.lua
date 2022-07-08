@@ -64,6 +64,10 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
     button.pressed=false --button state
     button.deleteMe=false --when true, remove button from parent room
     button.isNearPlayer=false --true when near player
+
+    button.sfx={
+        press=Sounds.button()
+    }
     
     function button:update()
         button.currentAnim:update(dt)
@@ -97,6 +101,7 @@ function DoorButton:newDoorButton(_xPos,_yPos,_name)
     function button:nodeInteract()
         button.pressed=true
         button.collider:setCollisionClass('doorButtonActivated')
+        button.sfx.press:play()
     end
 
     function button:drawUIelements()    

@@ -320,7 +320,7 @@ ResourceNodes.nodeSpawnFunctions[2]=function(_x,_y) --spawn Rock
             --wait 0.4s before emitting more particles
             self.state.particleWait=true
             TimerState:after(0.3,function() self.state.particleWait=false end)
-            local pitch=love.math.random(9,11)*0.1
+            local pitch=love.math.random(10,12)*0.1
             self.sfx.pickaxe:play(pitch)
         end
 

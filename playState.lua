@@ -192,14 +192,15 @@ function PlayState:startDungeonPhase()
     -- ResourceNodes.nodeSpawnFunctions[4](randomPoints()) --fungi
     -- ResourceNodes.nodeSpawnFunctions[5](randomPoints()) --fishing hole
 
-    Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t2')
+    -- Items:spawn_item(playerStartX,playerStartY,'weapon_staff_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'weapon_bow_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_head_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_chest_t3')
     -- Items:spawn_item(playerStartX,playerStartY,'armor_legs_t3')
-    -- for i=1,20 do 
+    -- for i=1,10 do 
         -- Items:spawn_item(playerStartX,playerStartY,'tree_wood')
         -- Items:spawn_item(playerStartX,playerStartY,'rock_ore')
+        -- Items:spawn_item(playerStartX,playerStartY,'vine_fiber')
         -- Items:spawn_item(playerStartX,playerStartY,'fish_raw')
         -- Items:spawn_item(playerStartX,playerStartY,'fish_cooked')
         -- Items:spawn_item(playerStartX,playerStartY,'potion')

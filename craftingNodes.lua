@@ -173,6 +173,13 @@ function CraftingNodes:load()
             uiOffset=30
         }
     }
+
+    self.sfxPitchVariation={
+        furnace=function() return 8,12 end,
+        grill=function() return 5,14 end,
+        sawmill=function() return 10,12 end,
+        spinning_wheel=function() return 10,11 end,
+    }
 end
 
 function CraftingNodes:spawnCraftingNode(_type,_x,_y)
@@ -234,6 +241,11 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
         self.state.craftProgressPrev=0
         self.state.isNearPlayer=false 
 
+        self.sfx={
+            craft=Sounds[_type]()
+        }
+        self.sfxLowPitch,self.sfxHighPitch=CraftingNodes.sfxPitchVariation[_type]()
+
         --insert into entities table to have dynamic draw order
         table.insert(Entities.entitiesTable,node) 
     end
@@ -246,6 +258,9 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
             self.currentAnim=self.animations.idle
         else
             self.currentAnim=self.animations.crafting
+
+            local pitch=love.math.random(self.sfxLowPitch,self.sfxHighPitch)*0.1
+            self.sfx.craft:play(pitch) --play crafting sfx
 
             self.particleTimer=self.particleTimer+dt*60
             if self.particleTimer>=self.particleEmissionRate then 

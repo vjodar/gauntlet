@@ -317,7 +317,17 @@ function Rooms:newRoom(_coordinates)
         love.graphics.setColor(1,1,1,1) --reset colors and alpha
     end   
 
+    self.sfx={
+        reveal=Sounds.room_reveal()
+    }
+
     table.insert(Dungeon.roomsTable,room) --insert into Dungeon's roomsTable
+
+    --play reveal sfx unless it's the starting room or boss room
+    if #Dungeon.roomsTable>1 then 
+        local pitch=love.math.random(9,12)*0.1
+        self.sfx.reveal:play(pitch) 
+    end 
 end
 
 --generates the appropriate pattern of collision boxes for the _type room
