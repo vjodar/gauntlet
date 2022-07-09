@@ -64,6 +64,15 @@ function BossRoom:load()
     self.floorTileActivationRate=5 --5s to activate first floor lava pattern
 
     self.isBattleOver=false 
+
+    self.sfx={
+        bubble_1=Sounds.lava_bubble(),
+        bubble_2=Sounds.lava_bubble(),
+        bubble_3=Sounds.lava_bubble(),
+        bubble_4=Sounds.lava_bubble(),
+        bubble_5=Sounds.lava_bubble(),
+        bubble_6=Sounds.lava_bubble(),
+    }
 end
 
 function BossRoom:update()
@@ -124,6 +133,16 @@ function BossRoom:updateTileLava()
             --choose random angle in 360 degree spread
             local angle=2*math.pi*love.math.random()-math.pi
             Player:takeDamage('melee','pure',self.lavaKnockback,angle,self.lavaDamage)
+        end
+    end
+    if #self.floorLavaColliders>0 then 
+        if #self.floorTiles>0 then --play lava bubbling sfx
+            self.sfx.bubble_1:play(love.math.random(8,12)*0.1)
+            self.sfx.bubble_2:play(love.math.random(8,12)*0.1)
+            self.sfx.bubble_3:play(love.math.random(8,12)*0.1)
+            self.sfx.bubble_4:play(love.math.random(8,12)*0.1)
+            self.sfx.bubble_5:play(love.math.random(8,12)*0.1)
+            self.sfx.bubble_6:play(love.math.random(8,12)*0.1)
         end
     end
 end

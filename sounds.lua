@@ -82,7 +82,7 @@ Sounds.protectMagical=function() return Sounds.newSound({'protect_magical'}) end
 --nodes sounds
 Sounds.pickaxe=function() return Sounds.newSound({'pickaxe'}) end
 Sounds.hatchet=function() return Sounds.newSound({'hatchet'}) end
-Sounds.harpoon=function() return Sounds.newSound({'splash','splash_2'}) end --fishing hole splashing
+Sounds.harpoon=function() return Sounds.newSound({'splash_1','splash_2'}) end --fishing hole splashing
 Sounds.harvest_vine=function() return Sounds.newSound({'harvest_plant'},0.35) end
 Sounds.harvest_fungi=function() return Sounds.newSound({'harvest_plant'},0.4) end
 Sounds.vine=function() return Sounds.newSound({'vine'}) end
@@ -127,11 +127,25 @@ Sounds.launch_staff_t2=function() return Sounds.newSound({'staff_t2'}) end
 Sounds.launch_staff_t3=function() return Sounds.newSound({'staff_t3'}) end
 Sounds.launch_orc_t2=function() return Sounds.newSound({'launch_stone'}) end
 Sounds.launch_orc_t3=function() return Sounds.newSound({'launch_stone'}) end
-Sounds.launch_mage_t2=function() return Sounds.newSound({'staff_t1'}) end
-Sounds.launch_demon_t3=function() return Sounds.newSound({'staff_t1'}) end
+Sounds.launch_mage_t2=function() return Sounds.newSound({'mage_t2'}) end
+Sounds.launch_demon_t3=function() return Sounds.newSound({'demon_t3'}) end
 
 --special attack sounds
-
+Sounds.tornado=function() return Sounds.newSound({'tornado'},0.2) end
+Sounds.flames=function() return Sounds.newSound({'flames'},0.85) end
+Sounds.fire_cicle=function() return Sounds.newSound({'fire_circle'}) end 
+Sounds.flame_pillar=function() 
+    return Sounds.newSound({'flames'},love.math.random(60,80)*0.01) 
+end
+Sounds.charge_fireball=function() return Sounds.newSound({'charge_fireball'},2) end
+Sounds.launch_fireball=function() return Sounds.newSound({'launch_fireball'}) end 
+Sounds.disabling_fireball=function() return Sounds.newSound({'disabling_fireball'}) end 
+Sounds.charge_fissure=function() return Sounds.newSound({'charge_fissure'},2) end
+Sounds.launch_fissure=function() return Sounds.newSound({'launch_fissure_1','launch_fissure_2'}) end 
+Sounds.lava_bubble=function() 
+    return Sounds.newSound({'lava_bubble'},love.math.random(3,6)*0.1) 
+end 
+Sounds.fissure_travel=function() return Sounds.newSound({'fissure_travel'},0.1) end 
 
 --menu sounds
 Sounds.menu_open=function() return Sounds.newSound({'menu_open'},1) end

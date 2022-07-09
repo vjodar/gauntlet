@@ -217,7 +217,7 @@ function Enemies:load()
             _enemy.sfx.footsteps:play(pitch)
             _enemy.currentAnim=_enemy.animations.moving
             _enemy.state.movingTimer=_enemy.state.movingTimer+dt 
-        elseif _enemy.state.idle then 
+        else
             _enemy.currentAnim=_enemy.animations.idle
             _enemy.state.reachedMoveTarget=true
             _enemy.state.movingTimer=0 --reset movingTimer
@@ -331,6 +331,7 @@ function Enemies:load()
         else 
             --if enemy reached move target already, countdown to next target
             _enemy.state.nextMoveTargetTimer=_enemy.state.nextMoveTargetTimer-dt 
+            _enemy.currentAnim=_enemy.animations.idle
         end
 
         --after appropriate amount of idle time, get a new wander target
@@ -1837,7 +1838,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         self.state.currentProtectionMagic=chooseStyle
         self.protectionMagics:activate(self.state.currentProtectionMagic,'noSound')
 
-        --select attack style opposite of current protection magic
+        --select attack style matching current protection magic
         self.state.currentAttack=chooseStyle
         self.animations.combat.current=self.animations.combat[chooseStyle]
 
@@ -1852,8 +1853,15 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
         }
         
         self.sfx={
-            footsteps=Sounds.footsteps_t3(),
+            footsteps=Sounds.footsteps_t4(),
             takeDamage=Sounds.hit(),
+
+            chargeFissure=Sounds.charge_fissure(),
+            launchFissure=Sounds.launch_fissure(),
+            
+            chargeFireball=Sounds.charge_fireball(),
+            launchFireball=Sounds.launch_fireball(),
+            disablingFireball=Sounds.disabling_fireball(),
         }
         self.selectSfxPitch={
             footsteps=function() return 1 end,
@@ -1898,8 +1906,12 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             self.currentAnim=self.animations.combat.current         
             self.currentAnim:resume()
 
-            if self.state.currentAttack=='physical' then self:attackPhysical() 
-            elseif self.state.currentAttack=='magical' then self:attackMagical()
+            if self.state.currentAttack=='physical' then 
+                self.sfx.chargeFissure:play()
+                self:attackPhysical() 
+            elseif self.state.currentAttack=='magical' then 
+                self.sfx.chargeFireball:play()
+                self:attackMagical()
             end
             
         elseif self.state.attackOnCooldown then 
@@ -1942,6 +1954,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             else 
                 SpecialAttacks:spawnFissure(self.xPos-35,self.yPos,Player)
             end
+
+            self.sfx.launchFissure:play()
         end
     end
 
@@ -1957,9 +1971,13 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             )
             if isDisabling then --emit correct color particles for initial explosion
                 self.particleSystems.disablingFireball:emit(100)
+                self.sfx.disablingFireball:play()
             else
                 self.particleSystems.fireball:emit(100) 
             end
+
+            self.sfx.launchFireball:play()
+
             --apply some recoil to boss
             self.collider:applyLinearImpulse(-60*self.state.scaleX,0)
         else --continue facing player until fireball is launched

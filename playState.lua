@@ -169,7 +169,7 @@ function PlayState:startDungeonPhase()
         Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(80,184)
     end
 
-    -- TimerState:after(3,function() self:startBossBattle() end)
+    -- TimerState:after(2,function() self:startBossBattle() end)
     -- TimerState:after(3,function() Player.state.falling=true end)
 
     -- SpecialAttacks:spawnFissure(randomPoints(),randomPoints(),Player)

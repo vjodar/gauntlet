@@ -257,6 +257,10 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
 
         self.shadow=Shadows:newShadow('tornado')
 
+        self.sfx={
+            tornado=Sounds.tornado()
+        }
+
         table.insert(Entities.entitiesTable,self)
     end
 
@@ -266,6 +270,9 @@ function SpecialAttacks:spawnTornado(_xPos,_yPos,_angle)
         for i,o in pairs(self.oscillations) do
             self.oscillations[i]=self.oscillations[i]+dt*8
         end
+
+        local pitch=love.math.random(4,8)*0.1
+        self.sfx.tornado:play(pitch)
 
         --apply force to move the tornado in a circle to match it's sprite oscillation
         self.collider:applyForce(
@@ -360,11 +367,20 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
         self.attackOnCooldown=true
         self.damage=5
         self.knockback=10
+        self.flamesSpawned=false 
 
         TimerState:after(1,function() --spawn flames after 1s
             self:spawnFlames()
             self.attackOnCooldown=false 
+            self.flamesSpawned=true
         end) 
+
+        self.sfx={
+            spawn=Sounds.fire_cicle(),
+            flames=Sounds.flames()
+        }
+        local pitch=love.math.random(9,11)*0.1
+        self.sfx.spawn:play(pitch)
 
         table.insert(Dungeon.floorObjects,self) --add to dungeon's floor effects
     end
@@ -372,6 +388,11 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
     function insignia:update()
         --reveal by increasing alpha
         if self.alpha<1 then self.alpha=self.alpha+dt end
+
+        if self.flamesSpawned then 
+            local pitch=love.math.random(8,12)*0.1
+            self.sfx.flames:play(pitch)
+        end
 
         if not self.attackOnCooldown
         and self.collider:isTouching(Player.collider:getBody())
@@ -499,12 +520,23 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
 
         self:spawnCrater1(self.xPos,self.yPos) --create crater in initial impact area
 
+        self.sfx={
+            travel=Sounds.fissure_travel()
+        }
+
         table.insert(Entities.entitiesTable,self)
     end
 
     function fissure:update()
         self.xPos,self.yPos=self.collider:getPosition()
         self.timer=self.timer+dt 
+
+        if not self.hitTarget then             
+            --play fissure trail travel sfx
+            local pitch=love.math.random(7,13)*0.1
+            self.sfx.travel:play(pitch)
+        end
+
         if self.timer>0.025 and not self.hitTarget then --spawn trail every 0.025s
             --spawn two trail pieces along the line of travel but somewhat 
             --staggered (1/4pi and 3/4pi along angle) to create a zigzag trail
@@ -519,7 +551,9 @@ function SpecialAttacks:spawnFissure(_xPos,_yPos,_target)
             self.timer=0
         end 
 
-        if Player.health.current==0 or BossRoom.boss.health.current==0 then 
+        if Player.health.current==0 
+        or (BossRoom.boss and BossRoom.boss.health.current==0)
+        then 
             self.willDie=true 
         end
 
@@ -782,12 +816,19 @@ function SpecialAttacks:spawnFlamePillar(_xPos,_yPos,_angle)
 
         self.shadow=Shadows:newShadow('tornado')
 
+        self.sfx={
+            flamePillar=Sounds.flame_pillar()
+        }
+
         table.insert(Entities.entitiesTable,self)
     end
 
     function pillar:update()
         self.xPos,self.yPos=self.collider:getPosition()
         self.particles:update(dt)
+
+        local pitch=love.math.random(8,12)*0.1
+        self.sfx.flamePillar:play(pitch)
 
         --travel in the direction of angle
         self.collider:applyForce(
