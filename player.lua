@@ -255,6 +255,11 @@ function Player:load()
         charge_bow_t3=Sounds.charge_bow_t3(),
 
         takeDamage=Sounds.hit(),
+        failure=Sounds.failure(),
+
+        consumable=Sounds.use_consumable(),
+        fish=Sounds.consume_fish(),
+        potion=Sounds.consume_potion(),
     }
 
     table.insert(Entities.entitiesTable,self)
@@ -695,17 +700,21 @@ function Player:fightEnemy()
 end
 
 function Player:consumeSupply(_supply)
+    self.sfx.consumable:play() --play 'throw consumable up' sfx
     self.suppliesData.consuming[_supply]=true 
     TimerState:after(0.5,function()
         self.suppliesData.consuming[_supply]=false
         if self.state.isDead then return end --don't consume if dead
+        local pitch=love.math.random(13,18)*0.1
         if _supply=='fish_cooked' then 
+            self.sfx.fish:play(pitch)
             self:updateHealth(20)
             self.particleSystems.health:emit(2)
             TimerState:after(0.1,function() self.particleSystems.health:emit(1) end)
             TimerState:after(0.2,function() self.particleSystems.health:emit(1) end)
             TimerState:after(0.3,function() self.particleSystems.health:emit(2) end)
         elseif _supply=='potion' then 
+            self.sfx.potion:play(pitch)
             self:updateMana(30)
             self.particleSystems.mana:emit(2)
             TimerState:after(0.1,function() self.particleSystems.mana:emit(2) end)

@@ -2,15 +2,6 @@ Sounds={}
 
 --construct and return a new sound effect using one or more .wav files
 Sounds.newSound=function(_names,_repeatDelay)
-
-    --if no _names are provided, return an empty Sound
-    if _names==nil then 
-        local sound={sources={}}
-        sound.play=function() end 
-        sound.stop=sound.play 
-        sound.setPitch=sound.play
-    end
-
     local sound={sources={}}
     for i,name in pairs(_names) do 
         table.insert(
@@ -55,10 +46,31 @@ Sounds.newSound=function(_names,_repeatDelay)
     return sound 
 end
 
+Sounds.blank=function() --returns a blank sound
+    local sound={sources={}}
+    sound.play=function() end 
+    sound.stop=sound.play 
+    sound.setPitch=sound.play
+    return sound
+end
+
+--footsteps
+Sounds.footsteps=function() return Sounds.newSound({'footsteps'},0.4) end --player/default
+Sounds.footsteps_mage=function() return Sounds.newSound({'footsteps_mage'},0.4) end
+Sounds.footsteps_t3=function() return Sounds.newSound({'footsteps_t3','footsteps_bass'},0.4) end
+Sounds.footsteps_t4=function() --boss footsteps
+    return Sounds.newSound({'footsteps_t3','footsteps_bass','footsteps_bass'},0.6) 
+end
+
 --player sounds
-Sounds.footsteps=function() return Sounds.newSound({'footsteps'},0.4) end
 Sounds.falling=function() return Sounds.newSound({'falling'}) end --falling into room
 Sounds.landing=function() return Sounds.newSound({'landing'}) end --landing in room
+
+--enemy sounds
+Sounds.jump=function() return Sounds.newSound({'jump'}) end --t1 lunge
+Sounds.bite=function() return Sounds.newSound({'bite','jump'}) end --t2 demon bite
+Sounds.charge_demon_t2=function() return Sounds.newSound({'charge_demon_t2'}) end 
+Sounds.charge_demon_t3=function() return Sounds.newSound({'charge_demon_t3'}) end 
 
 --magics
 Sounds.protection_deactivate=function() return Sounds.newSound({'protection_deactivate'}) end 
@@ -70,7 +82,7 @@ Sounds.protectMagical=function() return Sounds.newSound({'protect_magical'}) end
 --nodes sounds
 Sounds.pickaxe=function() return Sounds.newSound({'pickaxe'}) end
 Sounds.hatchet=function() return Sounds.newSound({'hatchet'}) end
-Sounds.splash=function() return Sounds.newSound({'splash'}) end --fishing hole splashing
+Sounds.harpoon=function() return Sounds.newSound({'splash','splash_2'}) end --fishing hole splashing
 Sounds.harvest_vine=function() return Sounds.newSound({'harvest_plant'},0.35) end
 Sounds.harvest_fungi=function() return Sounds.newSound({'harvest_plant'},0.4) end
 Sounds.vine=function() return Sounds.newSound({'vine'}) end
@@ -82,6 +94,11 @@ Sounds.spinning_wheel=function() return Sounds.newSound({'spinning_wheel'},0.8) 
 --item sounds
 Sounds.item=function() return Sounds.newSound({'item'}) end
 
+--consumable sounds
+Sounds.use_consumable=function() return Sounds.newSound({'use_consumable'}) end
+Sounds.consume_fish=function() return Sounds.newSound({'consume_fish'}) end 
+Sounds.consume_potion=function() return Sounds.newSound({'consume_potion'}) end 
+
 --door button sounds
 Sounds.button=function() return Sounds.newSound({'button'}) end
 
@@ -89,8 +106,8 @@ Sounds.button=function() return Sounds.newSound({'button'}) end
 Sounds.room_reveal=function() return Sounds.newSound({'room_reveal'}) end
 
 --weapon sounds
-Sounds.charge_bow_t0=function() return Sounds.newSound({}) end     --t0 weapons have no
-Sounds.charge_staff_t0=function() return Sounds.newSound({}) end   --charge sfx
+Sounds.charge_bow_t0=function() return Sounds.blank() end     --t0 weapons have no
+Sounds.charge_staff_t0=function() return Sounds.blank() end   --charge sfx
 Sounds.charge_bow_t1=function() return Sounds.newSound({'charge_bow'}) end 
 Sounds.charge_bow_t2=function() return Sounds.newSound({'charge_bow'}) end 
 Sounds.charge_bow_t3=function() return Sounds.newSound({'charge_bow'}) end 
@@ -108,10 +125,15 @@ Sounds.launch_staff_t0=Sounds.launch_bow_t0
 Sounds.launch_staff_t1=function() return Sounds.newSound({'staff_t1'}) end
 Sounds.launch_staff_t2=function() return Sounds.newSound({'staff_t2'}) end
 Sounds.launch_staff_t3=function() return Sounds.newSound({'staff_t3'}) end
-Sounds.launch_orc_t2=function() return Sounds.newSound({'staff_t1'}) end
-Sounds.launch_orc_t3=function() return Sounds.newSound({'staff_t1'}) end
+Sounds.launch_orc_t2=function() return Sounds.newSound({'launch_stone'}) end
+Sounds.launch_orc_t3=function() return Sounds.newSound({'launch_stone'}) end
 Sounds.launch_mage_t2=function() return Sounds.newSound({'staff_t1'}) end
 Sounds.launch_demon_t3=function() return Sounds.newSound({'staff_t1'}) end
 
 --special attack sounds
 
+
+--menu sounds
+Sounds.menu_open=function() return Sounds.newSound({'menu_open'},1) end
+Sounds.menu_close=function() return Sounds.newSound({'menu_close'},1) end
+Sounds.failure=function() return Sounds.newSound({'failure'}) end 

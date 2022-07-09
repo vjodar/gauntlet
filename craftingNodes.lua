@@ -242,7 +242,8 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
         self.state.isNearPlayer=false 
 
         self.sfx={
-            craft=Sounds[_type]()
+            craft=Sounds[_type](),
+            failure=Sounds.failure()
         }
         self.sfxLowPitch,self.sfxHighPitch=CraftingNodes.sfxPitchVariation[_type]()
 
@@ -328,6 +329,7 @@ function CraftingNodes:spawnCraftingNode(_type,_x,_y)
             if self.dialogBoolean then 
                 self.dialogBoolean=false --stops new dialogs each frame
                 Player.dialog:say(self.failedCraftDialog)
+                self.sfx.failure:play() --play failure sfx
                 --after 1s, can add more dialogs
                 TimerState:after(1,function() self.dialogBoolean=true end)
             end

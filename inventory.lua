@@ -130,6 +130,11 @@ function Inventory:load()
     self.MAXNUM=27 --maximum number of open or closed segments and icons
     self.numClosed=self.MAXNUM --number of inventory segments and icons are in their closed position
     self.numOpen=0 --number of inventory segments and icons are in their open position
+
+    self.sfx={
+        open=Sounds.menu_open(),
+        close=Sounds.menu_close(),
+    }
 end
 
 function Inventory:update()
@@ -185,6 +190,7 @@ end
 
 function Inventory:move()
     if self.state.open then --inventory will close
+        self.sfx.close:play()
         for i,segment in pairs(self.inventorySegments) do 
             --only iterate over segments which still need to move
             if segment.xPos_current~=segment.xPos_closed then 
@@ -220,6 +226,7 @@ function Inventory:move()
         end
 
     elseif self.state.closed then --inventory will open
+        self.sfx.open:play()
         for i,segment in pairs(self.inventorySegments) do 
             --only iterate over segments that still need to move
             if segment.xPos_current~=segment.xPos_open then 

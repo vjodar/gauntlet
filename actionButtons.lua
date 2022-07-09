@@ -218,6 +218,8 @@ function ActionButtons:addActionButtonSupplies()
                         button.state.consumeOnCooldown=false 
                     end)
 
+                    Player.sfx.failure:play() --play failure sfx
+
                 elseif Player.suppliesPouch[self.state.currentSupply]>0 then 
                     Player:consumeSupply(self.state.currentSupply) --consume the supply
                     
@@ -389,6 +391,7 @@ function ActionButtons:addActionButtonProtectionMagics()
                                 love.math.random(#Player.dialogLines.outOfMana)
                             ]
                         )
+                        Player.sfx.failure:play() --play failure sfx
                     end
 
                 --otherwise, deactivate and remove collision.
@@ -417,10 +420,6 @@ function ActionButtons:addActionButtonProtectionMagics()
                         --if player is currently protecting, deactivate
                         --previous protection type and activate current one
                         if Player.state.protectionActivated then 
-                            -- Player.protectionMagics:deactivate()
-                            -- Player.protectionMagics:activate(
-                            --     button.state.currentSpell
-                            -- )
                             Player.protectionMagics:switchTo(button.state.currentSpell)
                         end
                     end)
@@ -631,6 +630,7 @@ function ActionButtons:addActionButtonCombatInteract()
                 if not Player.combatData.inCombat then
                     --not in combat and no enemies nearby, return nil
                     Player.dialog:say('No enemies nearby')
+                    Player.sfx.failure:play()
                     return nil 
                 end
             end

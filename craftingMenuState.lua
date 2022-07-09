@@ -173,6 +173,11 @@ function CraftingMenuState:load()
 
     self.state={} --metatable
     self.state.keyIsReleased=false --checks if the player released the 'open menu' button 
+
+    self.sfx={
+        failure=Sounds.failure(),
+        close=Sounds.menu_close()
+    }
 end
 
 function CraftingMenuState:update()
@@ -185,6 +190,7 @@ function CraftingMenuState:update()
     if Controls.releasedInputs.btnRight 
     or Player.health.current~=self.playerHealth 
     then
+        self.sfx.close:play()
         ActionButtons:setMenuMode(false) --back to regular action buttons
         return false  --exit crafting menu
     end 
@@ -324,7 +330,11 @@ function CraftingMenuState:craft(_item)
     failureDialog=string.sub(failureDialog,1,#failureDialog-1) --remove the last comma
 
     --upon failure to craft, make player say the failureDialog, then return.
-    if #failureDialog>6 then Player.dialog:say(failureDialog) return end 
+    if #failureDialog>6 then 
+        Player.dialog:say(failureDialog) 
+        self.sfx.failure:play() --play failure sfx
+        return 
+    end 
 
     --at this point, they player has full quantities of all required items,
     --remove them from player's inventory

@@ -79,6 +79,10 @@ function Enemies:load()
         _enemy.collider:applyLinearImpulse(
             math.cos(_angle)*_knockback,math.sin(_angle)*_knockback
         )
+
+        --play take damage sfx
+        local pitch=_enemy.selectSfxPitch.takeDamage()
+        _enemy.sfx.takeDamage:play(pitch)
     end
 
     self.sharedEnemyFunctions.die=function(_enemy)         
@@ -209,6 +213,8 @@ function Enemies:load()
         end
 
         if _enemy.state.moving then 
+            local pitch=_enemy.selectSfxPitch.footsteps()
+            _enemy.sfx.footsteps:play(pitch)
             _enemy.currentAnim=_enemy.animations.moving
             _enemy.state.movingTimer=_enemy.state.movingTimer+dt 
         elseif _enemy.state.idle then 
@@ -394,6 +400,11 @@ function Enemies:load()
             end)
     
             _enemy.animations.combat:resume()
+
+            if _enemy.sfx.charge then 
+                local pitch=_enemy.selectSfxPitch.charge()
+                _enemy.sfx.charge:play(pitch)
+            end
         end
     end
 
@@ -403,6 +414,9 @@ function Enemies:load()
         if not _enemy.state.attackOnCooldown then
             _enemy.currentAnim=_enemy.animations.combat 
 
+            local pitch=_enemy.selectSfxPitch.attack()
+            _enemy.sfx.attack:play(pitch)
+
             local angle=math.atan2( --calculate launch angle
                 (Player.yPos-_enemy.yPos), --y distance component
                 (Player.xPos-_enemy.xPos)  --x distance component
@@ -410,7 +424,7 @@ function Enemies:load()
             _enemy.collider:applyLinearImpulse( --lunge toward player
                 math.cos(angle)*_enemy.state.moveSpeed,
                 math.sin(angle)*_enemy.state.moveSpeed
-            )
+            )            
 
             --put attack on cooldown for 1.35s
             _enemy.state.attackOnCooldown=true
@@ -516,6 +530,17 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
             currentShown=20, --what will actually be drawn
             timer=0, --used to smoothly tween shown health
             moveRate=0.005, --increase/decrease every 0.02s
+        }
+
+        self.sfx={
+            footsteps=Sounds.footsteps(),
+            takeDamage=Sounds.hit(),
+            attack=Sounds.jump(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return love.math.random(30,50)*0.1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
+            attack=function() return love.math.random(9,11)*0.1 end,
         }
 
         --insert enemy into entitiesTable
@@ -660,6 +685,17 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
             currentShown=20, --what will actually be drawn
             timer=0, --used to smoothly tween shown health
             moveRate=0.005, --increase/decrease every 0.02s
+        }
+
+        self.sfx={
+            footsteps=Sounds.footsteps(),
+            takeDamage=Sounds.hit(),
+            attack=Sounds.jump(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return love.math.random(30,50)*0.1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
+            attack=function() return love.math.random(9,11)*0.1 end,
         }
 
         --insert enemy into entitiesTable
@@ -807,6 +843,17 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
             moveRate=0.005, --increase/decrease every 0.02s
         }
 
+        self.sfx={
+            footsteps=Sounds.footsteps(),
+            takeDamage=Sounds.hit(),
+            attack=Sounds.jump(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return love.math.random(30,50)*0.1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
+            attack=function() return love.math.random(9,11)*0.1 end,
+        }
+
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
     end
@@ -947,6 +994,15 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
             currentShown=50, --what will actually be drawn
             timer=0, --used to smoothly tween shown health
             moveRate=0.005, --increase/decrease every 0.02s
+        }
+        
+        self.sfx={
+            footsteps=Sounds.footsteps(),
+            takeDamage=Sounds.hit(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return love.math.random(20,30)*0.1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
         }
 
         --insert enemy into entitiesTable
@@ -1094,6 +1150,17 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
             timer=0, --used to smoothly tween shown health
             moveRate=0.005, --increase/decrease every 0.02s
         }
+        
+        self.sfx={
+            footsteps=Sounds.footsteps(),
+            takeDamage=Sounds.hit(),
+            attack=Sounds.bite(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return love.math.random(20,30)*0.1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
+            attack=function() return love.math.random(9,11)*0.1 end,
+        }
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
@@ -1236,6 +1303,17 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
             currentShown=50, --what will actually be drawn
             timer=0, --used to smoothly tween shown health
             moveRate=0.005, --increase/decrease every 0.02s
+        }
+        
+        self.sfx={
+            footsteps=Sounds.footsteps_mage(),
+            takeDamage=Sounds.hit(),
+            charge=Sounds.charge_demon_t2(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return love.math.random(7,14)*0.1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
+            charge=function() return love.math.random(9,11)*0.1 end,
         }
 
         --insert enemy into entitiesTable
@@ -1384,6 +1462,17 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
             currentShown=100, --what will actually be drawn
             timer=0, --used to smoothly tween shown health
             moveRate=0.005, --increase/decrease every 0.02s
+        }
+        
+        self.sfx={
+            footsteps=Sounds.footsteps_t3(),
+            takeDamage=Sounds.hit(),
+            charge=Sounds.charge_bow_t3(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return 1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
+            charge=function() return love.math.random(9,11)*0.1 end,
         }
 
         --insert enemy into entitiesTable
@@ -1542,6 +1631,17 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
             currentShown=100, --what will actually be drawn
             timer=0, --used to smoothly tween shown health
             moveRate=0.005, --how frequent health will decrease
+        }
+        
+        self.sfx={
+            footsteps=Sounds.footsteps_t3(),
+            takeDamage=Sounds.hit(),
+            charge=Sounds.charge_demon_t3(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return 1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
+            charge=function() return love.math.random(9,12)*0.1 end,
         }
 
         --insert enemy into entitiesTable
@@ -1749,6 +1849,15 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
             currentShown=200, --what will actually be drawn
             timer=0, --used to smoothly tween shown health
             moveRate=0.005, --how frequent health will decrease
+        }
+        
+        self.sfx={
+            footsteps=Sounds.footsteps_t3(),
+            takeDamage=Sounds.hit(),
+        }
+        self.selectSfxPitch={
+            footsteps=function() return 1 end,
+            takeDamage=function() return love.math.random(8,12)*0.1 end,
         }
 
         --boss becomes active after 0.5s to allow player to fall into room.

@@ -737,7 +737,7 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
         self.state.particleWait=false --used to wait some interval of time between particle emissions
 
         self.sfx={
-            splash=Sounds.splash()
+            harpoon=Sounds.harpoon()
         }
 
         --insert into entities table to allow dynamic draw order
@@ -793,8 +793,8 @@ ResourceNodes.nodeSpawnFunctions[5]=function(_x,_y) --spawn Fishing Hole
             TimerState:after(0.3,function() self.state.particleWait=false end)
             
             local pitch=love.math.random(5,15)*0.1
-            self.sfx.splash:stop()
-            self.sfx.splash:play(pitch)
+            self.sfx.harpoon:stop()
+            self.sfx.harpoon:play(pitch)
         end 
 
         self.particles:update(dt) --update particles
