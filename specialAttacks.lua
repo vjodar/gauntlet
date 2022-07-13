@@ -376,7 +376,7 @@ function SpecialAttacks:spawnFireCircle(_xPos,_yPos)
         end) 
 
         self.sfx={
-            spawn=Sounds.fire_cicle(),
+            spawn=Sounds.fire_circle(),
             flames=Sounds.flames()
         }
         local pitch=love.math.random(9,11)*0.1

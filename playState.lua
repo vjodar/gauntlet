@@ -61,7 +61,7 @@ function PlayState:load()
     Hud:load() --initialize Heads Up Display
     BossRoom:load() --initialize boss room
 
-    self:startDungeonPhase()
+    self:waitForTitleScreen() --wait for user to start game
 end
 
 --update and draw functions. They will be changed depending on which part of
@@ -116,7 +116,6 @@ function PlayState:drawDungeonPhasePlayerFalling()
         Dungeon:drawForeground() 
         Entities:draw() 
     cam:detach()
-    Hud:draw()
 end
 
 function PlayState:updateBossBattle()
@@ -143,24 +142,22 @@ function PlayState:startDungeonPhase()
     --set associated update and draw functions
     self._update=self.updateDungeonPhase
     self._draw=self.drawDungeonPhasePlayerFalling
-
-    --move the player to the starting room
+        
+    -- move the player to the starting room
     local playerStartX=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+love.math.random(80,304)
     local playerStartY=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+love.math.random(74,248)
     Player.collider:setPosition(playerStartX,playerStartY)
-
-    --set camera target to be the player's position
-    cam:lookAt(playerStartX,playerStartY) 
-    camTarget=Player
-
-    --fade in. Once complete, return to normal dungeon phase draw, start clock.
+        
+    -- --drop in player, then switch to normal dungeon phase draw function and start clock
     local afterFn=function() 
         self._draw=self.drawDungeonPhase
         Clock:start() 
     end 
-    FadeState:fadeIn()
     PlayerTransitionState:enterRoom(Player,afterFn)
 
+    camTarget=Player --camera looks at player
+
+    FadeState:fadeIn()
 
     --testing----------------------------------
     world:setQueryDebugDrawing(true) --draws collider queries for 10 frames
@@ -249,4 +246,35 @@ function PlayState:startBossBattle()
         for i,c in pairs(BossRoom.lavaColliders) do c:setSensor(false) end 
     end
     FadeState:fadeIn(0,afterFn)
+end
+
+--wait for user to choose an option from the title screen (play, tutorial, etc.)
+function PlayState:waitForTitleScreen()    
+
+    -- make camera look at the center of starting room
+    local startingRoomCenter={
+        xPos=Dungeon.startRoom[1]*Rooms.ROOMWIDTH+Rooms.ROOMWIDTH*0.5,
+        yPos=Dungeon.startRoom[2]*Rooms.ROOMHEIGHT+Rooms.ROOMHEIGHT*0.5
+    }
+    cam:lookAt(startingRoomCenter.xPos,startingRoomCenter.yPos) 
+    camTarget=startingRoomCenter
+    
+    FadeState:fadeIn(0.7)
+    
+    self._update=function()
+        world:update(dt) 
+        Dungeon:update() 
+        Entities:update()     
+        cam:lockPosition(camTarget.xPos,camTarget.yPos,camSmoother)     
+        return true
+    end
+    
+    self._draw=function()  
+        cam:attach()    
+            Dungeon:drawFloorObjects()
+            Dungeon:drawRooms() 
+            Dungeon:drawForeground() 
+            Entities:draw()             
+        cam:detach()
+    end
 end

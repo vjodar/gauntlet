@@ -1,12 +1,76 @@
 Sounds={}
 
+function Sounds:load()
+    self.data={ --sound data used to create sources
+        footsteps=love.sound.newSoundData("assets/sfx/footsteps.wav"),
+        footsteps_mage=love.sound.newSoundData("assets/sfx/footsteps_mage.wav"),
+        footsteps_t3=love.sound.newSoundData("assets/sfx/footsteps_t3.wav"),
+        footsteps_bass=love.sound.newSoundData("assets/sfx/footsteps_bass.wav"),
+        falling=love.sound.newSoundData("assets/sfx/falling.wav"),
+        landing=love.sound.newSoundData("assets/sfx/landing.wav"),
+        jump=love.sound.newSoundData("assets/sfx/jump.wav"),
+        bite=love.sound.newSoundData("assets/sfx/bite.wav"),
+        charge_demon_t2=love.sound.newSoundData("assets/sfx/charge_demon_t2.wav"),
+        charge_demon_t3=love.sound.newSoundData("assets/sfx/charge_demon_t3.wav"),
+        protection_deactivate=love.sound.newSoundData("assets/sfx/protection_deactivate.wav"),
+        protection_activate_magical=love.sound.newSoundData("assets/sfx/protection_activate_magical.wav"),
+        protection_activate_physical=love.sound.newSoundData("assets/sfx/protection_activate_physical.wav"),
+        protect_physical=love.sound.newSoundData("assets/sfx/protect_physical.wav"),
+        protect_magical=love.sound.newSoundData("assets/sfx/protect_magical.wav"),
+        pickaxe=love.sound.newSoundData("assets/sfx/pickaxe.wav"),
+        hatchet=love.sound.newSoundData("assets/sfx/hatchet.wav"),
+        splash_1=love.sound.newSoundData("assets/sfx/splash_1.wav"),
+        splash_2=love.sound.newSoundData("assets/sfx/splash_2.wav"),
+        harvest_plant=love.sound.newSoundData("assets/sfx/harvest_plant.wav"),
+        vine=love.sound.newSoundData("assets/sfx/vine.wav"),
+        furnace_1=love.sound.newSoundData("assets/sfx/furnace_1.wav"),
+        furnace_2=love.sound.newSoundData("assets/sfx/furnace_2.wav"),
+        furnace_3=love.sound.newSoundData("assets/sfx/furnace_3.wav"),
+        grill=love.sound.newSoundData("assets/sfx/grill.wav"),
+        sawmill_1=love.sound.newSoundData("assets/sfx/sawmill_1.wav"),
+        sawmill_2=love.sound.newSoundData("assets/sfx/sawmill_2.wav"),
+        spinning_wheel=love.sound.newSoundData("assets/sfx/spinning_wheel.wav"),
+        item=love.sound.newSoundData("assets/sfx/item.wav"),
+        use_consumable=love.sound.newSoundData("assets/sfx/use_consumable.wav"),
+        consume_fish=love.sound.newSoundData("assets/sfx/consume_fish.wav"),
+        consume_potion=love.sound.newSoundData("assets/sfx/consume_potion.wav"),
+        button=love.sound.newSoundData("assets/sfx/button.wav"),
+        room_reveal=love.sound.newSoundData("assets/sfx/room_reveal.wav"),
+        charge_bow=love.sound.newSoundData("assets/sfx/charge_bow.wav"),
+        charge_staff_t1=love.sound.newSoundData("assets/sfx/charge_staff_t1.wav"),
+        charge_staff_t2=love.sound.newSoundData("assets/sfx/charge_staff_t2.wav"),
+        charge_staff_t3=love.sound.newSoundData("assets/sfx/charge_staff_t3.wav"),
+        collision_physical=love.sound.newSoundData("assets/sfx/collision_physical.wav"),
+        launch_stone=love.sound.newSoundData("assets/sfx/launch_stone.wav"),
+        staff_t1=love.sound.newSoundData("assets/sfx/staff_t1.wav"),
+        staff_t2=love.sound.newSoundData("assets/sfx/staff_t2.wav"),
+        staff_t3=love.sound.newSoundData("assets/sfx/staff_t3.wav"),
+        mage_t2=love.sound.newSoundData("assets/sfx/mage_t2.wav"),
+        demon_t3=love.sound.newSoundData("assets/sfx/demon_t3.wav"),
+        tornado=love.sound.newSoundData("assets/sfx/tornado.wav"),
+        flames=love.sound.newSoundData("assets/sfx/flames.wav"),
+        fire_circle=love.sound.newSoundData("assets/sfx/fire_circle.wav"),
+        charge_fireball=love.sound.newSoundData("assets/sfx/charge_fireball.wav"),
+        launch_fireball=love.sound.newSoundData("assets/sfx/launch_fireball.wav"),
+        disabling_fireball=love.sound.newSoundData("assets/sfx/disabling_fireball.wav"),
+        charge_fissure=love.sound.newSoundData("assets/sfx/charge_fissure.wav"),
+        launch_fissure_1=love.sound.newSoundData("assets/sfx/launch_fissure_1.wav"),
+        launch_fissure_2=love.sound.newSoundData("assets/sfx/launch_fissure_2.wav"),
+        lava_bubble=love.sound.newSoundData("assets/sfx/lava_bubble.wav"),
+        fissure_travel=love.sound.newSoundData("assets/sfx/fissure_travel.wav"),
+        menu_open=love.sound.newSoundData("assets/sfx/menu_open.wav"),
+        menu_close=love.sound.newSoundData("assets/sfx/menu_close.wav"),
+        failure=love.sound.newSoundData("assets/sfx/failure.wav"),
+    }
+end
+
 --construct and return a new sound effect using one or more .wav files
 Sounds.newSound=function(_names,_repeatDelay)
     local sound={sources={}}
     for i,name in pairs(_names) do 
         table.insert(
             sound.sources,
-            love.audio.newSource('assets/sfx/'..name..'.wav','static')
+            love.audio.newSource(Sounds.data[name])
         )
     end
     if _repeatDelay then 
@@ -133,7 +197,7 @@ Sounds.launch_demon_t3=function() return Sounds.newSound({'demon_t3'}) end
 --special attack sounds
 Sounds.tornado=function() return Sounds.newSound({'tornado'},0.2) end
 Sounds.flames=function() return Sounds.newSound({'flames'},0.85) end
-Sounds.fire_cicle=function() return Sounds.newSound({'fire_circle'}) end 
+Sounds.fire_circle=function() return Sounds.newSound({'fire_circle'}) end 
 Sounds.flame_pillar=function() 
     return Sounds.newSound({'flames'},love.math.random(60,80)*0.01) 
 end

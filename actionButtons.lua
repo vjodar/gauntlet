@@ -15,7 +15,7 @@ function ActionButtons:load()
     self.menuAccept=self:addMenuAccept()
     self.menuDecline=self:addMenuDecline()
 
-    self.inMenuMode=false --true when a menu is active
+    self.inMenuMode=true --true when a menu is active
 end
 
 function ActionButtons:update()

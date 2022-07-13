@@ -58,6 +58,11 @@ function EndScreenState:restartOrMainMenu()
             local afterFn=function()
                 PlayState:load()
                 ActionButtons:setMenuMode(false)
+                cam:lookAt(
+                    Dungeon.startRoom[1]*Rooms.ROOMWIDTH+Rooms.ROOMWIDTH*0.5,
+                    Dungeon.startRoom[1]*Rooms.ROOMHEIGHT+Rooms.ROOMHEIGHT*0.5
+                )
+                PlayState:startDungeonPhase()
             end
             FadeState:fadeOut(1,afterFn)
             return false

@@ -22,6 +22,7 @@ require 'fadeState'
 require 'playerTransitionState'
 require 'endScreenState'
 require 'sounds'
+require 'titleScreenState'
 
 function love.load()
     --set pixelated look
@@ -53,17 +54,18 @@ function love.load()
     acceptInput=false --flag to restrict inputs to one state at a time
 
     --Initialize all states in gamestates that need loading
+    Sounds:load()
     Controls:load()
     TimerState:load()
     FadeState:load()
+    TitleScreenState:load()
     PlayerTransitionState:load()
     PlayState:load()
     CraftingMenuState:load()
 
     table.insert(gameStates,TimerState) --timer state is always first on gamestates stack
-
-    --Initial game state 
     table.insert(gameStates,PlayState)
+    table.insert(gameStates,TitleScreenState)
 end
 
 function love.update(_dt)
