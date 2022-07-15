@@ -260,6 +260,8 @@ function Player:load()
         consumable=Sounds.use_consumable(),
         fish=Sounds.consume_fish(),
         potion=Sounds.consume_potion(),
+
+        die=Sounds.game_over(),
     }
 
     table.insert(Entities.entitiesTable,self)
@@ -705,8 +707,8 @@ function Player:consumeSupply(_supply)
     TimerState:after(0.5,function()
         self.suppliesData.consuming[_supply]=false
         if self.state.isDead then return end --don't consume if dead
-        local pitch=love.math.random(13,18)*0.1
         if _supply=='fish_cooked' then 
+            local pitch=love.math.random(8,12)*0.1
             self.sfx.fish:play(pitch)
             self:updateHealth(20)
             self.particleSystems.health:emit(2)
@@ -714,6 +716,7 @@ function Player:consumeSupply(_supply)
             TimerState:after(0.2,function() self.particleSystems.health:emit(1) end)
             TimerState:after(0.3,function() self.particleSystems.health:emit(2) end)
         elseif _supply=='potion' then 
+            local pitch=love.math.random(13,18)*0.1
             self.sfx.potion:play(pitch)
             self:updateMana(30)
             self.particleSystems.mana:emit(2)
@@ -799,6 +802,7 @@ function Player:setShapeSensor(_shape,_bool)
 end
 
 function Player:die()
+    self.sfx.die:play()
     self.state.isDead=true
     self.currentAnim=self.animations.dying
     self.combatData.inCombat=false 

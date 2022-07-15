@@ -176,7 +176,9 @@ function CraftingMenuState:load()
 
     self.sfx={
         failure=Sounds.failure(),
-        close=Sounds.menu_close()
+        open=Sounds.menu_open(),
+        close=Sounds.menu_close(),
+        move=Sounds.menu_move(),
     }
 end
 
@@ -217,6 +219,7 @@ function CraftingMenuState:update()
                 end
                 self.cursor.xPos=self.cursor.xPos+19
             end
+            self.sfx.move:play()
         elseif Controls.releasedInputs.dirLeft then 
             if self.cursor.selection=='potion' then --wrap around to staff
                 self.cursor.selection='staff'
@@ -230,6 +233,7 @@ function CraftingMenuState:update()
                 end
                 self.cursor.xPos=self.cursor.xPos-19
             end
+            self.sfx.move:play()
         end
     end
 
@@ -305,6 +309,8 @@ function CraftingMenuState:openCraftingMenu(_x,_y)
     self.state.keyIsReleased=false --hasn't yet released the key used to open this menu
     
     ActionButtons:setMenuMode(true) --buttons are in menu mode
+
+    self.sfx.open:play()
 end
 
 --Craft the item as long as player has all the necessary components

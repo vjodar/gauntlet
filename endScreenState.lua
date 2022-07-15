@@ -9,7 +9,7 @@ function EndScreenState:draw()
     cam:attach() 
     self._drw()
     if self.acceptInput then 
-        love.graphics.printf("QUIT GAME",cam.x,cam.y+103,160,'right')
+        love.graphics.printf("MAIN MENU",cam.x,cam.y+103,160,'right')
         love.graphics.printf("PLAY AGAIN",cam.x,cam.y+123,140,'right')
     end
     cam:detach()

@@ -60,7 +60,16 @@ function Sounds:load()
         fissure_travel=love.sound.newSoundData("assets/sfx/fissure_travel.wav"),
         menu_open=love.sound.newSoundData("assets/sfx/menu_open.wav"),
         menu_close=love.sound.newSoundData("assets/sfx/menu_close.wav"),
+        menu_move=love.sound.newSoundData("assets/sfx/menu_move.wav"),
         failure=love.sound.newSoundData("assets/sfx/failure.wav"),
+        game_over=love.sound.newSoundData("assets/sfx/game_over.wav"),
+    }
+
+    self.seeds={ --used to open and modify sounds in ChipTone
+        menu_move="eNpjYvg5-y-rAMsZmyMMjgz_6xkYGurdGZkZmBmEmP_XA_lGxgwMIMEzPhC6k5GBwco_zg6kFFkcRu8RgdBM69iNjCcyMBxggICG-v_2EJoZxoALHHFoBjP22qexgWh0HfwWkyVA9IzI7D9gcQiUnxHJQE8AAGNsNl0.",
+        menu_open="eNpjYuB790GegcXI-H89CDIwNNS7MzIzeDEGMoH5RsYMDCDBMz4QupORgcHKP84OpBRZHEbvEYHQTOvYjYwnMjAcYICAhvr_9hCaGcaACxxxaAYz9tqnsYFodB38FpMlQPSMyOw_YHEIlJ8RyUBPAAC7NTec",
+        menu_close="eNpjYuB790GegeWMDWPD__r_9QwMDfXujMwMXoyBTGC-kTEDA0jwjA-E7mRkYLDyj7MDKUUWh9F7RCA00zp2I-OJDAwHGCCgof6_PYRmhjHgAkccmsGMvfZpbCAaXQe_xWQJED0jMvsPWBwC5WdEMtATAABWfTdC",
+        game_over="eNpjYuB790GekSXVTut--T8GIGioZ2DYwtDGsF_4f_3WYhZrF4igvCNMkoHByj_ObkYkhH_GB5VOU4OqW8duZDyRgeEAAwQ01P-3h9DMMAZc4IhDM5ix1z6NDWYHsgJ-i8kSIHpGZPYfsDgEykPcQDcAAMOUNLU.",
     }
 end
 
@@ -129,6 +138,7 @@ end
 --player sounds
 Sounds.falling=function() return Sounds.newSound({'falling'}) end --falling into room
 Sounds.landing=function() return Sounds.newSound({'landing'}) end --landing in room
+Sounds.game_over=function() return Sounds.newSound({'game_over'}) end
 
 --enemy sounds
 Sounds.jump=function() return Sounds.newSound({'jump'}) end --t1 lunge
@@ -212,6 +222,7 @@ end
 Sounds.fissure_travel=function() return Sounds.newSound({'fissure_travel'},0.1) end 
 
 --menu sounds
-Sounds.menu_open=function() return Sounds.newSound({'menu_open'},1) end
-Sounds.menu_close=function() return Sounds.newSound({'menu_close'},1) end
+Sounds.menu_open=function() return Sounds.newSound({'menu_open'}) end
+Sounds.menu_close=function() return Sounds.newSound({'menu_close'}) end
+Sounds.menu_move=function() return Sounds.newSound({'menu_move'}) end
 Sounds.failure=function() return Sounds.newSound({'failure'}) end 

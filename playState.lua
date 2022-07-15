@@ -259,7 +259,7 @@ function PlayState:waitForTitleScreen()
     cam:lookAt(startingRoomCenter.xPos,startingRoomCenter.yPos) 
     camTarget=startingRoomCenter
     
-    FadeState:fadeIn(0.7)
+    FadeState:fadeIn(0.6)
     
     self._update=function()
         world:update(dt) 

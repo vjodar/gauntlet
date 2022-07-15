@@ -141,7 +141,10 @@ function Inventory:update()
     if self.state.transitioning then 
         self:move()
     elseif acceptInput and Controls.releasedInputs.btnStart then 
-        self.state.transitioning=true 
+        self.state.transitioning=true
+        if self.state.closed then self.sfx.open:play()
+        elseif self.state.open then self.sfx.close:play()
+        end
     end
 end
 
@@ -190,7 +193,6 @@ end
 
 function Inventory:move()
     if self.state.open then --inventory will close
-        self.sfx.close:play()
         for i,segment in pairs(self.inventorySegments) do 
             --only iterate over segments which still need to move
             if segment.xPos_current~=segment.xPos_closed then 
@@ -226,7 +228,6 @@ function Inventory:move()
         end
 
     elseif self.state.closed then --inventory will open
-        self.sfx.open:play()
         for i,segment in pairs(self.inventorySegments) do 
             --only iterate over segments that still need to move
             if segment.xPos_current~=segment.xPos_open then 

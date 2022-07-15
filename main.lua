@@ -58,9 +58,9 @@ function love.load()
     Controls:load()
     TimerState:load()
     FadeState:load()
-    TitleScreenState:load()
     PlayerTransitionState:load()
     PlayState:load()
+    TitleScreenState:load()
     CraftingMenuState:load()
 
     table.insert(gameStates,TimerState) --timer state is always first on gamestates stack
@@ -71,7 +71,7 @@ end
 function love.update(_dt)
     dt=_dt --update delta time
 
-    Controls:update()
+    Controls:update() --read user input
 
     for i,state in pairs(gameStates) do
         --input should only be accepted by gamestate on top of stack (last in table)
@@ -83,6 +83,9 @@ end
 
 function love.draw()
     for i,state in pairs(gameStates) do state:draw() end 
+    --testing----------------------------
+    -- love.graphics.print(#gameStates,0,0,nil,3)
+    --testing----------------------------
 end
 
 --resizes display, enters/exits fullscreen, rescales game assets appropriately
@@ -103,4 +106,20 @@ function changeDisplaySettings(_w,_h,_isFullscreen)
     WINDOWSCALE_X=WINDOW_WIDTH/400 --1x scale per 400px width
     WINDOWSCALE_Y=WINDOW_HEIGHT/300 --1x scale per 300px width
     if cam~=nil then cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5)) end
+end
+
+--closes the game. In the browser version, the game stops updating but displays
+--the last thing drawn to screen. So display a "Thank you" to leave plays with.
+function closeGame() 
+    love.update=function(dt) end 
+    love.draw=function() 
+        love.graphics.printf(
+            'Thank you for playing!',
+            0-((0.5*WINDOW_WIDTH)*(WINDOWSCALE_X-1)),WINDOW_HEIGHT*0.5,
+            WINDOW_WIDTH,'center',
+            nil,WINDOWSCALE_X
+        )    
+    end        
+
+    love.event.quit()
 end
