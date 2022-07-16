@@ -28,15 +28,12 @@ function love.load()
     --set pixelated look
     love.graphics.setDefaultFilter('nearest','nearest')
 
-    --Commenting out for current, primary build (for web). Will create secondary
-    --branches for binaries (Windows/Max/Linux) which will have the ability to 
-    --change resolution. 
     -- --set display resolution to be as large as possible while still fitting
     -- --in the users monitor, in 4x3 aspect ratio, and in windowed mode
-    -- local desktopW,desktopH=love.window.getDesktopDimensions()
-    -- local nearestHeight=math.floor(desktopH/300)*300
-    -- local nearestWidth=nearestHeight*(4/3)
-    -- changeDisplaySettings(nearestWidth,nearestHeight,false)
+    local desktopW,desktopH=love.window.getDesktopDimensions()
+    local nearestHeight=math.floor(desktopH/300)*300
+    local nearestWidth=nearestHeight*(4/3)
+    changeDisplaySettings({w=nearestWidth,h=nearestHeight,isFullscreen=false})
     
     --resizing and rescaling game to match new display settings.
     WINDOW_WIDTH=love.graphics.getWidth()
@@ -83,19 +80,19 @@ end
 
 function love.draw()
     for i,state in pairs(gameStates) do state:draw() end 
-    --testing----------------------------
-    -- love.graphics.print(#gameStates,0,0,nil,3)
-    --testing----------------------------
 end
 
 --resizes display, enters/exits fullscreen, rescales game assets appropriately
-function changeDisplaySettings(_w,_h,_isFullscreen)
+function changeDisplaySettings(_settings)
+    local w=_settings.w
+    local h=_settings.h
+    local isFullscreen=_settings.isFullscreen 
     local _,_,flags=love.window.getMode() --gets the index of current monitor
     love.window.setMode(
-        math.max(_w,400),math.max(_h,300), --resolution can't be lower than 400x300
+        math.max(w,400),math.max(h,300), --resolution can't be lower than 400x300
         {
             display=flags.display,
-            fullscreen=_isFullscreen,
+            fullscreen=isFullscreen,
             fullscreentype='exclusive',
         }
     )

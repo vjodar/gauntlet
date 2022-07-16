@@ -55,8 +55,9 @@ end
 
 function Controls:update()
     --check for any currently down (pressed) keyboard inputs
+    --enforce that a key cannot be down and released at the same time
     for key,input in pairs(self.keyMappings) do
-        if love.keyboard.isDown(key) then 
+        if love.keyboard.isDown(key) and not self.releasedInputs[input] then 
             self.currentInputs[input]=true 
         else 
             --if currentInputs[input]==true but love.keyboard.isDown(key)==false,
