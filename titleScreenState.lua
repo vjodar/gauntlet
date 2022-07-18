@@ -298,11 +298,11 @@ TitleScreenState.createDisplaySettingsMenu=function()
     }
 
     menu.resetPendingDisplayValues=function()
-        local width,height,flags=love.window.getMode()
+        local w,h,flags=love.window.getMode()
         menu.pendingDisplayValues={
             displayMode=flags.fullscreen,
-            w=width,
-            h=height
+            width=w,
+            height=h 
         }
     end
     menu.resetPendingDisplayValues()
@@ -349,11 +349,11 @@ TitleScreenState.createDisplaySettingsMenu=function()
 
     menu.applyPendingValues=function()
         local newSettings={
-            w=menu.pendingDisplayValues.w,
-            h=menu.pendingDisplayValues.h,
+            width=menu.pendingDisplayValues.width,
+            height=menu.pendingDisplayValues.height,
             isFullscreen=menu.pendingDisplayValues.displayMode
         }
-        changeDisplaySettings(newSettings)
+        applySettings(newSettings)
     end
 
     menu.update=function() 
@@ -396,7 +396,7 @@ TitleScreenState.createDisplaySettingsMenu=function()
             end
             
             love.graphics.printf(
-                menu.pendingDisplayValues.w ..'x'.. menu.pendingDisplayValues.h,
+                menu.pendingDisplayValues.width ..'x'.. menu.pendingDisplayValues.height,
                 menu.xPos,menu.yPos+86,84,'center'
             )
         cam:detach()

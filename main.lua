@@ -24,22 +24,17 @@ require 'endScreenState'
 require 'sounds'
 require 'titleScreenState'
 
-function love.load()
+function love.load(_args)
     --set pixelated look
     love.graphics.setDefaultFilter('nearest','nearest')
-
-    -- --set display resolution to be as large as possible while still fitting
-    -- --in the users monitor, in 4x3 aspect ratio, and in windowed mode
-    local desktopW,desktopH=love.window.getDesktopDimensions()
-    local nearestHeight=math.floor(desktopH/300)*300
-    local nearestWidth=nearestHeight*(4/3)
-    changeDisplaySettings({w=nearestWidth,h=nearestHeight,isFullscreen=false})
     
-    --resizing and rescaling game to match new display settings.
-    WINDOW_WIDTH=love.graphics.getWidth()
-    WINDOW_HEIGHT=love.graphics.getHeight()
-    WINDOWSCALE_X=WINDOW_WIDTH/400 --1x scale per 400px width
-    WINDOWSCALE_Y=WINDOW_HEIGHT/300 --1x scale per 300px width
+    --read and store settings file. If none exist or if the settings file was
+    --modified in a way that makes it invalid, setting file will be set to 
+    --default values. See safeStorage.lua
+    --unless love.load caller specifies that settings should be kept, apply.
+    SafeStorage=require 'safeStorage'
+    local settings=SafeStorage.readSettings()
+    if not _args.keepSettings then applySettings(settings) end 
     
     --libraries
     wf=require 'libraries/windfield'
@@ -83,19 +78,24 @@ function love.draw()
 end
 
 --resizes display, enters/exits fullscreen, rescales game assets appropriately
-function changeDisplaySettings(_settings)
-    local w=_settings.w
-    local h=_settings.h
-    local isFullscreen=_settings.isFullscreen 
+--sets volume levels for sound effects and music
+--set control bindings
+function applySettings(_settings)
+    _settings.width=math.max(_settings.width,400)
+    _settings.height=math.max(_settings.height,300)
+    _settings.isFullscreen=_settings.isFullscreen 
     local _,_,flags=love.window.getMode() --gets the index of current monitor
     love.window.setMode(
-        math.max(w,400),math.max(h,300), --resolution can't be lower than 400x300
+        _settings.width,_settings.height,
         {
             display=flags.display,
-            fullscreen=isFullscreen,
+            fullscreen=_settings.isFullscreen,
             fullscreentype='exclusive',
         }
     )
+
+    --write to save file
+    SafeStorage.writeSettings(_settings)
     
     --resizing and rescaling game to match new display settings.
     WINDOW_WIDTH=love.graphics.getWidth()
