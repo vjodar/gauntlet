@@ -9,7 +9,7 @@ function TitleScreenState:load()
 
     self.settingsMenu=self.createSettingsMenu() --setings related menus
     self.displaySettingsMenu=self.createDisplaySettingsMenu()
-    -- self.audioSettingsMenu=self.createSettingsAudioMenu()
+    self.audioSettingsMenu=self.createAudioSettingsMenu()
     -- self.controlsSettingsMenu=self.createSettingsControlsMenu()
 
     self.sfx={
@@ -200,7 +200,7 @@ TitleScreenState.createSettingsMenu=function()
         name='audio',
         xPos=menu.xPos, yPos=menu.selections.display.yPos+19,
         selectionFunction=function() 
-            TitleScreenState:goto('') --TODO: add audio settings menu
+            TitleScreenState:goto('audioSettingsMenu')
             TitleScreenState.sfx.cursorAccept:play()
         end  
     }
@@ -290,7 +290,7 @@ end
 TitleScreenState.createDisplaySettingsMenu=function()
     local menu={}
 
-    menu.xPos,menu.yPos=cam.x-34,cam.y-50
+    menu.xPos,menu.yPos=cam.x-42,cam.y-50
 
     menu.sprites={
         selections=love.graphics.newImage("assets/title_screen/selections_display_menu.png"),
@@ -302,10 +302,37 @@ TitleScreenState.createDisplaySettingsMenu=function()
         menu.pendingDisplayValues={
             displayMode=flags.fullscreen,
             width=w,
-            height=h 
+            height=h
         }
     end
-    menu.resetPendingDisplayValues()
+    menu.resetPendingDisplayValues() 
+
+    menu.applyPendingValues=function() 
+        local desktopW,desktopH=love.window.getDesktopDimensions()
+        local maxHeight=math.floor(desktopH/300)*300 
+        local maxWidth=maxHeight*(4/3) 
+
+        --ensure resolution isn't being bypassed (i.e. by setting resolution
+        --in one monitor, then applying settings in another.)
+        menu.pendingDisplayValues.width=math.min(
+            maxWidth,menu.pendingDisplayValues.width)
+        menu.pendingDisplayValues.height=math.min(
+            maxHeight,menu.pendingDisplayValues.height)
+
+        --update CurrentSettings and apply to game
+        CurrentSettings.width=menu.pendingDisplayValues.width
+        CurrentSettings.height=menu.pendingDisplayValues.height
+        CurrentSettings.isFullscreen=menu.pendingDisplayValues.displayMode
+        applyCurrentSettings()
+    end
+
+    --returns the largest 4x3 resolution that can fit in current display
+    menu.getMaxResolution=function()
+        local desktopW,desktopH=love.window.getDesktopDimensions()
+        local maxHeight=math.floor(desktopH/300)*300 
+        local maxWidth=maxHeight*(4/3) 
+        return {width=maxWidth,height=maxHeight}
+    end
 
     menu.selections={}
     menu.selections.displayMode={
@@ -314,20 +341,52 @@ TitleScreenState.createDisplaySettingsMenu=function()
         shiftLeft=function() 
             local displayMode=menu.pendingDisplayValues.displayMode
             menu.pendingDisplayValues.displayMode=not displayMode
+            TitleScreenState.sfx.cursorAccept:play()
         end,
         shiftRight=function() 
             local displayMode=menu.pendingDisplayValues.displayMode
             menu.pendingDisplayValues.displayMode=not displayMode
+            TitleScreenState.sfx.cursorAccept:play()
         end,
     }
     menu.selections.resolution={
         name='resolution',
-        xPos=menu.xPos, yPos=menu.selections.displayMode.yPos+38,
-        shiftLeft=function() 
-            --TODO: increase resolution
+        xPos=menu.xPos, yPos=menu.selections.displayMode.yPos+39,
+        shiftLeft=function() --decrease resolution
+            local minRes={width=400,height=300}
+            local currentRes={
+                width=menu.pendingDisplayValues.width,
+                height=menu.pendingDisplayValues.height
+            }     
+            for dimension,_ in pairs(currentRes) do 
+                if currentRes[dimension]<=minRes[dimension] then 
+                    --already at min res, don't change
+                    TitleScreenState.sfx.cursorDecline:play()
+                else
+                    --resolution can decrease
+                    menu.pendingDisplayValues.width=currentRes.width-400
+                    menu.pendingDisplayValues.height=currentRes.height-300
+                    TitleScreenState.sfx.cursorAccept:play()                
+                end
+            end
         end,
-        shiftRight=function() 
-            --TODO: decrease resolution
+        shiftRight=function() --increase resolution
+            local maxRes=menu.getMaxResolution()
+            local currentRes={
+                width=menu.pendingDisplayValues.width,
+                height=menu.pendingDisplayValues.height
+            }            
+            for dimension,_ in pairs(currentRes) do 
+                if currentRes[dimension]>=maxRes[dimension] then 
+                    --already at max res, don't change
+                    TitleScreenState.sfx.cursorDecline:play()
+                else 
+                    --resolution can increase
+                    menu.pendingDisplayValues.width=currentRes.width+400
+                    menu.pendingDisplayValues.height=currentRes.height+300
+                    TitleScreenState.sfx.cursorAccept:play()
+                end
+            end
         end,
     }
 
@@ -345,15 +404,6 @@ TitleScreenState.createDisplaySettingsMenu=function()
     menu.cursor.updatePosition=function()
         menu.cursor.xPos=menu.cursor.currentSelection.xPos 
         menu.cursor.yPos=menu.cursor.currentSelection.yPos 
-    end
-
-    menu.applyPendingValues=function()
-        local newSettings={
-            width=menu.pendingDisplayValues.width,
-            height=menu.pendingDisplayValues.height,
-            isFullscreen=menu.pendingDisplayValues.displayMode
-        }
-        applySettings(newSettings)
     end
 
     menu.update=function() 
@@ -400,6 +450,145 @@ TitleScreenState.createDisplaySettingsMenu=function()
                 menu.xPos,menu.yPos+86,84,'center'
             )
         cam:detach()
+    end 
+
+    return menu
+end
+
+TitleScreenState.createAudioSettingsMenu=function()
+    local menu={}
+
+    menu.xPos,menu.yPos=cam.x-42,cam.y-50
+
+    menu.sprites={
+        selections=love.graphics.newImage("assets/title_screen/selections_audio_menu.png"),
+        cursor=love.graphics.newImage("assets/title_screen/cursor_audio_menu.png")
+    }
+
+    menu.resetPendingAudioValues=function()
+        menu.pendingAudioValues={
+            sound=CurrentSettings.sound,
+            music=CurrentSettings.music,
+        }
+    end
+    menu.resetPendingAudioValues()
+
+    --applies audio settings to game. Must restart in order to initialize
+    --everything to have the correct audio volumes
+    menu.applyPendingValues=function()
+        CurrentSettings.sound=menu.pendingAudioValues.sound
+        CurrentSettings.music=menu.pendingAudioValues.music
+        applyCurrentSettings()
+        love.load({keepSettings=true})
+    end
+
+    menu.selections={}
+    menu.selections.sound={
+        name='sound',
+        xPos=menu.xPos, yPos=menu.yPos,
+        shiftLeft=function() --decrease sound volume
+            if menu.pendingAudioValues.sound<=0 then 
+                TitleScreenState.sfx.cursorDecline:play()
+            else 
+                TitleScreenState.sfx.cursorAccept:play()
+            end
+            menu.pendingAudioValues.sound=math.max(
+                menu.pendingAudioValues.sound-10,0
+            )
+        end,
+        shiftRight=function() --increase sound volume
+            if menu.pendingAudioValues.sound>=100 then 
+                TitleScreenState.sfx.cursorDecline:play()
+            else 
+                TitleScreenState.sfx.cursorAccept:play()
+            end
+            menu.pendingAudioValues.sound=math.min(
+                menu.pendingAudioValues.sound+10,100
+            )            
+        end,
+    }
+    menu.selections.music={
+        name='music',
+        xPos=menu.xPos, yPos=menu.selections.sound.yPos+39,
+        shiftLeft=function() --decrease music volume
+            if menu.pendingAudioValues.music<=0 then 
+                TitleScreenState.sfx.cursorDecline:play()
+            else 
+                TitleScreenState.sfx.cursorAccept:play()
+            end
+            menu.pendingAudioValues.music=math.max(
+                menu.pendingAudioValues.music-10,0
+            )
+        end,
+        shiftRight=function() --increase music volume
+            if menu.pendingAudioValues.music>=100 then 
+                TitleScreenState.sfx.cursorDecline:play()
+            else 
+                TitleScreenState.sfx.cursorAccept:play()
+            end
+            menu.pendingAudioValues.music=math.min(
+                menu.pendingAudioValues.music+10,100
+            )    
+        end,
+    }
+
+    menu.cursor={xPos=0,yPos=0}
+    menu.cursor.currentSelection=menu.selections.sound
+    menu.cursor.switchSelection=function()
+        local otherSelection={
+            sound='music',
+            music='sound'
+        }
+        menu.cursor.currentSelection=menu.selections[
+            otherSelection[menu.cursor.currentSelection.name]
+        ]
+    end
+    menu.cursor.updatePosition=function()
+        menu.cursor.xPos=menu.cursor.currentSelection.xPos 
+        menu.cursor.yPos=menu.cursor.currentSelection.yPos 
+    end
+
+    menu.update=function() 
+        menu.cursor.updatePosition()
+        if acceptInput then 
+            ActionButtons:update()
+            if Controls.releasedInputs.btnDown then 
+                menu.applyPendingValues()
+                TitleScreenState.sfx.cursorAccept:play()
+            end
+            if Controls.releasedInputs.btnRight then 
+                menu.resetPendingAudioValues()
+                TitleScreenState:goto('settingsMenu')                
+                TitleScreenState.sfx.cursorDecline:play()
+            end 
+            if Controls.releasedInputs.dirUp or Controls.releasedInputs.dirDown then 
+                menu.cursor.switchSelection()
+                TitleScreenState.sfx.cursorMove:play()
+            end
+            if Controls.releasedInputs.dirRight then 
+                menu.cursor.currentSelection.shiftRight()
+            end
+            if Controls.releasedInputs.dirLeft then 
+                menu.cursor.currentSelection.shiftLeft()
+            end
+        end
+        return true --keep TitleScreenState on state stack
+    end 
+
+    menu.draw=function() 
+        cam:attach()
+            love.graphics.draw(menu.sprites.selections,menu.xPos,menu.yPos)
+            love.graphics.draw(menu.sprites.cursor,menu.cursor.xPos,menu.cursor.yPos)
+            love.graphics.printf("BACK",cam.x,cam.y+103,160,'right')
+            love.graphics.printf("APPLY",cam.x,cam.y+123,140,'right')
+
+            love.graphics.printf(
+                menu.pendingAudioValues.sound,menu.xPos,menu.yPos+48,84,'center'
+            )
+            love.graphics.printf(
+                menu.pendingAudioValues.music,menu.xPos,menu.yPos+86,84,'center'
+            )
+            cam:detach()
     end 
 
     return menu

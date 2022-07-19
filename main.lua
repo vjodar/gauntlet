@@ -33,8 +33,8 @@ function love.load(_args)
     --default values. See safeStorage.lua
     --unless love.load caller specifies that settings should be kept, apply.
     SafeStorage=require 'safeStorage'
-    local settings=SafeStorage.readSettings()
-    if not _args.keepSettings then applySettings(settings) end 
+    CurrentSettings=SafeStorage.readSettings()
+    if not _args.keepSettings then applyCurrentSettings() end 
     
     --libraries
     wf=require 'libraries/windfield'
@@ -80,22 +80,20 @@ end
 --resizes display, enters/exits fullscreen, rescales game assets appropriately
 --sets volume levels for sound effects and music
 --set control bindings
-function applySettings(_settings)
-    _settings.width=math.max(_settings.width,400)
-    _settings.height=math.max(_settings.height,300)
-    _settings.isFullscreen=_settings.isFullscreen 
-    local _,_,flags=love.window.getMode() --gets the index of current monitor
+--all settings taken from global CurrentSettings which is read and loaded from  
+--'settings' file. After settings are applied, 'settings' file is rewritten
+function applyCurrentSettings()
+
+    --DISPLAY
+    local _,_,flags=love.window.getMode() --gets index of current window
     love.window.setMode(
-        _settings.width,_settings.height,
+        CurrentSettings.width,CurrentSettings.height,
         {
             display=flags.display,
-            fullscreen=_settings.isFullscreen,
+            fullscreen=CurrentSettings.isFullscreen,
             fullscreentype='exclusive',
         }
     )
-
-    --write to save file
-    SafeStorage.writeSettings(_settings)
     
     --resizing and rescaling game to match new display settings.
     WINDOW_WIDTH=love.graphics.getWidth()
@@ -103,6 +101,15 @@ function applySettings(_settings)
     WINDOWSCALE_X=WINDOW_WIDTH/400 --1x scale per 400px width
     WINDOWSCALE_Y=WINDOW_HEIGHT/300 --1x scale per 300px width
     if cam~=nil then cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5)) end
+    
+    --AUDIO
+    Volume={ --volumes are from 0 to 1
+        sound=CurrentSettings.sound*0.01,
+        music=CurrentSettings.music*0.01,
+    } 
+
+    --finally save CurrentSettings to 'settings' file
+    SafeStorage.writeSettings(CurrentSettings)
 end
 
 --closes the game. In the browser version, the game stops updating but displays

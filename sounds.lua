@@ -79,7 +79,7 @@ Sounds.newSound=function(_names,_repeatDelay)
     for i,name in pairs(_names) do 
         table.insert(
             sound.sources,
-            love.audio.newSource(Sounds.data[name])
+            love.audio.newSource(Sounds.data[name],'static')
         )
     end
     if _repeatDelay then 
@@ -112,9 +112,15 @@ Sounds.newSound=function(_names,_repeatDelay)
         for i,source in pairs(self.sources) do source:stop() end 
     end
 
-    function sound:setPitch(_pitch) --set's new base pitch
+    function sound:setPitch(_pitch) --sets new base pitch
         for i,source in pairs(self.sources) do source:setPitch(_pitch) end 
     end
+
+    function sound:setVolume(_vol) --sets new volume
+        for i,source in pairs(self.sources) do source:setVolume(_vol) end
+    end
+
+    sound:setVolume(CurrentSettings.sound*0.01) --set volume of sound
     
     return sound 
 end
