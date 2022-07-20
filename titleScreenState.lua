@@ -204,17 +204,9 @@ TitleScreenState.createSettingsMenu=function()
             TitleScreenState.sfx.cursorAccept:play()
         end  
     }
-    menu.selections.controls={
-        name='controls',
-        xPos=menu.xPos, yPos=menu.selections.audio.yPos+19,
-        selectionFunction=function()  
-            TitleScreenState:goto('') --TODO: add controls settings menu
-            TitleScreenState.sfx.cursorAccept:play()
-        end 
-    }
     menu.selections.back={
         name='back',
-        xPos=menu.xPos, yPos=menu.selections.controls.yPos+19,
+        xPos=menu.xPos, yPos=menu.selections.audio.yPos+19,
         selectionFunction=function() 
             TitleScreenState:goto('mainMenu')
             TitleScreenState.sfx.cursorDecline:play()
@@ -230,8 +222,7 @@ TitleScreenState.createSettingsMenu=function()
         local selectionAbove={
             display='back',
             audio='display',
-            controls='audio',
-            back='controls',
+            back='audio',
         }
         menu.cursor.currentSelection=menu.selections[
             selectionAbove[menu.cursor.currentSelection.name]
@@ -240,8 +231,7 @@ TitleScreenState.createSettingsMenu=function()
     menu.cursor.getSelectionBelow=function()        
         local selectionBelow={
             display='audio',
-            audio='controls',
-            controls='back',
+            audio='back',
             back='display',
         }
         menu.cursor.currentSelection=menu.selections[
@@ -300,7 +290,7 @@ TitleScreenState.createDisplaySettingsMenu=function()
     menu.resetPendingDisplayValues=function()
         local w,h,flags=love.window.getMode()
         menu.pendingDisplayValues={
-            displayMode=flags.fullscreen,
+            isFullscreen=flags.fullscreen,
             width=w,
             height=h
         }
@@ -308,22 +298,13 @@ TitleScreenState.createDisplaySettingsMenu=function()
     menu.resetPendingDisplayValues() 
 
     menu.applyPendingValues=function() 
-        local desktopW,desktopH=love.window.getDesktopDimensions()
-        local maxHeight=math.floor(desktopH/300)*300 
-        local maxWidth=maxHeight*(4/3) 
-
-        --ensure resolution isn't being bypassed (i.e. by setting resolution
-        --in one monitor, then applying settings in another.)
-        menu.pendingDisplayValues.width=math.min(
-            maxWidth,menu.pendingDisplayValues.width)
-        menu.pendingDisplayValues.height=math.min(
-            maxHeight,menu.pendingDisplayValues.height)
-
-        --update CurrentSettings and apply to game
-        CurrentSettings.width=menu.pendingDisplayValues.width
-        CurrentSettings.height=menu.pendingDisplayValues.height
-        CurrentSettings.isFullscreen=menu.pendingDisplayValues.displayMode
-        applyCurrentSettings()
+        --update Settings.currentSettings and apply to game
+        for field,setting in pairs(menu.pendingDisplayValues) do 
+            Settings.currentSettings.display[field]=setting
+        end
+        Settings:applyCurrentSettings()
+        --reset pending values in case settings validation rejected something
+        menu.resetPendingDisplayValues()
     end
 
     --returns the largest 4x3 resolution that can fit in current display
@@ -335,23 +316,23 @@ TitleScreenState.createDisplaySettingsMenu=function()
     end
 
     menu.selections={}
-    menu.selections.displayMode={
-        name='displayMode',
+    menu.selections.isFullscreen={
+        name='isFullscreen',
         xPos=menu.xPos, yPos=menu.yPos,
         shiftLeft=function() 
-            local displayMode=menu.pendingDisplayValues.displayMode
-            menu.pendingDisplayValues.displayMode=not displayMode
+            local isFullscreen=menu.pendingDisplayValues.isFullscreen
+            menu.pendingDisplayValues.isFullscreen=not isFullscreen
             TitleScreenState.sfx.cursorAccept:play()
         end,
         shiftRight=function() 
-            local displayMode=menu.pendingDisplayValues.displayMode
-            menu.pendingDisplayValues.displayMode=not displayMode
+            local isFullscreen=menu.pendingDisplayValues.isFullscreen
+            menu.pendingDisplayValues.isFullscreen=not isFullscreen
             TitleScreenState.sfx.cursorAccept:play()
         end,
     }
     menu.selections.resolution={
         name='resolution',
-        xPos=menu.xPos, yPos=menu.selections.displayMode.yPos+39,
+        xPos=menu.xPos, yPos=menu.selections.isFullscreen.yPos+39,
         shiftLeft=function() --decrease resolution
             local minRes={width=400,height=300}
             local currentRes={
@@ -391,11 +372,11 @@ TitleScreenState.createDisplaySettingsMenu=function()
     }
 
     menu.cursor={xPos=0,yPos=0}
-    menu.cursor.currentSelection=menu.selections.displayMode
+    menu.cursor.currentSelection=menu.selections.isFullscreen
     menu.cursor.getOtherSelection=function()
         local otherSelection={
-            displayMode='resolution',
-            resolution='displayMode'
+            isFullscreen='resolution',
+            resolution='isFullscreen'
         }
         menu.cursor.currentSelection=menu.selections[
             otherSelection[menu.cursor.currentSelection.name]
@@ -439,9 +420,9 @@ TitleScreenState.createDisplaySettingsMenu=function()
             love.graphics.printf("BACK",cam.x,cam.y+103,160,'right')
             love.graphics.printf("APPLY",cam.x,cam.y+123,140,'right')
 
-            if menu.pendingDisplayValues.displayMode==false then 
+            if menu.pendingDisplayValues.isFullscreen==false then 
                 love.graphics.printf('Windowed',menu.xPos,menu.yPos+48,84,'center')
-            elseif menu.pendingDisplayValues.displayMode==true then 
+            elseif menu.pendingDisplayValues.isFullscreen==true then 
                 love.graphics.printf('Fullscreen',menu.xPos,menu.yPos+48,84,'center')
             end
             
@@ -467,8 +448,8 @@ TitleScreenState.createAudioSettingsMenu=function()
 
     menu.resetPendingAudioValues=function()
         menu.pendingAudioValues={
-            sound=CurrentSettings.sound,
-            music=CurrentSettings.music,
+            sound=Settings.currentSettings.audio.sound,
+            music=Settings.currentSettings.audio.music,
         }
     end
     menu.resetPendingAudioValues()
@@ -476,9 +457,9 @@ TitleScreenState.createAudioSettingsMenu=function()
     --applies audio settings to game. Must restart in order to initialize
     --everything to have the correct audio volumes
     menu.applyPendingValues=function()
-        CurrentSettings.sound=menu.pendingAudioValues.sound
-        CurrentSettings.music=menu.pendingAudioValues.music
-        applyCurrentSettings()
+        Settings.currentSettings.audio.sound=menu.pendingAudioValues.sound
+        Settings.currentSettings.audio.music=menu.pendingAudioValues.music
+        Settings:applyCurrentSettings()
         love.load({keepSettings=true})
     end
 

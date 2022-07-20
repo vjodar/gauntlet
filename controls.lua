@@ -1,57 +1,55 @@
-Controls={}
+controls={}
+   
+controls.currentInputs={ --stores wether or not each input is currently pressed
+    --directions
+    dirUp=false,
+    dirDown=false,
+    dirLeft=false,
+    dirRight=false,
 
-function Controls:load()     
-    self.currentInputs={ --stores wether or not each input is currently pressed
-        --directions
-        dirUp=false,
-        dirDown=false,
-        dirLeft=false,
-        dirRight=false,
+    --buttons
+    btnUp=false,
+    btnDown=false,
+    btnLeft=false,
+    btnRight=false,
+    btnStart=false,
+}
 
-        --buttons
-        btnUp=false,
-        btnDown=false,
-        btnLeft=false,
-        btnRight=false,
-        btnStart=false,
-    }
-    
-    self.releasedInputs={ --stores wether or not each input has been released each frame
-        --directions
-        dirUp=false,
-        dirDown=false,
-        dirLeft=false,
-        dirRight=false,
+controls.releasedInputs={ --stores wether or not each input has been released each frame
+    --directions
+    dirUp=false,
+    dirDown=false,
+    dirLeft=false,
+    dirRight=false,
 
-        --buttons
-        btnUp=false,
-        btnDown=false,
-        btnLeft=false,
-        btnRight=false,
-        btnStart=false,
-    }
+    --buttons
+    btnUp=false,
+    btnDown=false,
+    btnLeft=false,
+    btnRight=false,
+    btnStart=false,
+}
 
-    --table of control mappings.
-    self.keyMappings={ 
-        --directions
-        ['w']='dirUp',
-        ['s']='dirDown',
-        ['a']='dirLeft',
-        ['d']='dirRight',
+--table of keyboard control mappings.
+controls.keyMappings={ 
+    --directions
+    dirUp='w',
+    dirDown='s',
+    dirLeft='a',
+    dirRight='d',
 
-        --buttons
-        ['up']='btnUp',
-        ['down']='btnDown',
-        ['left']='btnLeft',
-        ['right']='btnRight',
-        ['space']='btnStart',
-    }
-end
+    --buttons
+    btnUp='up',
+    btnDown='down',
+    btnLeft='left',
+    btnRight='right',
+    btnStart='space',
+}
 
-function Controls:update()
-    --check for any currently down (pressed) keyboard inputs
+function controls:readInput()
+    --check for any currently down (pressed) keys
     --enforce that a key cannot be down and released at the same time
-    for key,input in pairs(self.keyMappings) do
+    for input,key in pairs(self.keyMappings) do
         if love.keyboard.isDown(key) and not self.releasedInputs[input] then 
             self.currentInputs[input]=true 
         else 
@@ -73,3 +71,5 @@ function love.keyreleased(_k)
     -- if _k=='p' then Player:takeDamage('melee','pure',0,0,999) end
 end
 --testing----------------------
+
+return controls

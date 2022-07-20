@@ -120,7 +120,7 @@ Sounds.newSound=function(_names,_repeatDelay)
         for i,source in pairs(self.sources) do source:setVolume(_vol) end
     end
 
-    sound:setVolume(CurrentSettings.sound*0.01) --set volume of sound
+    sound:setVolume(Settings.currentSettings.audio.sound*0.01) --set volume of sound
     
     return sound 
 end

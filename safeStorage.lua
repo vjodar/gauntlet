@@ -4,20 +4,41 @@ ss.Serialize=require('libraries/knife.serialize')
 
 function ss.defaultSettings()
     return {
-        --display settings
-        isFullscreen=false,
-        width=800,
-        height=600,
+        display={
+            isFullscreen=false,
+            width=800,
+            height=600,
+        },
 
-        --audio settings
-        sound=100,
-        music=100,
+        audio={
+            sound=100,
+            music=100,
+        },
 
-        --controls settings
-        ['w']='dirUp',
-        ['s']='dirDown',
-        ['a']='dirLeft',
-        ['d']='dirRight',
+        controls={
+            keyMappings={
+                dirUp='w',
+                dirDown='s',
+                dirLeft='a',
+                dirRight='d',
+                btnUp='up',
+                btnDown='down',
+                btnLeft='left',
+                btnRight='right',
+                btnStart='space',
+            },
+            btnMappings={
+                dirUp='dpup',
+                dirDown='dpdown',
+                dirLeft='dpleft',
+                dirRight='dpright',
+                btnUp='y',
+                btnDown='a',
+                btnLeft='x',
+                btnRight='b',
+                btnStart='back',
+            }
+        },
     }
 end
 
@@ -97,9 +118,19 @@ function ss.validate(_settings)
     local raw=_settings                 --raw settings table
     local valid=ss.defaultSettings()    --validated settings table (to be returned)
 
-    for field,_ in pairs(valid) do 
-        if raw[field] then valid[field]=raw[field] end 
+    local function recursiveFill(_r,_v)
+        for field,_ in pairs(_v) do             
+            if _r[field] then
+                if type(_v[field])=='table' then 
+                    recursiveFill(_r[field],_v[field]) --recurse on sub-table
+                else
+                    --overwrite default value with that of raw settings table
+                    _v[field]=_r[field] 
+                end
+            end
+        end
     end
+    recursiveFill(raw,valid)
 
     return valid
 end
