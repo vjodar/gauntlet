@@ -54,9 +54,10 @@ end
 
 function EndScreenState:restartOrMainMenu()
     if acceptInput and self.acceptInput then 
-        if Controls.currentInputs.btnDown then --restart game
+        if Controls.downInputs.btnDown then --restart game
             local afterFn=function()
                 PlayState:load()
+                CraftingMenuState:resetCurrentCraftOptions()
                 ActionButtons:setMenuMode(false)
                 cam:lookAt(
                     Dungeon.startRoom[1]*Rooms.ROOMWIDTH+Rooms.ROOMWIDTH*0.5,
@@ -67,7 +68,7 @@ function EndScreenState:restartOrMainMenu()
             FadeState:fadeOut(1,afterFn)
             return false
         end
-        if Controls.currentInputs.btnRight then --main menu
+        if Controls.downInputs.btnRight then --main menu
             local afterFn=function()
                 --reload game, specifiy to keep current settings
                 love.load({keepSettings=true})

@@ -34,7 +34,7 @@ function love.load(_args)
     --default values. See safeStorage.lua
     --unless love.load caller specifies that settings should be kept, apply.
     Settings=require 'settings'
-    if not _args.keepSettings then Settings:applyCurrentSettings() end 
+    if not _args.keepSettings then Settings:applyCurrentSettings() end
     
     --libraries
     wf=require 'libraries/windfield'

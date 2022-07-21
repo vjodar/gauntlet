@@ -83,7 +83,7 @@ function ActionButtons:addActionButtonWeapons()
 
         button.state.pressedFlag=0 --default to not being pressed
         if acceptInput then
-            if Controls.currentInputs.btnUp then 
+            if Controls.downInputs.btnUp then 
                 button.state.pressedFlag=1
             end 
 
@@ -193,7 +193,7 @@ function ActionButtons:addActionButtonSupplies()
 
         button.state.pressedFlag=0 --deafult to not pressed
         if acceptInput then --if gamestate and button are accepting input 
-            if Controls.currentInputs.btnLeft then 
+            if Controls.downInputs.btnLeft then 
                 button.state.pressedFlag=1
                 if button.state.acceptInput then --only increase duration when button is accepting input
                     button.state.buttonDuration=button.state.buttonDuration+dt 
@@ -368,7 +368,7 @@ function ActionButtons:addActionButtonProtectionMagics()
 
         button.state.pressedFlag=0 --default to not pressed
         if acceptInput then 
-            if Controls.currentInputs.btnRight then 
+            if Controls.downInputs.btnRight then 
                 button.state.pressedFlag=1
                 if button.state.acceptInput then --only increase duration when button is pressed
                     button.state.buttonDuration=button.state.buttonDuration+dt 
@@ -516,7 +516,7 @@ function ActionButtons:addActionButtonCombatInteract()
 
         button.state.pressedFlag=0 --default to not pressed
         if acceptInput then 
-            if Controls.currentInputs.btnDown then 
+            if Controls.downInputs.btnDown then 
                 button.state.pressedFlag=1            
                 button.state.buttonDuration=button.state.buttonDuration+dt
 
@@ -708,7 +708,7 @@ function ActionButtons:addMenuAccept()
     function button:update()
         self.pressedFlag=0 --default to not pressed
         if acceptInput then 
-            if Controls.currentInputs.btnDown then self.pressedFlag=1 end
+            if Controls.downInputs.btnDown then self.pressedFlag=1 end
         end
     end
 
@@ -745,7 +745,7 @@ function ActionButtons:addMenuDecline()
     function button:update()
         self.pressedFlag=0 --default to not pressed
         if acceptInput then 
-            if Controls.currentInputs.btnRight then self.pressedFlag=1 end
+            if Controls.downInputs.btnRight then self.pressedFlag=1 end
         end
     end
 

@@ -14,31 +14,6 @@ function ss.defaultSettings()
             sound=100,
             music=100,
         },
-
-        controls={
-            keyMappings={
-                dirUp='w',
-                dirDown='s',
-                dirLeft='a',
-                dirRight='d',
-                btnUp='up',
-                btnDown='down',
-                btnLeft='left',
-                btnRight='right',
-                btnStart='space',
-            },
-            btnMappings={
-                dirUp='dpup',
-                dirDown='dpdown',
-                dirLeft='dpleft',
-                dirRight='dpright',
-                btnUp='y',
-                btnDown='a',
-                btnLeft='x',
-                btnRight='b',
-                btnStart='back',
-            }
-        },
     }
 end
 
@@ -121,7 +96,7 @@ function ss.validate(_settings)
     local function recursiveFill(_r,_v)
         for field,_ in pairs(_v) do             
             if _r[field] then
-                if type(_v[field])=='table' then 
+                if type(_v[field])=='table' and type(_r[field])=='table' then 
                     recursiveFill(_r[field],_v[field]) --recurse on sub-table
                 else
                     --overwrite default value with that of raw settings table

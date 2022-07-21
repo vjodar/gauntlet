@@ -118,11 +118,11 @@ TitleScreenState.createMainMenu=function()
             if Controls.releasedInputs.btnRight then 
                 menu.selections.exit.selectionFunction() 
             end 
-            if Controls.releasedInputs.dirUp then 
+            if Controls.pressedInputs.dirUp then 
                 menu.cursor.getSelectionAbove()
                 TitleScreenState.sfx.cursorMove:play()
             end
-            if Controls.releasedInputs.dirDown then 
+            if Controls.pressedInputs.dirDown then 
                 menu.cursor.getSelectionBelow()
                 TitleScreenState.sfx.cursorMove:play()
             end
@@ -253,11 +253,11 @@ TitleScreenState.createSettingsMenu=function()
             if Controls.releasedInputs.btnRight then 
                 menu.selections.back.selectionFunction() 
             end 
-            if Controls.releasedInputs.dirUp then 
+            if Controls.pressedInputs.dirUp then 
                 menu.cursor.getSelectionAbove()
                 TitleScreenState.sfx.cursorMove:play()
             end
-            if Controls.releasedInputs.dirDown then 
+            if Controls.pressedInputs.dirDown then 
                 menu.cursor.getSelectionBelow()
                 TitleScreenState.sfx.cursorMove:play()
             end
@@ -399,14 +399,14 @@ TitleScreenState.createDisplaySettingsMenu=function()
                 TitleScreenState:goto('settingsMenu')                
                 TitleScreenState.sfx.cursorDecline:play()
             end 
-            if Controls.releasedInputs.dirUp or Controls.releasedInputs.dirDown then 
+            if Controls.pressedInputs.dirUp or Controls.pressedInputs.dirDown then 
                 menu.cursor.getOtherSelection()
                 TitleScreenState.sfx.cursorMove:play()
             end
-            if Controls.releasedInputs.dirRight then 
+            if Controls.pressedInputs.dirRight then 
                 menu.cursor.currentSelection.shiftRight()
             end
-            if Controls.releasedInputs.dirLeft then 
+            if Controls.pressedInputs.dirLeft then 
                 menu.cursor.currentSelection.shiftLeft()
             end
         end
@@ -542,14 +542,14 @@ TitleScreenState.createAudioSettingsMenu=function()
                 TitleScreenState:goto('settingsMenu')                
                 TitleScreenState.sfx.cursorDecline:play()
             end 
-            if Controls.releasedInputs.dirUp or Controls.releasedInputs.dirDown then 
+            if Controls.pressedInputs.dirUp or Controls.pressedInputs.dirDown then 
                 menu.cursor.switchSelection()
                 TitleScreenState.sfx.cursorMove:play()
             end
-            if Controls.releasedInputs.dirRight then 
+            if Controls.pressedInputs.dirRight then 
                 menu.cursor.currentSelection.shiftRight()
             end
-            if Controls.releasedInputs.dirLeft then 
+            if Controls.pressedInputs.dirLeft then 
                 menu.cursor.currentSelection.shiftLeft()
             end
         end

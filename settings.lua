@@ -2,6 +2,7 @@ local settings={}
 
 settings.safeStorage=require 'safeStorage'
 settings.currentSettings=settings.safeStorage.readSettings() --'global' current settings
+settings.defaultSettings=settings.safeStorage.defaultSettings()
 
 --resizes display, enters/exits fullscreen, rescales game assets appropriately
 --sets volume levels for sound effects and music
@@ -15,7 +16,6 @@ function settings:applyCurrentSettings()
     self:applyDisplaySettings() 
     --audio settings don't need to be applied; sounds generated 
     --read settings.currentSettings.sound/music directly
-    self:applyControlsSettings()
 
     --finally save currentSettings to 'settings' file
     settings.safeStorage.writeSettings(self.currentSettings)
@@ -45,17 +45,6 @@ function settings:validateCurrentSettings()
     currentAudio.music=math.max(0,currentAudio.music)
     currentAudio.music=math.min(100,currentAudio.music)
     currentAudio.music=math.floor(currentAudio.music)
-
-    --CONTROLS
-    local currentControls=self.currentSettings.controls
-    local defaults=self.safeStorage.defaultSettings()
-    --ensure all control mappings are strings. If not, revert to default
-    for input,key in pairs(currentControls.keyMappings) do 
-        if type(key)~='string' then key=defaults.controls.keyMappings[input] end
-    end
-    for input,btn in pairs(currentControls.btnMappings) do 
-        if type(btn)~='string' then btn=defaults.controls.btnMappings[input] end
-    end
 end
 
 function settings:applyDisplaySettings()
@@ -75,18 +64,6 @@ function settings:applyDisplaySettings()
     WINDOWSCALE_X=WINDOW_WIDTH/400 --1x scale per 400px width
     WINDOWSCALE_Y=WINDOW_HEIGHT/300 --1x scale per 300px width
     if cam~=nil then cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5)) end
-end
-
-function settings:applyControlsSettings()
-    --set keyboard bindinds
-    for input,key in pairs(Controls.keyMappings) do 
-        Controls.keyMappings[input]=self.currentSettings.controls.keyMappings[input]
-    end
-    
-    --set joystick bindings
-    -- for input,btn in pairs(Controls.btnMappings) do 
-    --     Controls.btnMappings[input]=self.currentSettings.controls.btnMappings[input]
-    -- end
 end
 
 return settings 

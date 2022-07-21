@@ -206,7 +206,7 @@ function CraftingMenuState:update()
         end
 
         --move cursor
-        if Controls.releasedInputs.dirRight then
+        if Controls.pressedInputs.dirRight then
             if self.cursor.selection=='staff' then --wrap around to potion
                 self.cursor.selection='potion'
                 self.cursor.xPos=self.menu.xPos+4
@@ -220,7 +220,7 @@ function CraftingMenuState:update()
                 self.cursor.xPos=self.cursor.xPos+19
             end
             self.sfx.move:play()
-        elseif Controls.releasedInputs.dirLeft then 
+        elseif Controls.pressedInputs.dirLeft then 
             if self.cursor.selection=='potion' then --wrap around to staff
                 self.cursor.selection='staff'
                 self.cursor.xPos=self.menu.xPos+99
@@ -239,7 +239,7 @@ function CraftingMenuState:update()
 
     --just to ensure the player releases the 'open crafting menu' button before proceeding
     if self.state.keyIsReleased==false then 
-        if acceptInput and not Controls.currentInputs.btnDown then 
+        if acceptInput and not Controls.downInputs.btnDown then 
             self.state.keyIsReleased=true 
         end
     end
@@ -374,4 +374,15 @@ function CraftingMenuState:updateCraftingOptions(_lastItemCrafted)
     elseif last=='weapon_staff_t1' then options.staff='weapon_staff_t2'  
     elseif last=='weapon_staff_t2' then options.staff='weapon_staff_t3'
     end
+end
+
+function CraftingMenuState:resetCurrentCraftOptions()
+    self.currentCraftOptions={
+        potion='potion',
+        head='armor_head_t1',
+        chest='armor_chest_t1',
+        legs='armor_legs_t1',
+        bow='weapon_bow_t1',
+        staff='weapon_staff_t1'
+    }
 end

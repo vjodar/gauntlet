@@ -407,21 +407,21 @@ function Player:move()
     self.xVel,self.yVel=0,0
     local target={x=self.xPos,y=self.yPos}
 
-    if Controls.currentInputs.dirLeft then
+    if Controls.downInputs.dirLeft then
         target.x=target.x-1
         self.state.facing='left'
         self.state.moving=true
     end
-    if Controls.currentInputs.dirRight then
+    if Controls.downInputs.dirRight then
         target.x=target.x+1
         self.state.facing='right'
         self.state.moving=true 
     end
-    if Controls.currentInputs.dirUp then
+    if Controls.downInputs.dirUp then
         target.y=target.y-1
         self.state.moving=true 
     end
-    if Controls.currentInputs.dirDown then
+    if Controls.downInputs.dirDown then
         target.y=target.y+1
         self.state.moving=true 
     end
@@ -455,7 +455,7 @@ function Player:queryInteractables()
         --set combatInteract button state to update sprite 
         ActionButtons.combatInteract:setNodeNearPlayer(true)
 
-        if Controls.currentInputs.btnDown then 
+        if Controls.downInputs.btnDown then 
             --face player toward that node
             if nearbyNode.xPos<self.xPos then self.state.facing='left' 
             else self.state.facing='right' end
