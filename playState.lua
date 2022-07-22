@@ -90,6 +90,8 @@ function PlayState:updateDungeonPhase() --update function of gathering/crafting 
 
     Hud:update() --update Heads Up Display
 
+    if acceptInput and Controls.releasedInputs.btnSelect then PauseMenuState:open() end
+
     return true --IMPORTANT! return true to remain on statestack
 end
 

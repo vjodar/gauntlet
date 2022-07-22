@@ -13,6 +13,7 @@ controls.downInputs={ --stores wether or not each input is currently down
     btnLeft=false,
     btnRight=false,
     btnStart=false,
+    btnSelect=false,
 }
 
 controls.pressedInputs={ --stores wether or not each input is pressed for the first frame
@@ -28,6 +29,7 @@ controls.pressedInputs={ --stores wether or not each input is pressed for the fi
     btnLeft=false,
     btnRight=false,
     btnStart=false,
+    btnSelect=false,
 }
 
 controls.releasedInputs={ --stores wether or not each input has been released each frame
@@ -43,6 +45,7 @@ controls.releasedInputs={ --stores wether or not each input has been released ea
     btnLeft=false,
     btnRight=false,
     btnStart=false,
+    btnSelect=false,
 }
 
 --table of keyboard control mappings.
@@ -59,6 +62,7 @@ controls.keyMappings={
     btnUp={'up','kp8'},
     btnDown={'down','kp5'},
     btnStart={'space'},
+    btnSelect={'return'},
 }
 
 --table of joystick control mappings
@@ -73,6 +77,7 @@ controls.btnMappings={ --buttons
     btnUp={"x"},
     btnDown={"b"},
     btnStart={"start"},
+    btnSelect={"back"},
 }
 controls.axisMappings={ --analog sticks
     dirLeft={"leftx",'neg'},
@@ -145,13 +150,5 @@ function love.joystickremoved(_j)
     print("joystick removed: ".._j:getName())
     if Controls.joystick then Controls.joystick=nil end 
 end
-
---testing----------------------    
-function love.keyreleased(_k)
-    -- if _k=='escape' then love.event.quit() end --easy close for devs.
-    if _k=='return' then love.load({keepSettings=true}) end --easy restart for devs.
-    -- if _k=='p' then Player:takeDamage('melee','pure',0,0,999) end
-end
---testing----------------------
 
 return controls

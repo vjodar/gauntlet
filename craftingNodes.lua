@@ -403,8 +403,9 @@ function CraftingNodes:spawnEnchantedCraftingTable(_x,_y)
     end
 
     function node:nodeInteract()
-        table.insert(gameStates,CraftingMenuState)
-        CraftingMenuState:openCraftingMenu(Player.xPos,Player.yPos)
+        if Controls.pressedInputs.btnDown then    
+            CraftingMenuState:openCraftingMenu(Player.xPos,Player.yPos)
+        end
     end
 
     function node:drawUIelements()        

@@ -22,6 +22,7 @@ require 'playerTransitionState'
 require 'endScreenState'
 require 'sounds'
 require 'titleScreenState'
+require 'pauseMenu'
 
 function love.load(_args)
     --set pixelated look
@@ -53,6 +54,7 @@ function love.load(_args)
     PlayState:load()
     TitleScreenState:load()
     CraftingMenuState:load()
+    PauseMenuState:load()
 
     table.insert(gameStates,TimerState) --timer state is always first on gamestates stack
     table.insert(gameStates,PlayState)

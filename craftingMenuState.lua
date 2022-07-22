@@ -171,8 +171,7 @@ function CraftingMenuState:load()
         arcane_bowstring='an Arcane Bowstring'
     }
 
-    self.state={} --metatable
-    self.state.keyIsReleased=false --checks if the player released the 'open menu' button 
+    self._upd=nil --update state machine
 
     self.sfx={
         failure=Sounds.failure(),
@@ -182,25 +181,43 @@ function CraftingMenuState:load()
     }
 end
 
-function CraftingMenuState:update()
+function CraftingMenuState:update() return self:_upd() end --run the state machines
+
+--need to wait for player to release the button used to open the crafting menu
+--otherwise bugs (player will try to craft potion the same frame they open menu).
+function CraftingMenuState:waitForButtonRelease()
+    self.xPos,self.yPos=cam:position() --update position
+    
+    Inventory:open() --open HUD inventory to show players their items.    
+    ActionButtons:update() --update the menu actionButtons
+
+    if acceptInput and Controls.releasedInputs.btnDown then 
+        --switch to 'real' craftingMenuState update
+        self._upd=self.updateMenu
+    end
+
+    return true 
+end
+
+--the actual update function. State machine switches to this after player has
+--released the button used to open the menu.
+function CraftingMenuState:updateMenu()
     self.xPos,self.yPos=cam:position() --update position
 
     Inventory:open() --open HUD inventory to show players their items.    
     ActionButtons:update() --update the menu actionButtons
+    
+    if acceptInput then
+        --if player presses exit button or player took damage, exit crafting menu
+        if Controls.pressedInputs.btnRight 
+        or Player.health.current~=self.playerHealth 
+        then
+            self.sfx.close:play()
+            ActionButtons:setMenuMode(false) --back to regular action buttons
+            return false  --exit crafting menu
+        end 
 
-    --if player presses exit button or player took damage, exit crafting menu
-    if Controls.releasedInputs.btnRight 
-    or Player.health.current~=self.playerHealth 
-    then
-        self.sfx.close:play()
-        ActionButtons:setMenuMode(false) --back to regular action buttons
-        return false  --exit crafting menu
-    end 
-
-    --gameState must be accepting input and the player must have released the
-    --'open crafting menu' button before inputs regarding crafting will be taken
-    if acceptInput and self.state.keyIsReleased then
-        if Controls.releasedInputs.btnDown then 
+        if Controls.pressedInputs.btnDown then 
             --craft the current selected item
             self:craft(self.currentCraftOptions[self.cursor.selection])
         end
@@ -237,13 +254,6 @@ function CraftingMenuState:update()
         end
     end
 
-    --just to ensure the player releases the 'open crafting menu' button before proceeding
-    if self.state.keyIsReleased==false then 
-        if acceptInput and not Controls.downInputs.btnDown then 
-            self.state.keyIsReleased=true 
-        end
-    end
-
     return true --return true to remain on gamestate stack
 end
 
@@ -251,9 +261,9 @@ function CraftingMenuState:draw()
     cam:attach()
 
     --fade out playstate
-    love.graphics.setColor(0,0,0,self.alpha)
+    love.graphics.setColor(black,black,black,self.alpha)
     love.graphics.rectangle('fill',self.xPos-200,self.yPos-150,400,300)
-    love.graphics.setColor(1,1,1,self.alpha+0.5)
+    love.graphics.setColor(1,1,1,self.alpha+0.6)
 
     Player.dialog:draw(Player.xPos,Player.yPos) --redraw player dialog so it isn't faded
 
@@ -304,11 +314,13 @@ function CraftingMenuState:openCraftingMenu(_x,_y)
     --used to know if player took damage while using the crafting menu
     self.playerHealth=Player.health.current
 
-    TimerState:tweenVal(self,'alpha',0.7,0.2)
+    self._upd=self.waitForButtonRelease
 
-    self.state.keyIsReleased=false --hasn't yet released the key used to open this menu
+    TimerState:tweenVal(self,'alpha',0.7,0.2)
     
     ActionButtons:setMenuMode(true) --buttons are in menu mode
+
+    table.insert(gameStates,self) --insert into gamestate stack
 
     self.sfx.open:play()
 end

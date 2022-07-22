@@ -33,6 +33,9 @@ end
 
 --remove TitleScreenState from gamestates stack
 function TitleScreenState:closeTitleScreen() 
+    PlayState:startDungeonPhase()
+    ActionButtons:setMenuMode(false)
+    self._drw=function() end
     self._upd=function() return false end
 end
 
@@ -52,8 +55,6 @@ TitleScreenState.createMainMenu=function()
         name='play',
         xPos=menu.xPos, yPos=menu.yPos,
         selectionFunction=function() --start game
-            PlayState:startDungeonPhase()
-            ActionButtons:setMenuMode(false)
             TitleScreenState:closeTitleScreen()
         end
     }
@@ -332,7 +333,7 @@ TitleScreenState.createDisplaySettingsMenu=function()
     }
     menu.selections.resolution={
         name='resolution',
-        xPos=menu.xPos, yPos=menu.selections.isFullscreen.yPos+39,
+        xPos=menu.xPos, yPos=menu.selections.isFullscreen.yPos+38,
         shiftLeft=function() --decrease resolution
             local minRes={width=400,height=300}
             local currentRes={
@@ -490,7 +491,7 @@ TitleScreenState.createAudioSettingsMenu=function()
     }
     menu.selections.music={
         name='music',
-        xPos=menu.xPos, yPos=menu.selections.sound.yPos+39,
+        xPos=menu.xPos, yPos=menu.selections.sound.yPos+38,
         shiftLeft=function() --decrease music volume
             if menu.pendingAudioValues.music<=0 then 
                 TitleScreenState.sfx.cursorDecline:play()
