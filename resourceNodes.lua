@@ -668,7 +668,7 @@ ResourceNodes.nodeSpawnFunctions[4]=function(_x,_y) --spawn Fungi
         --when player is near, draw name on UI
         if self.uiData.isNearPlayer and not self.state.depleted then
             love.graphics.printf(
-                "fungi",fonts.white,
+                "strange fungus",fonts.white,
                 self.xPos-100,self.yPos-self.uiData.uiOffset,200,'center'
             )
         end

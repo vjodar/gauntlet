@@ -700,7 +700,7 @@ function ActionButtons:addMenuAccept()
 
     function button:load()
         self.blankSprite={ActionButtons.blankUp,ActionButtons.blankDown} --[1]=up sprite,[2]=down sprite
-        self.sprite=love.graphics.newImage('assets/crafting_menu/accept.png')
+        self.sprite=love.graphics.newImage('assets/menus/crafting_menu/accept.png')
         self.pressedFlag=0
         return self 
     end
@@ -737,7 +737,7 @@ function ActionButtons:addMenuDecline()
 
     function button:load()
         self.blankSprite={ActionButtons.blankUp,ActionButtons.blankDown} --[1]=up sprite,[2]=down sprite
-        self.sprite=love.graphics.newImage('assets/crafting_menu/decline.png')
+        self.sprite=love.graphics.newImage('assets/menus/crafting_menu/decline.png')
         self.pressedFlag=0
         return self 
     end

@@ -4,8 +4,8 @@ function PauseMenuState:load()
     self.xPos,self.yPos=0,0
 
     self.sprites={
-        selections=love.graphics.newImage("assets/pause_menu/selections_pause_menu.png"),
-        cursor=love.graphics.newImage("assets/pause_menu/cursor_pause_menu.png"),
+        selections=love.graphics.newImage("assets/menus/pause_menu/selections_pause_menu.png"),
+        cursor=love.graphics.newImage("assets/menus/pause_menu/cursor_pause_menu.png"),
     }
 
     self.sfx={

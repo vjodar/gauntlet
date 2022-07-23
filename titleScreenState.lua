@@ -6,6 +6,7 @@ function TitleScreenState:load()
     self.mainMenu=self.createMainMenu() --main menu
 
     self.tutorialMenu=self.createTutorialMenu() --tutorial related menus
+    self.controlsGuideMenu=self.createControlsGuideMenu()
 
     self.settingsMenu=self.createSettingsMenu() --setings related menus
     self.displaySettingsMenu=self.createDisplaySettingsMenu()
@@ -45,9 +46,9 @@ TitleScreenState.createMainMenu=function()
     menu.xPos,menu.yPos=cam.x-34,cam.y+11
 
     menu.sprites={
-        title=love.graphics.newImage("assets/title_screen/title.png"),
-        selections=love.graphics.newImage("assets/title_screen/selections_main_menu.png"),
-        cursor=love.graphics.newImage("assets/title_screen/cursor_main_menu.png")
+        title=love.graphics.newImage("assets/menus/title_screen/title.png"),
+        selections=love.graphics.newImage("assets/menus/title_screen/selections_main_menu.png"),
+        cursor=love.graphics.newImage("assets/menus/title_screen/cursor_main_menu.png")
     }
 
     menu.selections={}
@@ -147,21 +148,84 @@ end
 TitleScreenState.createTutorialMenu=function()
     local menu={}
 
+    menu.xPos,menu.yPos=cam.x-49,cam.y-50
+
     menu.sprites={
-        controls_guide=love.graphics.newImage('assets/title_screen/controls_guide.png'),
+        selections=love.graphics.newImage('assets/menus/title_screen/selections_tutorial_menu.png'),
+        cursor=love.graphics.newImage('assets/menus/title_screen/cursor_tutorial_menu.png'),
     }
+
+    menu.selections={
+        viewControls={
+            name='viewControls',
+            xPos=menu.xPos,yPos=menu.yPos,
+            selectionFunction=function()
+                TitleScreenState:goto('controlsGuideMenu')
+                TitleScreenState.sfx.cursorAccept:play()
+            end
+        },
+        startTutorial={
+            name='startTutorial',
+            xPos=menu.xPos,yPos=menu.yPos+21,
+            selectionFunction=function()
+                --TODO: close menu and start tutorial
+            end
+        },
+        back={
+            name='back',            
+            xPos=menu.xPos,yPos=menu.yPos+42,
+            selectionFunction=function()
+                TitleScreenState:goto('mainMenu')
+                TitleScreenState.sfx.cursorDecline:play()
+            end
+        },
+    }
+
+    menu.cursor={
+        currentSelection=menu.selections.viewControls,
+        selectionBelow={
+            viewControls='startTutorial',
+            startTutorial='back',
+            back='viewControls'
+        },
+        selectionAbove={
+            viewControls='back',
+            startTutorial='viewControls',
+            back='startTutorial'
+        },
+    }
+
+    --returns the selection below the current selection
+    menu.getSelectionBelow=function()
+        local current=menu.cursor.currentSelection.name
+        local below=menu.cursor.selectionBelow[current]
+        return menu.selections[below]
+    end
+
+    --returns the selection above the current selection
+    menu.getSelectionAbove=function()
+        local current=menu.cursor.currentSelection.name
+        local above=menu.cursor.selectionAbove[current]
+        return menu.selections[above]
+    end
 
     menu.update=function()
         if acceptInput then 
             ActionButtons:update()
+            if Controls.pressedInputs.dirUp then 
+                menu.cursor.currentSelection=menu.getSelectionAbove()
+                TitleScreenState.sfx.cursorMove:play()
+            end
+            if Controls.pressedInputs.dirDown then 
+                menu.cursor.currentSelection=menu.getSelectionBelow()
+                TitleScreenState.sfx.cursorMove:play()
+            end
             if Controls.releasedInputs.btnRight then 
                 TitleScreenState:goto('mainMenu')
                 TitleScreenState.sfx.cursorDecline:play()
             end
             if Controls.releasedInputs.btnDown then 
-                --TODO------------------
-                --enter current selection
-                --TODO------------------
+                menu.cursor.currentSelection.selectionFunction()
             end
         end
         return true 
@@ -169,9 +233,62 @@ TitleScreenState.createTutorialMenu=function()
 
     menu.draw=function()
         cam:attach()
-            love.graphics.draw(menu.sprites.controls_guide,cam.x-200,cam.y-131)
+            love.graphics.draw(menu.sprites.selections,menu.xPos,menu.yPos)
+            love.graphics.draw(
+                menu.sprites.cursor,
+                menu.cursor.currentSelection.xPos,
+                menu.cursor.currentSelection.yPos
+            )
             love.graphics.printf("BACK",cam.x,cam.y+103,160,'right')
             love.graphics.printf("ACCEPT",cam.x,cam.y+123,140,'right')
+        cam:detach()
+    end
+
+    return menu
+end
+
+TitleScreenState.createControlsGuideMenu=function()
+    local menu={}
+
+    menu.sprites={
+        keyboard=love.graphics.newImage('assets/menus/title_screen/keyboard_controls_guide.png'),
+        controller=love.graphics.newImage('assets/menus/title_screen/controller_controls_guide.png'),
+    }
+
+    menu.currentGuide='keyboard'
+    menu.oppositeGuide={keyboard='controller',controller='keyboard'}
+
+    menu.acceptButtonText={
+        keyboard='VIEW CONTROLLER CONTROLS',
+        controller='VIEW KEYBOARD CONTROLS',
+    }
+
+    menu.update=function()
+        if acceptInput then 
+            ActionButtons:update()
+            if Controls.releasedInputs.btnRight then 
+                TitleScreenState:goto('tutorialMenu')
+                TitleScreenState.sfx.cursorDecline:play()
+            end
+            if Controls.releasedInputs.btnDown
+            or Controls.pressedInputs.dirRight 
+            or Controls.pressedInputs.dirLeft 
+            then --switch to opposite guide
+                menu.currentGuide=menu.oppositeGuide[menu.currentGuide]
+                TitleScreenState.sfx.cursorMove:play()
+            end
+        end
+        return true 
+    end
+
+    menu.draw=function()
+        cam:attach()
+            love.graphics.draw(menu.sprites[menu.currentGuide],cam.x-200,cam.y-150)
+            love.graphics.printf("BACK",cam.x,cam.y+103,160,'right')
+            love.graphics.printf(
+                menu.acceptButtonText[menu.currentGuide],
+                cam.x+40,cam.y+123,100,'right'
+            )
         cam:detach()
     end
 
@@ -184,8 +301,8 @@ TitleScreenState.createSettingsMenu=function()
     menu.xPos,menu.yPos=cam.x-34,cam.y-50
 
     menu.sprites={
-        selections=love.graphics.newImage("assets/title_screen/selections_settings_menu.png"),
-        cursor=love.graphics.newImage("assets/title_screen/cursor_main_menu.png")
+        selections=love.graphics.newImage("assets/menus/title_screen/selections_settings_menu.png"),
+        cursor=love.graphics.newImage("assets/menus/title_screen/cursor_main_menu.png")
     }
 
     menu.selections={}
@@ -284,8 +401,8 @@ TitleScreenState.createDisplaySettingsMenu=function()
     menu.xPos,menu.yPos=cam.x-42,cam.y-50
 
     menu.sprites={
-        selections=love.graphics.newImage("assets/title_screen/selections_display_menu.png"),
-        cursor=love.graphics.newImage("assets/title_screen/cursor_display_menu.png")
+        selections=love.graphics.newImage("assets/menus/title_screen/selections_display_menu.png"),
+        cursor=love.graphics.newImage("assets/menus/title_screen/cursor_display_menu.png")
     }
 
     menu.resetPendingDisplayValues=function()
@@ -443,8 +560,8 @@ TitleScreenState.createAudioSettingsMenu=function()
     menu.xPos,menu.yPos=cam.x-42,cam.y-50
 
     menu.sprites={
-        selections=love.graphics.newImage("assets/title_screen/selections_audio_menu.png"),
-        cursor=love.graphics.newImage("assets/title_screen/cursor_audio_menu.png")
+        selections=love.graphics.newImage("assets/menus/title_screen/selections_audio_menu.png"),
+        cursor=love.graphics.newImage("assets/menus/title_screen/cursor_audio_menu.png")
     }
 
     menu.resetPendingAudioValues=function()

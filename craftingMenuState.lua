@@ -5,11 +5,11 @@ function CraftingMenuState:load()
     self.alpha=0
 
     self.menu={}
-    self.menu.sprite=love.graphics.newImage('assets/crafting_menu/menu.png')
+    self.menu.sprite=love.graphics.newImage('assets/menus/crafting_menu/menu.png')
     self.menu.xPos,self.menu.yPos=0,0
 
     self.cursor={}
-    self.cursor.sprite=love.graphics.newImage('assets/crafting_menu/cursor.png')
+    self.cursor.sprite=love.graphics.newImage('assets/menus/crafting_menu/cursor.png')
     self.cursor.xPos,self.cursor.yPos=0,0
     self.cursor.selection='potion' --potion, head, chest, legs, bow, or staff
 
