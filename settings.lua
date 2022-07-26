@@ -10,15 +10,18 @@ settings.defaultSettings=settings.safeStorage.defaultSettings()
 --all settings taken from currentSettings which is read and loaded from  
 --'settings' file. After settings are applied, 'settings' file is rewritten
 function settings:applyCurrentSettings()
-
-    self:validateCurrentSettings() --first ensure settings are valid
-
+    --NOT IN WEB VERION-------------------------------------
+    -- self:validateCurrentSettings() --first ensure settings are valid
+    --NOT IN WEB VERION-------------------------------------
+    
     self:applyDisplaySettings() 
     --audio settings don't need to be applied; sounds generated 
     --read settings.currentSettings.sound/music directly
-
+    
+    --NOT IN WEB VERION-------------------------------------
     --finally save currentSettings to 'settings' file
-    settings.safeStorage.writeSettings(self.currentSettings)
+    -- settings.safeStorage.writeSettings(self.currentSettings)
+    --NOT IN WEB VERION-------------------------------------
 end
 
 --validates the current settings to make sure they are valid values
@@ -48,15 +51,17 @@ function settings:validateCurrentSettings()
 end
 
 function settings:applyDisplaySettings()
-    local _,_,flags=love.window.getMode() --gets index of current window
-    love.window.setMode(
-        self.currentSettings.display.width,self.currentSettings.display.height,
-        {
-            display=flags.display,
-            fullscreen=self.currentSettings.display.isFullscreen,
-            fullscreentype='exclusive',
-        }
-    )
+    --NOT IN WEB VERION-------------------------------------
+    -- local _,_,flags=love.window.getMode() --gets index of current window
+    -- love.window.setMode(
+    --     self.currentSettings.display.width,self.currentSettings.display.height,
+    --     {
+    --         display=flags.display,
+    --         fullscreen=self.currentSettings.display.isFullscreen,
+    --         fullscreentype='exclusive',
+    --     }
+    -- )
+    --NOT IN WEB VERION-------------------------------------
     
     --resizing and rescaling game to match new display settings.
     WINDOW_WIDTH=love.graphics.getWidth()

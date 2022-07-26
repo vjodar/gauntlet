@@ -28,8 +28,8 @@ function love.load(_args)
     --set pixelated look
     love.graphics.setDefaultFilter('nearest','nearest')
 
-    Controls=require 'controls'
-    
+    Controls=require 'controls'  
+
     --read and store settings file. If none exist or if the settings file was
     --modified in a way that makes it invalid, setting file will be set to 
     --default values. See safeStorage.lua

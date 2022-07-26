@@ -65,31 +65,7 @@ controls.keyMappings={
     btnSelect={'return'},
 }
 
---table of joystick control mappings
-controls.btnMappings={ --buttons
-    dirLeft={"dpleft"},
-    dirRight={"dpright"},
-    dirUp={"dpup"},
-    dirDown={"dpdown"},
-
-    btnLeft={"y"},
-    btnRight={"a"},
-    btnUp={"x"},
-    btnDown={"b"},
-    btnStart={"start"},
-    btnSelect={"back"},
-}
-controls.axisMappings={ --analog sticks
-    dirLeft={"leftx",'neg'},
-    dirRight={"leftx",'pos'},
-    dirUp={"lefty",'neg'},
-    dirDown={"lefty",'pos'},
-}
-controls.joystick=nil --added joystick will be referenced here
-
---reads input from keyboard. If joystick is detected, read from it as well.
 function controls:readInput()
-    if self.joystick then return self:readKeyboardAndJoystick() end 
 
     --check for any currently down (pressed) keys
     --enforce that a key cannot be down and released at the same time
@@ -111,44 +87,6 @@ function controls:readInput()
             self.pressedInputs[input]=false
         end
     end
-end
-
---reads input from both keyboard and joystick
-function controls:readKeyboardAndJoystick()
-    for input,_ in pairs(self.downInputs) do
-        local axisDown=false
-        if self.axisMappings[input] then --check analog stick
-            local axis=self.axisMappings[input][1]
-            local sign=self.axisMappings[input][2]
-            if sign=='pos' then axisDown=self.joystick:getGamepadAxis(axis)>0.5
-            elseif sign=='neg' then axisDown=self.joystick:getGamepadAxis(axis)<-0.5
-            end
-        end
-        local btnDown=self.joystick:isGamepadDown(self.btnMappings[input])
-        if ( --check if either key, btn, or axis is down
-            (love.keyboard.isDown(self.keyMappings[input]) or axisDown or btnDown)
-            ) and not self.releasedInputs[input] --can't be both down and released
-        then 
-            self.pressedInputs[input]=not self.downInputs[input]
-            self.downInputs[input]=true 
-        else --releasedInputs are downInputs that aren't actually down
-            self.releasedInputs[input]=self.downInputs[input]
-            self.downInputs[input]=false
-            self.pressedInputs[input]=false
-        end
-    end
-end
-
---add the joytick to Controls if it doesn't already have a joystick
-function love.joystickadded(_j)
-    print("joystick added: ".._j:getName())    
-    if not Controls.joystick then Controls.joystick=_j end 
-end
-
---remove joystick from Controls
-function love.joystickremoved(_j)
-    print("joystick removed: ".._j:getName())
-    if Controls.joystick then Controls.joystick=nil end 
 end
 
 return controls
