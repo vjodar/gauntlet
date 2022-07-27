@@ -168,7 +168,28 @@ TitleScreenState.createTutorialMenu=function()
             name='startTutorial',
             xPos=menu.xPos,yPos=menu.yPos+21,
             selectionFunction=function()
-                --TODO: close menu and start tutorial
+                --close titleScreenState
+                TitleScreenState._upd=function() return false end
+                TitleScreenState._drw=function() end
+                
+                local afterOutFn=function() 
+                    --close dungeon, bossRoom, and playState
+                    Dungeon:closeDungeon()
+                    for _,c in pairs(BossRoom.lavaColliders) do c:destroy() end
+                    PlayState._update=function() return false end 
+
+                    --start tutorialState
+                    TutorialState:startT1()
+
+                    --0.2s after fading out, fade in and drop player into room
+                    TimerState:after(0.2,function()
+                        FadeState:fadeIn()       
+                        PlayerTransitionState:enterRoom(Player)
+                        ActionButtons:setMenuMode(false)
+                    end)
+                end
+
+                FadeState:fadeOut(1,afterOutFn)
             end
         },
         back={
@@ -285,7 +306,7 @@ TitleScreenState.createSettingsMenu=function()
     menu.xPos,menu.yPos=cam.x-34,cam.y-50
 
     menu.sprites={
-        selections=love.graphics.newImage("assets/menus/title_screen/selections_settings_menu_web.png"),
+        selections=love.graphics.newImage("assets/menus/title_screen/selections_settings_menu.png"),
         cursor=love.graphics.newImage("assets/menus/title_screen/cursor_main_menu.png")
     }
 
@@ -314,16 +335,16 @@ TitleScreenState.createSettingsMenu=function()
             TitleScreenState.sfx.cursorDecline:play()
 
             --default to display selection (so it doesn't stay on exit)
-            menu.cursor.currentSelection=menu.selections.audio
+            menu.cursor.currentSelection=menu.selections.display --audio in WEB VERSION
         end
     }
 
     menu.cursor={xPos=0,yPos=0}
-    menu.cursor.currentSelection=menu.selections.audio
+    menu.cursor.currentSelection=menu.selections.display --audio in WEB VERSION
     menu.cursor.getSelectionAbove=function()
         local selectionAbove={
-            -- display='back', --NOT IN WEB VERSION
-            audio='back',
+            display='back', --NOT IN WEB VERSION
+            audio='display',
             back='audio',
         }
         menu.cursor.currentSelection=menu.selections[
@@ -332,9 +353,9 @@ TitleScreenState.createSettingsMenu=function()
     end
     menu.cursor.getSelectionBelow=function()        
         local selectionBelow={
-            -- display='audio', --NOT IN WEB VERSION
+            display='audio', --NOT IN WEB VERSION
             audio='back',
-            back='audio',
+            back='display',
         }
         menu.cursor.currentSelection=menu.selections[
             selectionBelow[menu.cursor.currentSelection.name]

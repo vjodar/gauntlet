@@ -11,7 +11,7 @@ settings.defaultSettings=settings.safeStorage.defaultSettings()
 --'settings' file. After settings are applied, 'settings' file is rewritten
 function settings:applyCurrentSettings()
     --NOT IN WEB VERION-------------------------------------
-    -- self:validateCurrentSettings() --first ensure settings are valid
+    self:validateCurrentSettings() --first ensure settings are valid
     --NOT IN WEB VERION-------------------------------------
     
     self:applyDisplaySettings() 
@@ -20,7 +20,7 @@ function settings:applyCurrentSettings()
     
     --NOT IN WEB VERION-------------------------------------
     --finally save currentSettings to 'settings' file
-    -- settings.safeStorage.writeSettings(self.currentSettings)
+    settings.safeStorage.writeSettings(self.currentSettings)
     --NOT IN WEB VERION-------------------------------------
 end
 
@@ -52,15 +52,15 @@ end
 
 function settings:applyDisplaySettings()
     --NOT IN WEB VERION-------------------------------------
-    -- local _,_,flags=love.window.getMode() --gets index of current window
-    -- love.window.setMode(
-    --     self.currentSettings.display.width,self.currentSettings.display.height,
-    --     {
-    --         display=flags.display,
-    --         fullscreen=self.currentSettings.display.isFullscreen,
-    --         fullscreentype='exclusive',
-    --     }
-    -- )
+    local _,_,flags=love.window.getMode() --gets index of current window
+    love.window.setMode(
+        self.currentSettings.display.width,self.currentSettings.display.height,
+        {
+            display=flags.display,
+            fullscreen=self.currentSettings.display.isFullscreen,
+            fullscreentype='exclusive',
+        }
+    )
     --NOT IN WEB VERION-------------------------------------
     
     --resizing and rescaling game to match new display settings.

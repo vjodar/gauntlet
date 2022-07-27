@@ -63,6 +63,7 @@ function Sounds:load()
         menu_move=love.sound.newSoundData("assets/sfx/menu_move.wav"),
         failure=love.sound.newSoundData("assets/sfx/failure.wav"),
         game_over=love.sound.newSoundData("assets/sfx/game_over.wav"),
+        objective_complete=love.sound.newSoundData("assets/sfx/objective_complete.wav"),
     }
 
     self.seeds={ --used to open and modify sounds in ChipTone
@@ -70,6 +71,7 @@ function Sounds:load()
         menu_open="eNpjYuB790GegcXI-H89CDIwNNS7MzIzeDEGMoH5RsYMDCDBMz4QupORgcHKP84OpBRZHEbvEYHQTOvYjYwnMjAcYICAhvr_9hCaGcaACxxxaAYz9tqnsYFodB38FpMlQPSMyOw_YHEIlJ8RyUBPAAC7NTec",
         menu_close="eNpjYuB790GegeWMDWPD__r_9QwMDfXujMwMXoyBTGC-kTEDA0jwjA-E7mRkYLDyj7MDKUUWh9F7RCA00zp2I-OJDAwHGCCgof6_PYRmhjHgAkccmsGMvfZpbCAaXQe_xWQJED0jMvsPWBwC5WdEMtATAABWfTdC",
         game_over="eNpjYuB790GekSXVTut--T8GIGioZ2DYwtDGsF_4f_3WYhZrF4igvCNMkoHByj_ObkYkhH_GB5VOU4OqW8duZDyRgeEAAwQ01P-3h9DMMAZc4IhDM5ix1z6NDWYHsgJ-i8kSIHpGZPYfsDgEykPcQDcAAMOUNLU.",
+        objective_complete="eNpjYkh7qCfBwJLqxQAFDfUMDMwMoszSLP_rk6sZjIwhgmd8UOkZkdjF09SghqxjNzKeCGL_t4eIwGgiBBhQ-TAzYXb-h0B5CJ9uAADmvS9s",
     }
 end
 
@@ -232,3 +234,6 @@ Sounds.menu_open=function() return Sounds.newSound({'menu_open'}) end
 Sounds.menu_close=function() return Sounds.newSound({'menu_close'}) end
 Sounds.menu_move=function() return Sounds.newSound({'menu_move'}) end
 Sounds.failure=function() return Sounds.newSound({'failure'}) end 
+
+--tutorial sounds
+Sounds.objective_complete=function() return Sounds.newSound({'objective_complete'}) end

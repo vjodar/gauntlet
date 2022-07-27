@@ -19,7 +19,9 @@ function PauseMenuState:load()
             name='backToGame',
             xPos=0,yPos=0,
             fn=function() --remove pauseMenu to go back to game
-                ActionButtons:setMenuMode(false)
+                TimerState:after(0.1,function() 
+                    ActionButtons:setMenuMode(false)
+                end)
                 self._upd=function() return false end 
                 self.sfx.decline:play()
             end,
@@ -40,10 +42,10 @@ function PauseMenuState:load()
                 end
                 local afterFn=function() --after fadeOut, restart game
                     self._upd=function() return false end
+                    ActionButtons:setMenuMode(false)
                     love.load({keepSettings=true}) 
                 end
                 FadeState:fadeOut(1,afterFn)
-                ActionButtons:setMenuMode(false)
                 self.sfx.accept:play()                
             end,
             updatePos=function(s)

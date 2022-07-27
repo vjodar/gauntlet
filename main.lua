@@ -23,6 +23,7 @@ require 'endScreenState'
 require 'sounds'
 require 'titleScreenState'
 require 'pauseMenu'
+require 'tutorialState'
 
 function love.load(_args)
     --set pixelated look
@@ -46,9 +47,14 @@ function love.load(_args)
     gameStates={} --state stack
     acceptInput=false --flag to restrict inputs to one state at a time
 
+    --color and alpha of screen used for fading in and out
+    black=2/15
+    transitionScreenAlpha=1
+
     --Initialize all states in gamestates that need loading
     Sounds:load()
     TimerState:load()
+    TutorialState:load()
     FadeState:load()
     PlayerTransitionState:load()
     PlayState:load()
@@ -76,6 +82,19 @@ end
 
 function love.draw()
     for i,state in pairs(gameStates) do state:draw() end 
+    -- love.graphics.print(#Entities.entitiesTable,0,0,nil,3)
+end
+
+--draw transition screen for fading in and out (alpha is controlled by FadeState)
+function drawTransitionScreen()
+    cam:attach()
+        love.graphics.setColor(black,black,black,transitionScreenAlpha)
+        love.graphics.rectangle(
+            'fill',cam.x-(WINDOW_WIDTH*0.5),cam.y-(WINDOW_HEIGHT*0.5),
+            WINDOW_WIDTH,WINDOW_HEIGHT
+        )
+        love.graphics.setColor(1,1,1,1)
+    cam:detach()
 end
 
 --closes the game. In the browser version, the game stops updating but displays

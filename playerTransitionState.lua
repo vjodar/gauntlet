@@ -42,6 +42,3 @@ function PlayerTransitionState:enterRoomUpd() --update function for enterRoom
 
     return true 
 end
-
-function PlayerTransitionState:exitRoom(_actor,_afterFn) end 
-function PlayerTransitionState:exitRoomUpd() end 

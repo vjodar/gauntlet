@@ -13,6 +13,7 @@ function PlayState:load()
         blue=love.graphics.newImageFont("assets/fonts/font_blue.png",glyphs), --magical damage
         red=love.graphics.newImageFont("assets/fonts/font_red.png",glyphs), --pure damage
         white=love.graphics.newImageFont("assets/fonts/font_white.png",glyphs), --ui text
+        green=love.graphics.newImageFont("assets/fonts/font_green.png",glyphs), --tutorial text
     }
     love.graphics.setFont(fonts.yellow)
 
@@ -21,10 +22,6 @@ function PlayState:load()
     camTarget={} --camera will look at this object's position
     --1x zoom for every 400px width and 300px height
     cam:zoomTo((WINDOWSCALE_X*0.5)+(WINDOWSCALE_Y*0.5))
-
-    --color and alpha of screen used for fading in and out
-    black=2/15
-    transitionScreenAlpha=1
 
     world=wf.newWorld() --initialize physics world which handles colliders
     world:addCollisionClass('player')
@@ -67,19 +64,7 @@ end
 --update and draw functions. They will be changed depending on which part of
 --the game the player is currently on (starting room, dungeon, and boss battle)
 function PlayState:update() return self:_update() end
-function PlayState:draw() self:_draw() self:drawTransitionScreen() end
-
---draw transition screen (alpha is controlled by FadeState)
-function PlayState:drawTransitionScreen()
-    cam:attach()
-        love.graphics.setColor(black,black,black,transitionScreenAlpha)
-        love.graphics.rectangle(
-            'fill',cam.x-(WINDOW_WIDTH*0.5),cam.y-(WINDOW_HEIGHT*0.5),
-            WINDOW_WIDTH,WINDOW_HEIGHT
-        )
-        love.graphics.setColor(1,1,1,1)
-    cam:detach()
-end
+function PlayState:draw() self:_draw() drawTransitionScreen() end
 
 function PlayState:updateDungeonPhase() --update function of gathering/crafting phase
     world:update(dt) --update physics colliders
