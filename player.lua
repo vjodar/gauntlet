@@ -171,6 +171,9 @@ function Player:load()
     self.dialogLines.outOfMana={
         "All out of mana!","No more mana!","Need to drink a potion!"
     }
+    self.dialogLines.noEnemies={
+        "No enemies nearby!","Nothing to fight!","Can't see any enemies!"
+    }
 
     --system that manages the floating symbols when using protection magics
     self.protectionMagics=ProtectionMagics:newProtectionMagicSystem(self)

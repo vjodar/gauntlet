@@ -285,7 +285,9 @@ function CraftingMenuState:draw()
 
     cam:detach()
     
-    Hud:draw() --draw HUD again to keep it on top of menu
+    --draw inventory and action buttons during crafting
+    Inventory:draw()
+    ActionButtons:draw()
 end
 
 --opens the crafting menu. Called by the enchanted crafting table craftingNode

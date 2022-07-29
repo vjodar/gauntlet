@@ -629,7 +629,10 @@ function ActionButtons:addActionButtonCombatInteract()
             else 
                 if not Player.combatData.inCombat then
                     --not in combat and no enemies nearby, return nil
-                    Player.dialog:say('No enemies nearby')
+                    local noEnemiesDialog=Player.dialogLines.noEnemies[
+                        love.math.random(#Player.dialogLines.noEnemies)
+                    ]
+                    Player.dialog:say(noEnemiesDialog)
                     Player.sfx.failure:play()
                     return nil 
                 end
