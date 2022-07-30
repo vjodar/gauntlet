@@ -5,7 +5,7 @@ function PlayState:load()
     local glyphs=( --used for fonts
         " abcdefghijklmnopqrstuvwxyz" ..
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ..
-        "1234567890.:!,'+"
+        "1234567890.:!,'+/()"
     )
     fonts={
         yellow=love.graphics.newImageFont("assets/fonts/font_yellow.png",glyphs), --default/dialog
@@ -220,7 +220,7 @@ function PlayState:startBossBattle()
     Player.combatData.aggroRange={x=800,y=600} 
 
     --spawn boss on the next frame (must allow entitiesTable to clear)
-    TimerState:after(0.05,function() Enemies.enemySpawner.t4[1](410,300) end)
+    TimerState:after(0.05,function() BossRoom.boss=Enemies.enemySpawner.t4[1](410,300) end)
 
     Player.collider:setPosition(424,370)
     cam:lookAt(Player.collider:getPosition())

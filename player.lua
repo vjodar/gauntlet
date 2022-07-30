@@ -230,6 +230,7 @@ function Player:load()
     self.combatData.damageResistance=0 --damage resistance given by armor
     self.combatData.magicBonus=0 --determines the rate mana drains when using protection magics
     self.combatData.manaDrainTimer=0 --frequency mana drains when using protection magics
+    self.combatData.blockedDamage=false --used for the Tutorial
 
     --health and mana
     self.health={
@@ -773,6 +774,7 @@ function Player:takeDamage(_attackType,_damageType,_knockback,_angle,_val)
             )  
         end
         self.dialog:damage(0,_damageType)
+        self.combatData.blockedDamage=true 
 
         local pitch=love.math.random(10,12)*0.1
         self.sfx['protect_'.._damageType]:stop() 

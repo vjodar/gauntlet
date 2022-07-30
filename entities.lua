@@ -49,7 +49,9 @@ function Entities:update()
     if self.willRemoveAll then 
         local tempPlayer=Player --save Player
         for i,e in pairs(self.entitiesTable) do --destroy any colliders
-            if e.collider and e~=tempPlayer then e.collider:destroy() end 
+            if e.collider and e~=tempPlayer then 
+                if not e.collider:isDestroyed() then e.collider:destroy() end  
+            end 
         end
         self.entitiesTable={} --clear table
         table.insert(self.entitiesTable,tempPlayer) --restore player

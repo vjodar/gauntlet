@@ -59,12 +59,14 @@ function Enemies:load()
             elseif _enemy.name=='demon_t3' then 
                 modifiedDamage=modifiedDamage-10
             end
+            _enemy.state.lastDamageTypeTaken='magical'
         elseif _damageType=='physical' then 
             if _enemy.name=='orc_t2' then 
                 modifiedDamage=modifiedDamage-5
             elseif _enemy.name=='orc_t3' then 
                 modifiedDamage=modifiedDamage-10
             end
+            _enemy.state.lastDamageTypeTaken='physical'
         end
 
         modifiedDamage=love.math.random( --roll between +/-10% of damage
@@ -518,6 +520,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
         self.state.dealtDamageThisAttack=false 
         self.state.meleeDamage=5
         self.state.knockback=30
+        self.state.lastDamageTypeTaken='' --what damage type was enemy hit with last
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -546,6 +549,8 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        return self 
     end
 
     function enemy:update() 
@@ -611,7 +616,7 @@ Enemies.enemySpawner.t1[1]=function(_x,_y) --spawn orc_t1
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
@@ -674,6 +679,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
         self.state.dealtDamageThisAttack=false 
         self.state.meleeDamage=5
         self.state.knockback=30
+        self.state.lastDamageTypeTaken='' --what damage type was enemy hit with last
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -701,6 +707,8 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        return self
     end
 
     function enemy:update() 
@@ -766,7 +774,7 @@ Enemies.enemySpawner.t1[2]=function(_x,_y) --spawn demon_t1
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
@@ -829,6 +837,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
         self.state.dealtDamageThisAttack=false 
         self.state.meleeDamage=5
         self.state.knockback=30
+        self.state.lastDamageTypeTaken='' --what damage type was enemy hit with last
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -857,6 +866,8 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        return self
     end
 
     function enemy:update() 
@@ -922,7 +933,7 @@ Enemies.enemySpawner.t1[3]=function(_x,_y) --spawn skeleton_t1
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
@@ -982,6 +993,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
         self.state.attackOnCooldown=false
         self.state.attackRange={x=75,y=55} --range enemy can attack from
         self.state.aggroRange={x=150,y=112} --range enemy will become aggressive
+        self.state.lastDamageTypeTaken='' --what damage type was enemy hit with last
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -1008,6 +1020,8 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        return self
     end
 
     function enemy:update() 
@@ -1073,7 +1087,7 @@ Enemies.enemySpawner.t2[1]=function(_x,_y) --spawn orc_t2
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
@@ -1137,6 +1151,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
         self.state.dealtDamageThisAttack=false 
         self.state.meleeDamage=15
         self.state.knockback=45
+        self.state.lastDamageTypeTaken='' --what damage type was enemy hit with last
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -1165,6 +1180,8 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        return self
     end
 
     function enemy:update() 
@@ -1230,7 +1247,7 @@ Enemies.enemySpawner.t2[2]=function(_x,_y) --spawn demon_t2
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
@@ -1291,6 +1308,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
         self.state.attackOnCooldown=false 
         self.state.attackRange={x=150,y=112}
         self.state.aggroRange={x=200,y=150}
+        self.state.lastDamageTypeTaken='' --what damage type was enemy hit with last
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -1319,6 +1337,8 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        return self
     end
 
     function enemy:update() 
@@ -1384,7 +1404,7 @@ Enemies.enemySpawner.t2[3]=function(_x,_y) --spawn mage_t2
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
@@ -1450,6 +1470,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
         self.state.attackRange={x=300,y=200}
         self.state.aggroRange={x=300,y=200}
         self.state.basicAttackCounter=0 --used to trigger a special attack
+        self.state.lastDamageTypeTaken='' --what damage type was enemy hit with last
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -1478,6 +1499,8 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        return self
     end
 
     function enemy:update() 
@@ -1553,7 +1576,7 @@ Enemies.enemySpawner.t3[1]=function(_x,_y) --spawn orc_t3
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
@@ -1619,6 +1642,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
         self.state.attackRange={x=300,y=200}
         self.state.aggroRange={x=300,y=200}
         self.state.basicAttackCounter=0 --used to trigger special attacks
+        self.state.lastDamageTypeTaken='' --what damage type was enemy hit with last
 
         --wait 1s before setting a moveTarget to allow enemy to be pushed out of other
         --colliders it may have spawned in
@@ -1647,6 +1671,8 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
+
+        return self
     end
 
     function enemy:update() 
@@ -1725,7 +1751,7 @@ Enemies.enemySpawner.t3[2]=function(_x,_y) --spawn demon_t3
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
     enemy.checkTargetPosition=Enemies.sharedEnemyFunctions.checkTargetPosition
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
@@ -1873,9 +1899,8 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
 
         --insert enemy into entitiesTable
         table.insert(Entities.entitiesTable,self) 
-
-        --also pass boss to BossRoom
-        BossRoom.boss=self 
+        
+        return self
     end
 
     function enemy:update() 
@@ -2073,7 +2098,7 @@ Enemies.enemySpawner.t4[1]=function(_x,_y) --spawn boss
     enemy.wanderingAI=Enemies.sharedEnemyFunctions.wanderingAI
     enemy.approachTarget=Enemies.sharedEnemyFunctions.approachTarget
 
-    enemy:load() --initialize enemy
+    return enemy:load() --initialize enemy
 end
 
 --takes a spawn zone and fills it with a set of 3 random T1 enemies

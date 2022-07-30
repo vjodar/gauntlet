@@ -149,8 +149,11 @@ function Projectiles:launch(_xPos,_yPos,_type,_target,_damageBonus)
     end
 
     function p:update()
-        --if target or player has died while projectile is still traveling, destory projectile
-        if self.target.health.current==0 or Player.health.current==0 then return false end 
+        --if target or player has died or player is invincible, destroy projectile
+        if self.target.health.current==0 
+        or Player.health.current==0 
+        or Player.state.invincible
+        then return false end 
         
         --calculate angle toward the target and set velocities such that
         --projectile will home in on target at a constant speed (self.speed)
