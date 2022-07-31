@@ -97,18 +97,8 @@ function drawTransitionScreen()
     cam:detach()
 end
 
---closes the game. In the browser version, the game stops updating but displays
---the last thing drawn to screen. So display a "Thank you" to leave plays with.
-function closeGame() 
-    love.update=function(dt) end 
-    love.draw=function() 
-        love.graphics.printf(
-            'Thank you for playing!',
-            0-((0.5*WINDOW_WIDTH)*(WINDOWSCALE_X-1)),WINDOW_HEIGHT*0.5,
-            WINDOW_WIDTH,'center',
-            nil,WINDOWSCALE_X
-        )    
-    end        
-
+--closes the game.
+function closeGame()   
     love.event.quit()
+    -- love.load({keepSettings=true}) --WEB VERSION
 end

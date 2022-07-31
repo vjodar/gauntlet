@@ -23,7 +23,7 @@ function TutorialState:load()
     self.room={
         xPos=0,yPos=0,
         sprites={
-            floor=love.graphics.newImage('assets/maps/room_floor.png'),
+            floor=love.graphics.newImage('assets/maps/room_tutorial_floor.png'),
             bg=love.graphics.newImage('assets/maps/room_tutorial.png'),
             fg=love.graphics.newImage('assets/maps/room_tutorial_foreground.png'),
         },
@@ -104,7 +104,7 @@ function TutorialState:load()
         love.graphics.printf(
             self.objectives.t1.movement.text,
             fonts[self.objectives.t1.movement.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
 
         cam:detach()
@@ -196,12 +196,12 @@ function TutorialState:load()
         love.graphics.printf(
             self.objectives.t2.logs.text,
             fonts[self.objectives.t2.logs.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
         love.graphics.printf(
             self.objectives.t2.ore.text,
             fonts[self.objectives.t2.ore.color],
-            self.room.xPos,self.room.yPos+286,400,'center'
+            self.room.xPos,self.room.yPos+254,400,'center'
         )
 
         cam:detach()
@@ -327,17 +327,17 @@ function TutorialState:load()
         love.graphics.printf(
             self.objectives.t3.inventory.text,
             fonts[self.objectives.t3.inventory.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
         love.graphics.printf(
             self.objectives.t3.gather.text,
             fonts[self.objectives.t3.gather.color],
-            self.room.xPos,self.room.yPos+286,400,'center'
+            self.room.xPos,self.room.yPos+254,400,'center'
         )
         love.graphics.printf(
             self.objectives.t3.make.text,
             fonts[self.objectives.t3.make.color],
-            self.room.xPos,self.room.yPos+296,400,'center'
+            self.room.xPos,self.room.yPos+264,400,'center'
         )
 
         cam:detach()
@@ -424,7 +424,7 @@ function TutorialState:load()
             PlayerTransitionState:enterRoom(Player)
 
             --spawn fungi and crafting table
-            ResourceNodes.nodeSpawnFunctions[4](self.room.xPos+186,self.room.yPos+212)
+            ResourceNodes.nodeSpawnFunctions[4](self.room.xPos+186,self.room.yPos+196)
             CraftingNodes:spawnEnchantedCraftingTable(self.room.xPos+176,self.room.yPos+116)
 
             --spawn items for crafting
@@ -433,9 +433,10 @@ function TutorialState:load()
                 Items:spawn_item(self.room.xPos+176,self.room.yPos+74,'rock_metal')
                 Items:spawn_item(self.room.xPos+176,self.room.yPos+74,'vine_thread')
             end
-            for i=1,18 do 
+            for i=1,10 do 
                 Items:spawn_item(self.room.xPos+176,self.room.yPos+74,'arcane_shards') 
             end 
+            Player:addToInventory('arcane_shards',20)
             Items:spawn_item(self.room.xPos+176,self.room.yPos+74,'broken_bow')
             Items:spawn_item(self.room.xPos+176,self.room.yPos+74,'broken_staff')
         end)
@@ -496,17 +497,17 @@ function TutorialState:load()
         love.graphics.printf(
             self.objectives.t4.potion.text,
             fonts[self.objectives.t4.potion.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
         love.graphics.printf(
             self.objectives.t4.armor.text,
             fonts[self.objectives.t4.armor.color],
-            self.room.xPos,self.room.yPos+286,400,'center'
+            self.room.xPos,self.room.yPos+254,400,'center'
         )
         love.graphics.printf(
             self.objectives.t4.weapons.text,
             fonts[self.objectives.t4.weapons.color],
-            self.room.xPos,self.room.yPos+296,400,'center'
+            self.room.xPos,self.room.yPos+264,400,'center'
         )
 
         cam:detach()
@@ -558,11 +559,17 @@ function TutorialState:load()
 
     function TutorialState:endT4()
         self.checkObjectivesT4=function()end --stop checking objectives
+
+        --prevent player from using crafting table 
+        Dungeon.craftingTable.collider:setCollisionClass('depletedNode')
         
         --reset Player dialog
         Player.dialogLines.noEnemies={
             "No enemies nearby!","Nothing to fight!","Can't see any enemies!"
-        }    
+        }
+
+        --close inventory
+        Inventory:close()
         
         self:gotoTutorial(5) --continue to next tutorial
     end
@@ -581,13 +588,13 @@ function TutorialState:load()
             PlayerTransitionState:enterRoom(Player)
 
             --spawn depleted trees to act as a barrier
-            for i=1,26 do 
+            for i=1,22 do 
                 local tree=ResourceNodes.nodeSpawnFunctions[1](
                     self.room.xPos+144,self.room.yPos+35+(i*10))
                 tree.state.depleted=true 
                 tree.collider:setType('static')
             end
-            for i=1,26 do 
+            for i=1,22 do 
                 local tree=ResourceNodes.nodeSpawnFunctions[1](
                     self.room.xPos+224,self.room.yPos+35+(i*10))
                 tree.state.depleted=true 
@@ -650,12 +657,12 @@ function TutorialState:load()
         love.graphics.printf(
             self.objectives.t5.goblin.text,
             fonts[self.objectives.t5.goblin.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
         love.graphics.printf(
             self.objectives.t5.imp.text,
             fonts[self.objectives.t5.imp.color],
-            self.room.xPos,self.room.yPos+286,400,'center'
+            self.room.xPos,self.room.yPos+254,400,'center'
         )
 
         cam:detach()
@@ -685,6 +692,9 @@ function TutorialState:load()
     function TutorialState:endT5()
         self.checkObjectivesT5=function()end --stop checking objectives
 
+        --close inventory
+        Inventory:close()
+
         self.enemies={} --clear enemies table
         
         self:gotoTutorial(6) --continue to next tutorial
@@ -704,7 +714,7 @@ function TutorialState:load()
             PlayerTransitionState:enterRoom(Player)
 
             --spawn depleted trees to act as a barrier
-            for i=1,26 do 
+            for i=1,22 do 
                 local tree=ResourceNodes.nodeSpawnFunctions[1](
                     self.room.xPos+185,self.room.yPos+35+(i*10))
                 tree.state.depleted=true 
@@ -777,12 +787,12 @@ function TutorialState:load()
         love.graphics.printf(
             self.objectives.t6.bow.text,
             fonts[self.objectives.t6.bow.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
         love.graphics.printf(
             self.objectives.t6.staff.text,
             fonts[self.objectives.t6.staff.color],
-            self.room.xPos,self.room.yPos+286,400,'center'
+            self.room.xPos,self.room.yPos+254,400,'center'
         )
 
         cam:detach()
@@ -842,6 +852,9 @@ function TutorialState:load()
         self.checkObjectivesT6=function()end --stop checking objectives
         self.populateRoomWithEnemiesT6=function()end --stop spawning enemies
 
+        --close inventory
+        Inventory:close()
+
         for _,e in pairs(self.enemies) do e.health.current=0 end --kill all enemies
         self.enemies={} --clear enemies table
         
@@ -863,8 +876,7 @@ function TutorialState:load()
             PlayerTransitionState:enterRoom(Player)
 
             --spawn inner walls
-            Walls:newWall(self.room.xPos+128,16+self.room.yPos+141,'horizontal',144)
-            Walls:newWall(self.room.xPos+48,16+self.room.yPos+237,'horizontal',288)
+            Walls:newWall(self.room.xPos+128,16+self.room.yPos+125,'horizontal',144)
 
             --spawn enemy
             self.enemies.orc=Enemies.enemySpawner.t2[1](192,176)
@@ -923,7 +935,7 @@ function TutorialState:load()
             self.objectives.t7.protectPhysical.text.." ("..
             self.objectives.t7.protectPhysical.instances.."/3)",
             fonts[self.objectives.t7.protectPhysical.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
 
         cam:detach()
@@ -966,6 +978,9 @@ function TutorialState:load()
         self.populateRoomWithEnemiesT7=function()end --stop spawning enemies
         Player.state.invincible=true 
 
+        --close inventory
+        Inventory:close()
+
         for _,e in pairs(self.enemies) do e.health.current=0 end --kill all enemies
         self.enemies={} --clear enemies table
         
@@ -988,8 +1003,7 @@ function TutorialState:load()
             Player.state.invincible=false 
 
             --spawn inner walls
-            Walls:newWall(self.room.xPos+128,16+self.room.yPos+141,'horizontal',144)
-            Walls:newWall(self.room.xPos+48,16+self.room.yPos+237,'horizontal',288)
+            Walls:newWall(self.room.xPos+128,16+self.room.yPos+125,'horizontal',144)
 
             --spawn enemy
             self.enemies.mage=Enemies.enemySpawner.t2[3](192,176)
@@ -1048,7 +1062,7 @@ function TutorialState:load()
             self.objectives.t8.protectMagical.text.." ("..
             self.objectives.t8.protectMagical.instances.."/3)",
             fonts[self.objectives.t8.protectMagical.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
 
         cam:detach()
@@ -1092,6 +1106,9 @@ function TutorialState:load()
         Player.health.current=Player.health.max
         Player.mana.current=Player.mana.max
         Player.state.invincible=true
+
+        --close inventory
+        Inventory:close()
 
         for _,e in pairs(self.enemies) do e.health.current=0 end --kill all enemies
         self.enemies={} --clear enemies table
@@ -1177,12 +1194,12 @@ function TutorialState:load()
         love.graphics.printf(
             self.objectives.t9.restoreHealth.text,
             fonts[self.objectives.t9.restoreHealth.color],
-            self.room.xPos,self.room.yPos+276,400,'center'
+            self.room.xPos,self.room.yPos+244,400,'center'
         )
         love.graphics.printf(
             self.objectives.t9.restoreMana.text,
             fonts[self.objectives.t9.restoreMana.color],
-            self.room.xPos,self.room.yPos+286,400,'center'
+            self.room.xPos,self.room.yPos+254,400,'center'
         )
 
         cam:detach()
@@ -1232,10 +1249,10 @@ function TutorialState:createOuterWalls(_room)
     local x,y=_room.xPos,_room.yPos
     local walls={}
 
-    walls.left=world:newRectangleCollider(x,y,36,320)
-    walls.right=world:newRectangleCollider(x+347,y,36,320)
+    walls.left=world:newRectangleCollider(x,y,36,288)
+    walls.right=world:newRectangleCollider(x+347,y,36,288)
     walls.top=world:newRectangleCollider(x+37,y,310,48)
-    walls.bottom=world:newRectangleCollider(x+37,y+298,310,22)
+    walls.bottom=world:newRectangleCollider(x+37,y+266,310,22)
 
     --make them static colliders and set their collision class
     for _,w in pairs(walls) do w:setType('static') w:setCollisionClass('outerWall') end
@@ -1245,9 +1262,9 @@ end
 
 --creates the inner walls for the Movement Tutorial
 function TutorialState:createT1InnerWalls(_room)   
-    Walls:newWall(_room.xPos+127,16+_room.yPos+33,'vertical',212)
-    Walls:newWall(_room.xPos+255,16+_room.yPos+61,'vertical',244)
-    Walls:newWall(_room.xPos+127,16+_room.yPos+229,'horizontal',96)
+    Walls:newWall(_room.xPos+127,16+_room.yPos+33,'vertical',180)
+    Walls:newWall(_room.xPos+255,16+_room.yPos+61,'vertical',212)
+    Walls:newWall(_room.xPos+127,16+_room.yPos+197,'horizontal',96)
     Walls:newWall(_room.xPos+160,16+_room.yPos+61,'horizontal',96)
 end
 

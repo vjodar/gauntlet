@@ -144,6 +144,11 @@ function ActionButtons:addActionButtonWeapons()
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
+        love.graphics.printf( --draw control key
+            Controls.keyMappings.btnUp[1],fonts.white,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,WINDOW_HEIGHT-70*WINDOWSCALE_Y,
+            24,'center',nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,-21
+        )
     end
 
     return button 
@@ -294,6 +299,11 @@ function ActionButtons:addActionButtonSupplies()
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
+        love.graphics.printf( --draw control key
+            Controls.keyMappings.btnLeft[1],fonts.white,
+            WINDOW_WIDTH-80*WINDOWSCALE_X,WINDOW_HEIGHT-50*WINDOWSCALE_Y,
+            24,'center',nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,-21
+        )
         
         --display the amount of fish/potion the player has (unless it's 0)
         if button.state.acceptInput then --only draw number when animation is done
@@ -462,6 +472,11 @@ function ActionButtons:addActionButtonProtectionMagics()
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
         love.graphics.setColor(1,1,1,1) --restore alpha
+        love.graphics.printf( --draw control key
+            Controls.keyMappings.btnRight[1],fonts.white,
+            WINDOW_WIDTH-40*WINDOWSCALE_X,WINDOW_HEIGHT-50*WINDOWSCALE_Y,
+            24,'center',nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,-21
+        )
     end
 
     return button 
@@ -598,6 +613,11 @@ function ActionButtons:addActionButtonCombatInteract()
             WINDOW_HEIGHT-30*WINDOWSCALE_Y+button.state.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,0
         )
+        love.graphics.printf( --draw control key
+            Controls.keyMappings.btnDown[1],fonts.white,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,WINDOW_HEIGHT-30*WINDOWSCALE_Y,
+            24,'center',nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,-21
+        )
     end
 
     --sets nodeNearPlayer state to _bool. Called be Player
@@ -730,6 +750,11 @@ function ActionButtons:addMenuAccept()
             WINDOW_HEIGHT-30*WINDOWSCALE_Y+self.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y
         )
+        love.graphics.printf( --draw control key
+            Controls.keyMappings.btnDown[1],fonts.white,
+            WINDOW_WIDTH-60*WINDOWSCALE_X,WINDOW_HEIGHT-30*WINDOWSCALE_Y,
+            24,'center',nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,-21
+        )
     end
 
     return button:load()
@@ -766,6 +791,11 @@ function ActionButtons:addMenuDecline()
             --draw 1px (scaled) lower when button is currently pressed
             WINDOW_HEIGHT-50*WINDOWSCALE_Y+self.pressedFlag*WINDOWSCALE_Y,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y
+        )
+        love.graphics.printf( --draw control key
+            Controls.keyMappings.btnRight[1],fonts.white,
+            WINDOW_WIDTH-40*WINDOWSCALE_X,WINDOW_HEIGHT-50*WINDOWSCALE_Y,
+            24,'center',nil,WINDOWSCALE_X,WINDOWSCALE_Y,0,-21
         )
     end
 

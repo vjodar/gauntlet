@@ -6,8 +6,9 @@ function Clock:load()
     self.runClock=false --used to pause and resume clock
     self.mode="" --used to show either dungeon or boss clock
     self.internalTimer={ --used to keep track of completion times
-        dungeon=0,boss=0
+        dungeon=530,boss=0
     }
+    self.font=fonts.yellow
 
     self._upd=nil --holds the appropriate update function
     
@@ -19,6 +20,14 @@ function Clock:update()
 
     if self.mode=='dungeon' then --update dungeon clock
         self.internalTimer.dungeon=self.internalTimer.dungeon+dt
+
+        --flash clock red every minute or keep clock red when 1min remains
+        if self.internalTimer.dungeon>=540 
+        or math.floor((60-self.internalTimer.dungeon)%60)==0
+        then 
+            self.font=fonts.red else self.font=fonts.yellow
+        end
+
         if self.internalTimer.dungeon>=600 then --10min are up, start boss battle
             self.internalTimer.dungeon=600 
             local afterFn=function()             
@@ -29,6 +38,7 @@ function Clock:update()
             FadeState:fadeOut(1,afterFn)
         end
     elseif self.mode=='boss' then --update boss clock
+        self.font=fonts.yellow
         self.internalTimer.boss=self.internalTimer.boss+dt
         if self.internalTimer.boss>=5999.99 then --clock is maxed, stop counting
             self.internalTimer.boss=5999.99
@@ -44,19 +54,19 @@ function Clock:draw()
         nil,WINDOWSCALE_X,WINDOWSCALE_Y
     )
     love.graphics.print( --print colon
-        ":",WINDOW_WIDTH-WINDOWSCALE_X*(self.w-15),WINDOWSCALE_Y*7,
+        ":",self.font,WINDOW_WIDTH-WINDOWSCALE_X*(self.w-15),WINDOWSCALE_Y*7,
         nil,WINDOWSCALE_X,WINDOWSCALE_Y
     )
 
     if self.mode=='dungeon' then --draw dungeon clock
         love.graphics.print( --minutes
             string.format("%02d",math.floor(10-(self.internalTimer.dungeon/60))),
-            WINDOW_WIDTH-WINDOWSCALE_X*(self.w-5),WINDOWSCALE_Y*7,
+            self.font,WINDOW_WIDTH-WINDOWSCALE_X*(self.w-5),WINDOWSCALE_Y*7,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y
         )
         love.graphics.print( --seconds
             string.format("%02d",math.floor((60-self.internalTimer.dungeon)%60)),
-            WINDOW_WIDTH-WINDOWSCALE_X*(self.w-20),WINDOWSCALE_Y*7,
+            self.font,WINDOW_WIDTH-WINDOWSCALE_X*(self.w-20),WINDOWSCALE_Y*7,
             nil,WINDOWSCALE_X,WINDOWSCALE_Y
         )
     elseif self.mode=='boss' then --draw boss clock
