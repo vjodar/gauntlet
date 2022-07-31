@@ -270,6 +270,11 @@ function Inventory:open()
     if self.state.closed==true then self.state.transitioning=true end 
 end
 
+--closes the inventory only when already open.
+function Inventory:close()
+    if self.state.open==true then self.state.transitioning=true end 
+end
+
 --increments the count of a given item in inventoryItems table
 function Inventory:addItem(_item,_amount)
     for i,item in pairs(self.inventoryItems) do 

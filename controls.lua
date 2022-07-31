@@ -51,16 +51,16 @@ controls.releasedInputs={ --stores wether or not each input has been released ea
 --table of keyboard control mappings.
 controls.keyMappings={ 
     --directions
-    dirLeft={'a'},
-    dirRight={'d'},
-    dirUp={'w'},
-    dirDown={'s'},
+    dirLeft={'a','left'},
+    dirRight={'d','right'},
+    dirUp={'w','up'},
+    dirDown={'s','down'},
 
     --buttons
-    btnLeft={'left','kp4'},
-    btnRight={'right','kp6'},
-    btnUp={'up','kp8'},
-    btnDown={'down','kp5'},
+    btnLeft={'j','kp4'},
+    btnRight={'l','kp6'},
+    btnUp={'i','kp8'},
+    btnDown={'k','kp5'},
     btnStart={'space'},
     btnSelect={'return'},
 }
