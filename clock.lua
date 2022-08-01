@@ -6,7 +6,7 @@ function Clock:load()
     self.runClock=false --used to pause and resume clock
     self.mode="" --used to show either dungeon or boss clock
     self.internalTimer={ --used to keep track of completion times
-        dungeon=530,boss=0
+        dungeon=0,boss=0
     }
     self.font=fonts.yellow
 

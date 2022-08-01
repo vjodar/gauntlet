@@ -99,6 +99,6 @@ end
 
 --closes the game.
 function closeGame()   
-    love.event.quit()
-    -- love.load({keepSettings=true}) --WEB VERSION
+    -- love.event.quit()
+    love.load({keepSettings=true}) --WEB VERSION
 end
