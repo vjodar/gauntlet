@@ -1,52 +1,27 @@
 controls={}
-   
-controls.downInputs={ --stores wether or not each input is currently down
-    --directions
-    dirUp=false,
-    dirDown=false,
-    dirLeft=false,
-    dirRight=false,
 
-    --buttons
-    btnUp=false,
-    btnDown=false,
-    btnLeft=false,
-    btnRight=false,
-    btnStart=false,
-    btnSelect=false,
-}
+local function defaultInputs() --defines all possible inputs
+    return {
+       --directions
+        dirUp=false,
+        dirDown=false,
+        dirLeft=false,
+        dirRight=false,
 
-controls.pressedInputs={ --stores wether or not each input is pressed for the first frame
-    --directions
-    dirUp=false,
-    dirDown=false,
-    dirLeft=false,
-    dirRight=false,
+        --buttons
+        btnUp=false,
+        btnDown=false,
+        btnLeft=false,
+        btnRight=false,
+        btnStart=false,
+        btnSelect=false, 
+    }
+end
 
-    --buttons
-    btnUp=false,
-    btnDown=false,
-    btnLeft=false,
-    btnRight=false,
-    btnStart=false,
-    btnSelect=false,
-}
-
-controls.releasedInputs={ --stores wether or not each input has been released each frame
-    --directions
-    dirUp=false,
-    dirDown=false,
-    dirLeft=false,
-    dirRight=false,
-
-    --buttons
-    btnUp=false,
-    btnDown=false,
-    btnLeft=false,
-    btnRight=false,
-    btnStart=false,
-    btnSelect=false,
-}
+--tables that stores what inputs are down, pressed, or released during a given frame
+controls.downInputs=defaultInputs()
+controls.pressedInputs=defaultInputs()
+controls.releasedInputs=defaultInputs()
 
 --table of keyboard control mappings.
 controls.keyMappings={ 
@@ -57,10 +32,10 @@ controls.keyMappings={
     dirDown={'s','down'},
 
     --buttons
-    btnLeft={'j','kp4'},
-    btnRight={'l','kp6'},
-    btnUp={'i','kp8'},
-    btnDown={'k','kp5'},
+    btnLeft={'j','kp4','z'},
+    btnRight={'l','kp6','v'},
+    btnUp={'i','kp8','x'},
+    btnDown={'k','kp5','c'},
     btnStart={'space'},
     btnSelect={'return'},
 }

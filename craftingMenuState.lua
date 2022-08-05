@@ -142,6 +142,38 @@ function CraftingMenuState:load()
         }
     }
 
+    self.leftMenuSelection={
+        potion='staff',
+        staff='bow',
+        bow='legs',
+        legs='chest',
+        chest='head',
+        head='potion'
+    }
+    function self:moveCursorLeft()
+        local leftSelection=self.leftMenuSelection[self.cursor.selection]
+        if leftSelection=='staff' then self.cursor.xPos=self.menu.xPos+99
+        else self.cursor.xPos=self.cursor.xPos-19
+        end
+        self.cursor.selection=leftSelection
+    end 
+
+    self.rightMenuSelection={
+        staff='potion',
+        potion='head',
+        head='chest',
+        chest='legs',
+        legs='bow',
+        bow='staff'
+    }
+    function self:moveCursorRight()
+        local rightSelection=self.rightMenuSelection[self.cursor.selection]
+        if rightSelection=='potion' then self.cursor.xPos=self.menu.xPos+4
+        else self.cursor.xPos=self.cursor.xPos+19 
+        end
+        self.cursor.selection=rightSelection
+    end
+
     --dialogs the player will say upon failing to craft an item due to insufficient requirements
     self.failedCraftDialog={
         arcane_shards='Arcane Shards',
@@ -209,7 +241,7 @@ function CraftingMenuState:updateMenu()
     
     if acceptInput then
         --if player presses exit button or player took damage, exit crafting menu
-        if Controls.pressedInputs.btnRight 
+        if Controls.releasedInputs.btnRight 
         or Player.health.current~=self.playerHealth 
         then
             self.sfx.close:play()
@@ -224,32 +256,10 @@ function CraftingMenuState:updateMenu()
 
         --move cursor
         if Controls.pressedInputs.dirRight then
-            if self.cursor.selection=='staff' then --wrap around to potion
-                self.cursor.selection='potion'
-                self.cursor.xPos=self.menu.xPos+4
-            else --move to the right, update cursor selection
-                if self.cursor.selection=='potion' then self.cursor.selection='head'
-                elseif self.cursor.selection=='head' then self.cursor.selection='chest'
-                elseif self.cursor.selection=='chest' then self.cursor.selection='legs'
-                elseif self.cursor.selection=='legs' then self.cursor.selection='bow'
-                elseif self.cursor.selection=='bow' then self.cursor.selection='staff'
-                end
-                self.cursor.xPos=self.cursor.xPos+19
-            end
+            self:moveCursorRight()
             self.sfx.move:play()
         elseif Controls.pressedInputs.dirLeft then 
-            if self.cursor.selection=='potion' then --wrap around to staff
-                self.cursor.selection='staff'
-                self.cursor.xPos=self.menu.xPos+99
-            else --move to the left, update cursor selection
-                if self.cursor.selection=='staff' then self.cursor.selection='bow'
-                elseif self.cursor.selection=='bow' then self.cursor.selection='legs'
-                elseif self.cursor.selection=='legs' then self.cursor.selection='chest'
-                elseif self.cursor.selection=='chest' then self.cursor.selection='head'
-                elseif self.cursor.selection=='head' then self.cursor.selection='potion'
-                end
-                self.cursor.xPos=self.cursor.xPos-19
-            end
+            self:moveCursorLeft()
             self.sfx.move:play()
         end
     end

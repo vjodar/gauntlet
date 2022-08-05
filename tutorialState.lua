@@ -1136,9 +1136,8 @@ function TutorialState:load()
             Player.state.invincible=false
 
             --spawn cooked fish and potions
-            for i=1,10 do 
+            for i=1,5 do 
                 Items:spawn_item(self.room.xPos+192,self.room.yPos+112,'fish_cooked')
-                Items:spawn_item(self.room.xPos+192,self.room.yPos+144,'potion')
             end
         end)
         
@@ -1176,6 +1175,13 @@ function TutorialState:load()
 
         self:checkObjectivesT9()
 
+        --prevent softlock from running out of potions without fully restoring mana
+        if Player.suppliesPouch.potion==0 and #Entities.entitiesTable==1 then 
+            for i=1,5 do 
+                Items:spawn_item(self.room.xPos+192,self.room.yPos+144,'potion')
+            end
+        end
+
         return true
     end
 
@@ -1200,9 +1206,9 @@ function TutorialState:load()
             self.objectives.t9.restoreMana.text,
             fonts[self.objectives.t9.restoreMana.color],
             self.room.xPos,self.room.yPos+254,400,'center'
-        )
-
+        ) 
         cam:detach()
+
         ActionButtons.combatInteract:draw()
         ActionButtons.weapons:draw()
         ActionButtons.protectionMagics:draw()
